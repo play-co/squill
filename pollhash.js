@@ -1,6 +1,6 @@
-jsio('from jsio.interfaces import PubSub');
+jsio('import lib.PubSub');
 
-exports.Poller = new (Class(PubSub, function() {
+exports.Poller = new (Class(lib.PubSub, function() {
 	
 	this._lastTag = null;
 	
