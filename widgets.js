@@ -1,5 +1,6 @@
-jsio('from jsio.interfaces import PubSub');
-jsio('from jsio.util.browser import $');
+jsio('import lib.PubSub as PubSub');
+jsio('from util.browser import $');
+jsio('import .Events');
 
 function shallowCopy(p) {
 	var o = {};
@@ -67,7 +68,7 @@ exports.Widget = Class(PubSub, function() {
 	this.onclick = function(f) { $.onEvent(this._el, 'click', f); return this; }
 });
 
-exports.TextInput = Class([exports.Widget, DOMEvents], function(supr) {
+exports.TextInput = Class([exports.Widget, Events], function(supr) {
 	this._type = 'text';
 	this._name = 'textInput';
 	this._class = _wp + this._name;
@@ -80,9 +81,9 @@ exports.TextInput = Class([exports.Widget, DOMEvents], function(supr) {
 		this._label = $.create({text: label, className: _wp + 'textInputLabel', parent: el});
 		this._input = $.create({tag: 'input', attrs: {type: this._type, value: value}, parent: el});
 		
-		this.mouseEvents(el);
-		this.focusEvents(this._input);
-		this.keyEvents(this._input);
+		this.initMouseEvents(el);
+		this.initFocusEvents(this._input);
+		this.initKeyEvents(this._input);
 	}
 	
 	this.getValue = function() { return this._input.value; }
@@ -110,7 +111,7 @@ exports.PasswordInput = Class(exports.TextInput, function(supr) {
 	this._type = 'password';
 });
 
-exports.Button = Class([exports.Widget, DOMEvents], function(supr) {
+exports.Button = Class([exports.Widget, Events], function(supr) {
 	this._name = 'btn';
 	this._class = _wp + this._name;
 	
@@ -118,7 +119,7 @@ exports.Button = Class([exports.Widget, DOMEvents], function(supr) {
 		var el = this._el;
 		
 		if(this._params.onclick) { this.subscribe('Click', this, this._params.onclick); }
-		this.mouseEvents(el);
+		this.initMouseEvents(el);
 		
 		el.style.userSelect = 'none';
         el.style.MozUserSelect = 'none'; // Mozilla
@@ -141,7 +142,7 @@ exports.TextButton = Class(exports.Button, function(supr) {
 			this.subscribe('Click', this, this._params.onclick);
 		}
 		
-		this.mouseEvents(el);
+		this.initMouseEvents(el);
 	}
 	
 	this.setLabel = function(label) {

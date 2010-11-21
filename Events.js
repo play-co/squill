@@ -26,7 +26,7 @@ exports = Class(function() {
 		this.event('blur', 'onBlur');
 	}
 	
-	this.keyEvents = function(el) {
+	this.initKeyEvents = function(el) {
 		this.event('keydown', 'onKeyDown');
 		this.event('keypress', 'onKeyPress');
 		this.event('keyup', 'onKeyUp');

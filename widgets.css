@@ -1,0 +1,71 @@
+.jsiox-btn {
+    position: relative;
+    cursor: pointer;
+    font: 16px Tahoma;
+    color: #9a9a9a;
+}
+
+.jsiox-btnLeft {
+    float: left;
+    width: 10px;
+    height: 41px;
+    background: url('images/button.png') 0px 0px no-repeat;
+}
+
+.jsiox-btnCenter {
+    float: left;
+    line-height: 41px;
+    padding: 0px 20px;
+    background: url('images/button.png') 0px -41px repeat-x;
+}
+
+.jsiox-btnRight {
+    float: left;
+    width: 10px;
+    height: 41px;
+    background: url('images/button.png') 0px -82px no-repeat;
+}
+
+.jsiox-btn-hover { color: #888;}
+.jsiox-btn-hover .jsiox-btnLeft { background-position: 0px -123px; }
+.jsiox-btn-hover .jsiox-btnCenter { background-position: 0px -164px; }
+.jsiox-btn-hover .jsiox-btnRight { background-position: 0px -205px; }
+.jsiox-btn-down .jsiox-btnLeft { background-position: 0px -246px; }
+.jsiox-btn-down .jsiox-btnCenter { background-position: 0px -287px; }
+.jsiox-btn-down .jsiox-btnRight { background-position: 0px -328px; }
+
+.jsiox-textInput {
+    position: relative;
+    background: url('images/inputbg.png') repeat-x;
+    height: 31px;
+    border: 2px solid #e8e8ea;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    cursor: text;
+}
+
+.jsiox-textInput * {
+    font: 16px Tahoma;
+}
+
+.jsiox-textInput div {
+    position: relative;
+    top: 4px;
+    left: 10px;
+    color: #c2c2c2;
+}
+
+.jsiox-textInput input {
+    border: 0px;
+    background: none;
+    position: absolute;
+    top: 4px;
+    left: 8px;
+    color: #000;
+    outline: none;
+    padding: 0px;
+}
+
+.jsiox-textInput-hover { border-color: #bcbcbf; }
+.jsiox-textInput-focused { border-color: #8c8cde; }
