@@ -3,6 +3,7 @@
     cursor: pointer;
     font: 16px Tahoma;
     color: #9a9a9a;
+    text-decoration: none;
 }
 
 .jsiox-btnLeft {
@@ -26,7 +27,7 @@
     background: url('images/button.png') 0px -82px no-repeat;
 }
 
-.jsiox-btn-hover { color: #888;}
+.jsiox-btn-hover { color: #888; }
 .jsiox-btn-hover .jsiox-btnLeft { background-position: 0px -123px; }
 .jsiox-btn-hover .jsiox-btnCenter { background-position: 0px -164px; }
 .jsiox-btn-hover .jsiox-btnRight { background-position: 0px -205px; }
@@ -38,14 +39,11 @@
     position: relative;
     background: url('images/inputbg.png') repeat-x;
     height: 31px;
-    border: 2px solid #e8e8ea;
+    border: 2px solid #c7c7c9;
     border-radius: 10px;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     cursor: text;
-}
-
-.jsiox-textInput * {
     font: 16px Tahoma;
 }
 
@@ -57,6 +55,7 @@
 }
 
 .jsiox-textInput input {
+    font: 16px Tahoma;
     border: 0px;
     background: none;
     position: absolute;
@@ -67,5 +66,5 @@
     padding: 0px;
 }
 
-.jsiox-textInput-hover { border-color: #bcbcbf; }
+.jsiox-textInput-hover { border-color: #a7a8ac; }
 .jsiox-textInput-focused { border-color: #8c8cde; }

@@ -1,35 +1,56 @@
 jsio('from util.browser import $');
+jsio('import .Drag');
 
 exports = Class(function() {
-	this.event = function(name, handler, args) {
+	var SLICE = Array.prototype.slice;
+	
+	this.event = function(el, name, handler) {
 		if (!this._eventEnabled) { this._eventEnabled = {}; }
-		if (!args) { args = []; }
-		args = [this, handler].concat(args);
-		
-		var handler = bind.apply(this, args),
+		var args = [this, handler].concat(SLICE.call(arguments, 3)),
+			handler = bind.apply(this, args),
 			events = this._eventEnabled;
 		
 		events[name] = true;
-		$.onEvent(this._el, name, function() { if(events[name]) { handler.apply(this, arguments); }});
+		$.onEvent(el, name, function() {
+			if(events[name]) {
+				handler.apply(this, arguments);
+			}
+		});
 	}
 	
-	this.initMouseEvents = function() {
-		this.event('mouseover', 'onMouseOver');
-		this.event('mouseout', 'onMouseOut');
-		this.event('mousedown', 'onMouseDown');
-		this.event('mouseup', 'onMouseUp');
-		this.event('click', 'onClick');
+	this.isDragging = function() { return this._isDragging || false; }
+	
+	this.initDragEvents = function(el) {
+		if (!this.__drag) {
+			var d = this.__drag = new Drag();
+			d.subscribe('DragStart', this, 'onDragStart');
+			d.subscribe('Drag', this, 'onDrag');
+			d.subscribe('DragEnd', this, 'onDragEnd');
+		}
+		
+		$.onEvent(el, 'mousedown', bind(this.__drag, 'startDrag'));
 	}
 	
-	this.initFocusEvents = function() {
-		this.event('focus', 'onFocus');
-		this.event('blur', 'onBlur');
+	this.initMouseEvents = function(el) {
+		el = el || this._el;
+		this.event(el, 'mouseover', 'onMouseOver');
+		this.event(el, 'mouseout', 'onMouseOut');
+		this.event(el, 'mousedown', 'onMouseDown');
+		this.event(el, 'mouseup', 'onMouseUp');
+		this.event(el, 'click', 'onClick');
+	}
+	
+	this.initFocusEvents = function(el) {
+		el = el || this._el;
+		this.event(el, 'focus', 'onFocus');
+		this.event(el, 'blur', 'onBlur');
 	}
 	
 	this.initKeyEvents = function(el) {
-		this.event('keydown', 'onKeyDown');
-		this.event('keypress', 'onKeyPress');
-		this.event('keyup', 'onKeyUp');
+		el = el || this._el;
+		this.event(el, 'keydown', 'onKeyDown');
+		this.event(el, 'keypress', 'onKeyPress');
+		this.event(el, 'keyup', 'onKeyUp');
 	}
 	
 	this.onMouseOver = function() {
@@ -74,15 +95,19 @@ exports = Class(function() {
 		this.publish('Blur');
 	}
 	
-	this.onKeyUp = function() {
-		
+	this.onKeyUp = function(e) {
+		this.publish('KeyUp', e);
 	}
 	
-	this.onKeyPress = function() {
-		
+	this.onKeyPress = function(e) {
+		this.publish('KeyPress', e);
 	}
 	
-	this.onKeyDown = function() {
-		
+	this.onKeyDown = function(e) {
+		this.publish('KeyDown', e);
 	}
+	
+	this.onDragStart = function(dragEvt) {}
+	this.onDrag = function(dragEvt, moveEvt) {}
+	this.onDragEnd = function(dragEvt, upEvt) {}
 });
