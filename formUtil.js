@@ -1,6 +1,8 @@
 jsio('from util.browser import $');
 
 exports.onEnter = function(el, cb) {
+	if (arguments.length > 2) { cb = bind.apply(this, Array.prototype.slice.call(arguments, 1)); }
+	
 	$.onEvent(el, 'keypress', function(evt) {
 		if (evt.keyCode == 13) {
 			cb();
@@ -13,6 +15,8 @@ exports.focus = function(el) {
 }
 
 exports.onPress = function(el, cb) {
+	if (arguments.length > 2) { cb = bind.apply(this, Array.prototype.slice.call(arguments, 1)); }
+	
 	$.onEvent(el, 'click', function(evt) {
 		$.stopEvent(evt);
 		cb();

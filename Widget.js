@@ -56,12 +56,12 @@ var Widget = exports = Class([Element, Events], function() {
 		
 		var id = 'jsioWidgetId' + (++uid);
 		global.getTargetDocument().write('<div id="'+id+'"></div>');
-		setTimeout(bind(this, _replaceNode), 0);
+		setTimeout(bind(this, _replaceNode, id), 0);
 		
 		return this;
 	}
 	
-	function _replaceNode() {
+	function _replaceNode(id) {
 		var el = $.id(id);
 		el.parentNode.insertBefore(this._el, el);
 		el.parentNode.removeChild(el);

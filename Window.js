@@ -1,5 +1,6 @@
 jsio('import lib.PubSub');
 jsio('import std.uri');
+jsio('import std.js as JS');
 
 var UNIQUE_ID = '__squill__window_id';
 
@@ -25,6 +26,20 @@ var Window = exports = Class(lib.PubSub, function() {
 	
 	this.hash = function(key) {
 		return this._location.query(key);
+	}
+	
+	this.center = function(el, opts) {
+		opts = JS.merge(opts, {subscribe: true});
+		
+		var width = 'width' in opts ? opts.width : el.offsetWidth,
+			height = 'height' in opts ? opts.height : el.offsetHeight;
+		
+		el.style.left = (this._dim.width - width) / 2 + 'px';
+		el.style.top = (this._dim.height - height) / 2 + 'px';
+		
+		if (opts.subscribe) {
+			this.subscribe('ViewportChange', this, 'center', el, JS.merge({subscribe: false}, opts));
+		}
 	}
 });
 
