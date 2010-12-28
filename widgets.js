@@ -25,7 +25,9 @@ var widgetNames = [
 	'SubmitButton',
 	'TextInput',
 	'PasswordInput',
-	'TextArea'
+	'TextArea',		
+	'TextLimitArea',
+	'Form'
 ]
 
 for (var i = 0, name; name = widgetNames[i]; ++i) {
