@@ -3,6 +3,9 @@ jsio('import .Element');
 jsio('import .Widget');
 
 exports = Class(Widget, function(supr) {
+	
+	this.isValid = true;
+
 	this.init = function(opts) {
 		opts = JS.merge(opts, {});
 		supr(this, 'init', [opts]);
@@ -22,13 +25,25 @@ exports = Class(Widget, function(supr) {
 			}
 		}));
 	}
+
+	this.validate = function(){
+		this.each(bind(this, function(item){
+			if (item.isValid){
+				if (!item.isValid()){
+					this.isValid = false;
+				}
+			}
+		}));
+		return this.isValid;
+	}
 	
 	this.each = function(cb) {
  		for(var i = 0, w; w = this._items[i]; ++i ){
 			cb(w);
 		}
 	}
-	
+		
+
 	this.addItems = function(items) {
 		for(var i = 0, len = items.length; i < len; ++i) {
 			var def = items[i];
@@ -48,7 +63,6 @@ exports = Class(Widget, function(supr) {
 			if (ctor = Widget.get(item.type)) {
 				item = new ctor(item).appendTo(this._el);
 			} else {
-				
 				logger.warn('unknown widget ctor: ' + item.type);
 				return;
 			}

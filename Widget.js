@@ -29,11 +29,38 @@ var Widget = exports = Class([Element, Events], function() {
 	
 	this.buildContent = function() {
 		$.addClass(this._el, global.getWidgetPrefix() + this._css);
+		if (this._params.errorLabel) {
+			this._errorLabel = $.create({html: this._params.errorLabel, className: global.getWidgetPrefix() + 'textInputErrorLabel', parent: this._el})
+		}
 		this.buildWidget();
 	}
 	
 	this.buildWidget = function() {}
 	
+	this.errors = function(){
+		return this.validators.map(function(item){
+			if (item.isValid == false){
+				return item.message;
+			}
+		});
+	}
+
+	this.validate = function() {
+		if(this.validators) {
+			this.isValid = this.validators.map(function(item){
+				item.isValid = item.validator.call(this);
+				return item.isValid;
+			},this).reduce(function(prev,cur){ return prev && cur });
+		}else{
+			this.isValid = true
+		}
+		return this.isValid;
+	}
+
+	this.isValid = true;
+
+	this.validators = [];
+
 	this.getElement = function() {
 		if (!this._el) { this.build(); }
 		return this._el;
