@@ -1,6 +1,7 @@
 jsio('import lib.PubSub');
 jsio('import std.uri');
 jsio('import std.js as JS');
+jsio('from util.browser import $');
 
 var UNIQUE_ID = '__squill__window_id';
 
@@ -18,6 +19,7 @@ var Window = exports = Class(lib.PubSub, function() {
 		this.publish('ViewportChange', e, this._dim);
 	}
 	
+	this.getDim = 
 	this.getViewport = function() { return this._dim; }
 	
 	this.query = function(key) {
