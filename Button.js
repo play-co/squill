@@ -3,15 +3,21 @@ jsio('import .Widget, .Events, .global');
 
 var Button = exports = Class([Widget, Events], function(supr) {
 	this._css = 'btn';
-	this._tag = 'a';
-	this._class = global.getWidgetPrefix() + this._css;
 	this._type = 'button';
 	
+	this.init = function(params) {
+		params = JS.merge(params, {
+			tag: 'button'
+		});
+		
+		supr(this, 'init', [params]);
+	}
+	
 	this.create = function() {
-		this._params = this._params || {};
-		this._params.style = this._params.style || {};
-		this._params.style.whiteSpace = 'nowrap';
-		this._params.style.display = 'block';
+		this._params.style = JS.merge(this._params.style, {
+				whiteSpace: 'nowrap',
+				display: 'block'
+			});
 		
 		supr(this, 'create', arguments);
 		
@@ -33,7 +39,7 @@ var Button = exports = Class([Widget, Events], function(supr) {
 	this.onClick = function(e) {
 		$.stopEvent(e);
 		if (this._params.onclick) {
-			this._params.onclick(e);
+			this._params.onclick(e, this);
 		} 
 		
 		supr(this, 'onClick', arguments);

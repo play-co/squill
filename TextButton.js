@@ -1,15 +1,14 @@
-jsio('import .Button, .Widget');
-jsio('from util.browser import $');
+"use import";
+
+import .Button, .Widget;
+from util.browser import $;
 
 var TextButton = exports = Class(Button, function(supr) {
 	this._type = 'text-button';
 	
 	this.buildWidget = function() {
-		var el = this._el,
-			label = this._params.label || '';
-		
-		$.setText(el, label);
-		
+		var el = this._el;
+		$.setText(el, this.getI18n('label'));
 		
 		this.initMouseEvents(el);
 		this.initKeyEvents(el);
@@ -17,7 +16,7 @@ var TextButton = exports = Class(Button, function(supr) {
 	
 	this.setLabel = function(label) {
 		this._params.label = label;
-		if(this._center) { $.setText(this._center, label); }
+		if(this._el) { $.setText(this._el, label); }
 	}
 });
 

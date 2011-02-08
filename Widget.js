@@ -1,5 +1,6 @@
 jsio('from util.browser import $');
 jsio('import .Element, .Events, .global');
+jsio('import .i18n');
 
 var uid = 0;
 
@@ -20,8 +21,9 @@ var Widget = exports = Class([Element, Events], function() {
 	this._name = '';
 	
 	this.init = function(params) {
-		this._params = shallowCopy(params);
+		this._params = JS.merge(params, {});
 		if (params.name) { this._name = params.name; }
+		if (params.parent) { this.build(); }
 	}
 	
 	this.getName = function() { return this._name; }
@@ -44,23 +46,29 @@ var Widget = exports = Class([Element, Events], function() {
 			}
 		});
 	}
-
+	
 	this.validate = function() {
-		if(this.validators) {
-			this.isValid = this.validators.map(function(item){
-				item.isValid = item.validator.call(this);
-				return item.isValid;
-			},this).reduce(function(prev,cur){ return prev && cur });
-		}else{
-			this.isValid = true
+		var isValid = true;
+		for (var i = 0, len = this.validators.length; i < len; ++i) {
+			var v = this.validators[i];
+			isValid = isValid && (v.isValid = v.call(this));
 		}
-		return this.isValid;
+		return (this._isValid = isValid);
 	}
-
-	this.isValid = true;
-
+	
+	this._isValid = true;
+	this.isValid = function() { return this._isValid; }
+	
 	this.validators = [];
-
+	
+	this.getI18n = function(key, id) {
+		var src = key in this._params
+			? this._params
+			: i18n.get(id || this._params.id);
+		
+		return src && src[key] || '';
+	}
+	
 	this.getElement = function() {
 		if (!this._el) { this.build(); }
 		return this._el;

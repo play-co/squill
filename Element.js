@@ -23,11 +23,15 @@ var Element = exports = Class(lib.PubSub, function(supr) {
 		return this;
 	}
 	
+	this.getId = function() { return this._el && this._el.id || this._params && this._params.id; }
+	
 	this.buildContent = function() {}
 	
 	this.destroy = function() {
 		if (!this._el) { return; }
 	}
+	
+	this.getElement = function() { return this._el || this.build()._el; }
 	
 	this.appendChild = function(el) {
 		if (!this._el) { this.build(); }

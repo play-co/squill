@@ -1,8 +1,13 @@
 jsio('from util.browser import $');
 
-exports = Class(function() {
-	this.init = function(params) {
-		this._el = $.create(params);
+exports = Class(squill.Widget, function() {
+	this._css = 'label';
+	
+	this.buildWidget = function() {
+		var el = this._el,
+			label = this.getI18n('label') || '';
+		
+		$.setText(el, label);
 	}
 	
 	this.setText = function(text) { $.setText(this._el, text); }

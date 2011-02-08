@@ -1,10 +1,10 @@
-var _wp = 'squill-';
-var win = window;
-var doc = document;
+var gWidgetPrefix = 'squill-';
+var gWin = window;
+var gDoc = document;
 
-exports.setTargetWindow = function(w) { win = w; doc = w.document; }
-exports.getTargetWindow = function() { return win; }
-exports.getTargetDocument= function() { return doc; }
+exports.setTargetWindow = function(w) { gWin = w; gDoc = w.document; }
+exports.getTargetWindow = function() { return gWin; }
+exports.getTargetDocument = function() { return gDoc; }
 
-exports.setWidgetPrefix = function(p) { _wp = p; }
-exports.getWidgetPrefix = function() { return _wp; }
+exports.setWidgetPrefix = function(p) { gWidgetPrefix = p; }
+exports.getWidgetPrefix = function() { return gWidgetPrefix; }

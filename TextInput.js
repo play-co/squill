@@ -8,11 +8,28 @@ var TextInput = exports= Class(Widget, function(supr) {
 	
 	this.buildWidget = function() {
 		var el = this._el,
-			label = this._params.label || '',
-			value = this._params.value || '';
+			type = this._params.type,
+			label = this.getI18n('label') || '',
+			value = this.getI18n('value') || '';
 		
-		this._label = $.create({text: label, className: global.getWidgetPrefix() + 'textInputLabel', parent: el});
-		this._input = $.create({tag: 'input', attrs: {type: this._type, value: value, name: this._name}, parent: el});
+		$.style(el, {position: 'relative'});
+		
+		this._label = $.create({
+			text: label,
+			className: global.getWidgetPrefix() + 'textInputLabel',
+			style: {position: 'absolute'},
+			parent: el
+		});
+		
+		this._input = $.create({
+			tag: 'input',
+			attrs: {
+				type: type || this._type,
+				value: value,
+				name: this._name
+			},
+			parent: el
+		});
 		
 		this.initMouseEvents(el);
 		this.initFocusEvents(this._input);
