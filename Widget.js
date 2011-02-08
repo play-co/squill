@@ -1,6 +1,7 @@
 jsio('from util.browser import $');
 jsio('import .Element, .Events, .global');
 jsio('import .i18n');
+jsio('import std.js as JS');
 
 var uid = 0;
 
