@@ -1,25 +1,23 @@
 jsio('from util.browser import $');
-jsio('import .Element');
+jsio('import .Widget');
 
-var TabbedPane = exports = Class(Element, function() {
-	this.init = function(opts) {
-		this._el = $({
-			className: 'tabbedPane',
-			style: {
-			}
-		});
-		
+var TabbedPane = exports = Class(Widget, function(supr) {
+
+	Class.ctor(this, supr, {className: 'tabbedPane'});
+	
+	this.buildWidget = function(el) {
 		this._tabContainer = $({
 			className: 'tabContainer',
-			parent: this._el,
+			parent: $({className: 'tabContainerWrapper', parent: el}),
 			style: {
 				
 			}
 		});
 		
+		
 		this._content = $({
 			className: 'tabContents',
-			parent: this._el,
+			parent: $({className: 'tabContentsWrapper', parent: el}),
 			style: {
 				
 			}
@@ -30,7 +28,7 @@ var TabbedPane = exports = Class(Element, function() {
 	}
 	
 	this.select = function(title) {
-		this.onTabClick(title);
+		this.showTab(title);
 	}
 	
 	this.newPane = function(title) {
@@ -44,7 +42,7 @@ var TabbedPane = exports = Class(Element, function() {
 			}
 		});
 		
-		$.onEvent(tab, 'click', this, 'showTab', title);
+		$.onEvent(tab, 'mousedown', this, 'showTab', title);
 		
 		this._tabs[title] = tab;
 		this._currentPane = this._panes[title] = $({
@@ -61,6 +59,9 @@ var TabbedPane = exports = Class(Element, function() {
 		
 		return this._currentPane;
 	}
+	
+	this.getTabs = function() { return this._tabs; }
+	this.getPanes = function() { return this._panes; }
 	
 	this.addNode = function(node) {
 		this._currentPane.appendChild(node);

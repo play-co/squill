@@ -22,7 +22,7 @@ var Widget = exports = Class([Element, Events], function() {
 	this._name = '';
 	
 	this.init = function(params) {
-		this._params = JS.merge(params, {});
+		this._params = params = JS.merge(params, {});
 		if (params.name) { this._name = params.name; }
 		if (params.parent) { this.build(); }
 	}
@@ -35,7 +35,7 @@ var Widget = exports = Class([Element, Events], function() {
 		if (this._params.errorLabel) {
 			this._errorLabel = $.create({html: this._params.errorLabel, className: global.getWidgetPrefix() + 'textInputErrorLabel', parent: this._el})
 		}
-		this.buildWidget();
+		this.buildWidget(this._el);
 	}
 	
 	this.buildWidget = function() {}

@@ -1,3 +1,4 @@
+jsio('import std.js as JS');
 jsio('from util.browser import $');
 jsio('import .Widget, .Events, .global');
 
