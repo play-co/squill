@@ -80,7 +80,7 @@ exports = Class(function() {
 	}
 	
 	this.onClick = function() {
-		this.publish('Click');
+		this.publish('Select');
 	}
 	
 	this.onFocus = function() {
