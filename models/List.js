@@ -24,7 +24,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._dataSource.subscribe('REMOVE', this, 'needsSort');
 	}
 	
-	this.needsSort = function() { this._needsSort = true; }
+	this.needsSort = function() { this._needsSort = true; this._view.needsRepaint(); }
 	
 	this.setSelected = function(data) { this._selected = data; }
 	this.getSelected = function() { return this._selected; }
