@@ -14,12 +14,6 @@ var TextInput = exports= Class(Widget, function(supr) {
 		
 		$.style(el, {position: 'relative'});
 		
-		this._label = $.create({
-			text: label,
-			className: global.getWidgetPrefix() + 'textInputLabel',
-			style: {position: 'absolute'},
-			parent: el
-		});
 		
 		this._input = $.create({
 			tag: 'input',
@@ -30,6 +24,18 @@ var TextInput = exports= Class(Widget, function(supr) {
 			},
 			parent: el
 		});
+		
+		if (this._input.getAttribute('placeholder') === null) {
+			this._input.setAttribute('placeholder', label);
+		} else {
+			this._label = $.create({
+				tag: 'button',
+				text: label,
+				className: global.getWidgetPrefix() + 'textInputLabel',
+				style: {position: 'absolute'},
+				parent: el
+			});	
+		}
 		
 		this.initMouseEvents(el);
 		this.initFocusEvents(this._input);
@@ -46,19 +52,34 @@ var TextInput = exports= Class(Widget, function(supr) {
 	
 	this.onMouseDown = function(e) {
 		supr(this, 'onMouseDown', arguments);
-		$.stopEvent(e);
-		
 		this._input.focus();
+	}
+	
+	this.onClick = function(e) {
+		supr(this, 'onClick', arguments);
+		
+		var evt = document.createEvent("MouseEvents");
+		evt.initMouseEvent("touchend", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		this._input.dispatchEvent(evt);
 	}
 	
 	this.onKeyDown = function() {
 		supr(this, 'onKeyDown', arguments);
-		$.hide(this._label);
+		if (this._label) { $.hide(this._label); }
+	}
+	
+	this.onKeyUp = function() {
+		supr(this, 'onKeyUp', arguments);
+		this.checkLabel();
 	}
 	
 	this.onBlur = function() {
 		supr(this, 'onBlur');
-		if(/^\s*$/.test(this._input.value)) {
+		this.checkLabel();
+	}
+	
+	this.checkLabel = function() {
+		if(this._label && /^\s*$/.test(this._input.value)) {
 			$.show(this._label);
 		}
 	}
