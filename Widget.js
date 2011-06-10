@@ -1,7 +1,8 @@
-jsio('from util.browser import $');
-jsio('import .Element, .Events, .global');
-jsio('import .i18n');
-jsio('import std.js as JS');
+"use import";
+
+from util.browser import $;
+import .Element, .Events, .global;
+import .i18n;
 
 var uid = 0;
 
@@ -22,9 +23,98 @@ var Widget = exports = Class([Element, Events], function() {
 	this._name = '';
 	
 	this.init = function(params) {
-		this._params = params = JS.merge(params, {});
+		this._params = params = merge(params, {});
 		if (params.name) { this._name = params.name; }
-		if (params.parent) { this.build(); }
+		if (params.parent) {
+			if (params.parent._el) {
+				this._parent = params.parent;
+				params.parent = params.parent._el;
+			} else if (!params.parent.appendChild) {
+				delete params.parent;
+			}
+			
+			this.build();
+		}
+	}
+	
+	this.onInputSelect = function(evt) {}
+	
+	this.buildChildren = function(def, target) {
+		if (!target) { target = this; }
+		
+		if (def.children) {
+			var children = def.children;
+			delete def.children;
+		}
+		
+		var el, newParent;
+		if (!def.type || typeof def.type == 'string') {
+			switch(def.type) {
+				case 'vcenter':
+					el = $(merge({
+						tag: 'table',
+						style: merge({height: '100%', width: '100%'}, def.style),
+						attrs: {cellpadding: 0, cellspacing: 0},
+						children: [
+							$({tag: 'tbody', children: [
+								$({tag: 'tr', children: [
+									newParent = $({tag: 'td', attrs: {valign: 'middle'}, style: {verticalAlign: 'middle'}})
+								]})
+							]})
+						]
+					}, def))
+					break;
+				case 'image':
+					el = $(merge({tag: 'img'}, def));
+					break;
+				case 'button':
+					if (typeof TextButton == 'undefined') {
+						import .TextButton;
+					}
+			
+					el = new TextButton(def);
+					el.subscribe('Select', target, 'onInputSelect', def.id);
+					break;
+				case 'label':
+					if (typeof Label == 'undefined') {
+						import .Label;
+					}
+			
+					el = new Label(def);
+					break;
+				case 'list':
+					if (typeof List == 'undefined') {
+						import .List;
+					}
+			
+					el = new List(def);
+					break;
+				case 'text':
+				case 'password':
+					if (typeof TextInput == 'undefined') {
+						import .TextInput;
+					}
+					
+					el = new TextInput(def);
+					break;
+				default:
+					el = $(def);
+					break;
+			}
+		} else {
+			el = new def.type(def);
+		}
+		
+		target[def.id] = el;
+		
+		if (children) {
+			var parent = newParent && newParent._el || newParent || el && el._el || el;
+			for (var i = 0, c; c = children[i]; ++i) {
+				this.buildChildren(merge({parent: parent}, c), target);
+			}
+		}
+
+		return el;
 	}
 	
 	this.getName = function() { return this._name; }
@@ -35,6 +125,8 @@ var Widget = exports = Class([Element, Events], function() {
 		if (this._params.errorLabel) {
 			this._errorLabel = $.create({html: this._params.errorLabel, className: global.getWidgetPrefix() + 'textInputErrorLabel', parent: this._el})
 		}
+		
+		if (this._def) { this.buildChildren(merge({el: this._el}, this._def)); }
 		this.buildWidget(this._el);
 	}
 	
