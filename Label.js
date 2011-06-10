@@ -1,4 +1,7 @@
-jsio('from util.browser import $');
+"use import";
+
+from util.browser import $;
+import squill.Widget;
 
 exports = Class(squill.Widget, function() {
 	this._css = 'label';
