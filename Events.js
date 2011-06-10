@@ -1,8 +1,13 @@
-jsio('from util.browser import $');
-jsio('import .Drag');
+"use import";
 
-exports = Class(function() {
+from util.browser import $;
+import .Drag;
+import lib.PubSub;
+
+exports = Class(lib.PubSub, function() {
 	var SLICE = Array.prototype.slice;
+	
+	var isMobile = /(iPod|iPhone|iPad|Android)/i.test(navigator.userAgent);
 	
 	this.event = function(el, name, handler) {
 		if (!this._eventEnabled) { this._eventEnabled = {}; }
@@ -33,17 +38,26 @@ exports = Class(function() {
 	
 	this.initMouseEvents = function(el) {
 		el = el || this._el;
-		this.event(el, 'mouseover', 'onMouseOver');
-		this.event(el, 'mouseout', 'onMouseOut');
-		this.event(el, 'mousedown', 'onMouseDown');
-		this.event(el, 'mouseup', 'onMouseUp');
-		this.event(el, 'click', 'onClick');
+		
+		if (isMobile) {
+			this.event(el, 'touchstart', '_onTouchStart');
+			this.event(el, 'touchend', '_onTouchEnd');
+		} else {
+			this.event(el, 'mouseover', 'onMouseOver');
+			this.event(el, 'mouseout', 'onMouseOut');
+			this.event(el, 'mousedown', 'onMouseDown');
+			this.event(el, 'mouseup', 'onMouseUp');
+			this.event(el, 'click', 'onClick');
+		}
+		
+		return this;
 	}
 	
 	this.initFocusEvents = function(el) {
 		el = el || this._el;
 		this.event(el, 'focus', 'onFocus');
 		this.event(el, 'blur', 'onBlur');
+		return this;
 	}
 	
 	this.initKeyEvents = function(el) {
@@ -51,6 +65,18 @@ exports = Class(function() {
 		this.event(el, 'keydown', 'onKeyDown');
 		this.event(el, 'keypress', 'onKeyPress');
 		this.event(el, 'keyup', 'onKeyUp');
+		return this;
+	}
+	
+	this._onTouchStart = function(e) {
+		this.onMouseOver(e);
+		this.onMouseDown(e);
+	}
+	
+	this._onTouchEnd = function(e) {
+		this.onMouseUp(e);
+		this.onClick(e);
+		this.onMouseOut(e);
 	}
 	
 	this.onMouseOver = function() {
