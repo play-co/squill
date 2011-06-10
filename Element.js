@@ -11,15 +11,17 @@ var Element = exports = Class(lib.PubSub, function(supr) {
 	}
 	
 	this.build = function() {
-		if (this._el) { return; }
-		if (this._params.el) {
-			this._el = this._params.el;
-			$.apply(this._el, this._params);
-		} else {
-			this._el = $.create(this._params);
+		if (!this._el) {
+			if (this._params.el) {
+				this._el = this._params.el;
+				$.apply(this._el, this._params);
+			} else {
+				this._el = $.create(this._params);
+			}
+		
+			this.buildContent();
 		}
 		
-		this.buildContent();
 		return this;
 	}
 	
