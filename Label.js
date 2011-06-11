@@ -13,6 +13,7 @@ exports = Class(squill.Widget, function() {
 		$.setText(el, label);
 	}
 	
+	this.setLabel =
 	this.setText = function(text) { $.setText(this._el, text); }
 	this.setHTML = function(html) { this._el.innerHTML = html; }
 });
