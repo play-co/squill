@@ -1,11 +1,11 @@
 jsio('import std.js as JS');
-jsio('import .widgets');
+jsio('import .Widget');
 jsio('import .Events');
 jsio('import math2D.Point as Point');
 jsio('from util.browser import $');
 jsio('import .Window');
 
-var Dialog = exports = Class([widgets.Widget, Events], function(supr) {
+var Dialog = exports = Class(Widget, function(supr) {
 	this.init = function(params) {
 		var params = JS.merge(params, {
 			draggable: true,
@@ -26,7 +26,7 @@ var Dialog = exports = Class([widgets.Widget, Events], function(supr) {
 		
 		this._titlebar = $({
 			className: 'titlebar',
-			text: this._params.title,
+			text: this._def.title,
 			parent: this._el
 		});
 		
@@ -39,12 +39,13 @@ var Dialog = exports = Class([widgets.Widget, Events], function(supr) {
 			this._titlebar.insertBefore(this._closeBtn, this._titlebar.firstChild);
 			
 			$.onEvent(this._closeBtn, 'click', this, function() {
-				$(this._el);
-				this.publish('Close')
+				this.dismiss(null);
 			});
 		}
 		
 		this.initDragEvents(this._titlebar);
+		
+		supr(this, 'buildContent');
 	}
 	
 	this.onDrag = function(dragEvt, moveEvt, delta) {
@@ -57,6 +58,14 @@ var Dialog = exports = Class([widgets.Widget, Events], function(supr) {
 		
 		this._el.style.left = Math.max(0, pos.x) + 'px';
 		this._el.style.top = Math.max(0, pos.y) + 'px';
-		
+	}
+	
+	this.dismiss = function(data) {
+		$(this._el);
+		this.publish('Close');
+		this._delegate && this._delegate(null, {
+			action: 'closed',
+			data: data
+		});
 	}
 });
