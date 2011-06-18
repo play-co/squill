@@ -31,6 +31,8 @@ var Widget = exports = Class([Element, Events], function() {
 				params.parent = params.parent._el;
 			} else if (!params.parent.appendChild) {
 				delete params.parent;
+			} else {
+				this._parent = params.parent;
 			}
 			
 			this.build();
@@ -116,6 +118,9 @@ var Widget = exports = Class([Element, Events], function() {
 
 		return el;
 	}
+	
+	this.setDelegate = function(delegate) { this._delegate = delegate; }
+	this.setController = function(controller) { this._controller = controller; }
 	
 	this.getName = function() { return this._name; }
 	this.setName = function(name) { this._name = name; }
