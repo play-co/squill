@@ -30,10 +30,13 @@ exports = Class(lib.PubSub, function() {
 			var d = this.__drag = new Drag();
 			d.subscribe('DragStart', this, 'onDragStart');
 			d.subscribe('Drag', this, 'onDrag');
-			d.subscribe('DragEnd', this, 'onDragEnd');
+			d.subscribe('DragStop', this, 'onDragStop');
 		}
 		
-		$.onEvent(el, 'mousedown', bind(this.__drag, 'startDrag'));
+		var startDrag = bind(this.__drag, 'startDrag');
+		if (!el) { el = this._el; }
+		if (el.addEventListener) { el.addEventListener('touchstart', startDrag, true); }
+		$.onEvent(el, 'mousedown', startDrag);
 	}
 	
 	this.initMouseEvents = function(el) {
@@ -135,5 +138,5 @@ exports = Class(lib.PubSub, function() {
 	
 	this.onDragStart = function(dragEvt) {}
 	this.onDrag = function(dragEvt, moveEvt) {}
-	this.onDragEnd = function(dragEvt, upEvt) {}
+	this.onDragStop = function(dragEvt, upEvt) {}
 });
