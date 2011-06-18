@@ -41,7 +41,7 @@ var Button = exports = Class([Widget, Events], function(supr) {
 		$.stopEvent(e);
 		if (this._params.onclick) {
 			this._params.onclick(e, this);
-		} 
+		}
 		
 		supr(this, 'onClick', arguments);
 	}
@@ -57,6 +57,10 @@ var Button = exports = Class([Widget, Events], function(supr) {
 	
 	this.onKeyUp = function(e) {
 		if (e.keyCode == 13) { $.stopEvent(e); this.onMouseUp(); this.onClick(e); }
+	}
+	
+	this.show = function() {
+		this.getElement().style.display = 'inline-block';
 	}
 });
 
