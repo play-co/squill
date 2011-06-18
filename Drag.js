@@ -3,28 +3,27 @@ jsio('import math2D.Point as Point');
 jsio('from util.browser import $');
 
 var gCurrentDrag = [],
-	gCurrentMouse = null;
+	gCurrentMouse = {x: 0, y: 0};
 
 function resolveMouse(e) {
 	if ('pageX' in e) {
-		gCurrentMouse = {
-			x: e.pageX,
-			y: e.pageY
-		};
+		gCurrentMouse.x = e.pageX;
+		gCurrentMouse.y = e.pageY;
 	} else { // looks like IE
 		var doc = document.documentElement,
 			body = document.body;
 		
-		gCurrentMouse = {
-			x: e.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0),
-			y: e.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop  || body && body.clientTop  || 0)
-		}
+		gCurrentMouse.x = e.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
+		gCurrentMouse.y = e.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop  || body && body.clientTop  || 0);
 	}
 }
+
+var _active = false;
 
 function gAddItem(item) {
 	gRemoveItem(item);
 	gCurrentDrag.push(item);
+	_active = true;
 }
 
 function gRemoveItem(item) {
@@ -34,20 +33,41 @@ function gRemoveItem(item) {
 			--i;
 		}
 	}
+	
+	if (!gCurrentDrag[0]) { _active = false; }
 }
 
-$.onEvent(document, 'mousemove', function (e) {
+function onMove(e) {
+	if (!_active) { return; }
+	
 	resolveMouse(e);
 	for (var i = 0, len = gCurrentDrag.length; i < len; ++i) {
 		gCurrentDrag[i].onMouseMove(e);
 	}
-});
+}
 
-$.onEvent(document, 'mouseup', function (e) {
+function onUp(e) {
+	if (!_active) { return; }
+	
 	for (var i = 0, len = gCurrentDrag.length; i < len; ++i) {
 		gCurrentDrag[i].onMouseUp(e);
 	}
-});
+}
+
+if ('ontouchstart' in window && document.addEventListener) {
+	document.addEventListener('touchstart', resolveMouse, true);
+	document.addEventListener('touchmove', onMove, true);
+	document.addEventListener('touchend', onUp, true);
+} else {
+	if (document.addEventListener) {
+		document.addEventListener('mousedown', resolveMouse, true);
+	} else {
+		$.onEvent(document, 'mousedown', resolveMouse);
+	}
+	
+	$.onEvent(document, 'mousemove', onMove);
+	$.onEvent(document, 'mouseup', onUp);
+}
 
 exports = Class(lib.PubSub, function(supr) {
 	
@@ -64,7 +84,7 @@ exports = Class(lib.PubSub, function(supr) {
 	this.startDrag = function(params, data) {
 		var e = this._evt = new exports.DragEvent();
 		this._evt.data = data;
-		this._evt.params = JS.merge(params, {
+		this._evt.params = merge(params, {
 			/* addInScroll: true, */ // TODO?
 			threshold: 5
 		});
@@ -80,14 +100,12 @@ exports = Class(lib.PubSub, function(supr) {
 		
 		if (!this._isActive && absDelta.getMagnitude() > dragEvt.params.threshold) {
 			this._isActive = true;
-			logger.log('dragstart');
 			this.publish('DragStart', dragEvt);
 		}
 		
 		if (this._isActive) {
 			dragEvt.prevPt = dragEvt.currPt;
 			dragEvt.currPt = new Point(gCurrentMouse);
-			logger.log('drag');
 			this.publish('Drag', dragEvt, moveEvt, Point.subtract(dragEvt.currPt, dragEvt.prevPt));
 		}
 	}
@@ -95,7 +113,7 @@ exports = Class(lib.PubSub, function(supr) {
 	this.onMouseUp = function(upEvt) {
 		gRemoveItem(this);
 		if (this._isActive) {
-			this.publish('DragStop', this._dragEvt, upEvt);
+			this.publish('DragStop', this._evt, upEvt);
 			this._isActive = false;
 		}
 	}
