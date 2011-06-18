@@ -11,7 +11,9 @@ exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
 		supr(this, 'init', arguments);
 		this._stack = [];
-		this.controller = opts.controller;
+		if (opts.controller) {
+			this._controller = opts.controller;
+		}
 	}
 	
 	this.getCurrentView = function() {
@@ -32,8 +34,7 @@ exports = Class(Widget, function(supr) {
 			dontAnimate = true;
 		}
 		
-		view.menuController = this;
-		view.controller = this.controller;
+		view.setController(this);
 		
 		var current = this.getCurrentView();
 		this._stack.push(view);
@@ -52,6 +53,8 @@ exports = Class(Widget, function(supr) {
 			});
 		
 		view.onBeforeHide();
+		view.publish('BeforeHide');
+		
 		if (!dontAnimate) {
 			new Animation({
 				transition: Animation.easeInOut,
@@ -82,6 +85,7 @@ exports = Class(Widget, function(supr) {
 		
 		var w = el.offsetWidth;
 		view.onBeforeShow();
+		view.publish('BeforeShow');
 		if (!dontAnimate) {
 			el.style.left = (backward ? -1 : 1) * w + 'px';
 			el.style.visibility = 'visible';
@@ -102,12 +106,12 @@ exports = Class(Widget, function(supr) {
 		var view = this._stack[this._stack.length - 1],
 			el = this.getElement();
 		
-		if (view) { view.onBeforeHide(); }
+		if (view) { view.onBeforeHide(); view.publish('BeforeHide'); }
 		
 		var onFinish = bind(this, function() {
 			this._parent = el.parentNode;
 			$.remove(el);
-			if (view) { view.onHide(); }
+			if (view) { view.onHide(); view.publish('DidHide'); }
 		});
 		
 		if (!dontAnimate) {
@@ -128,13 +132,13 @@ exports = Class(Widget, function(supr) {
 			el = this.getElement(),
 			onFinish = function() {
 				$.style(el, {opacity: 1});
-				if (view) { view.onShow(); }
+				if (view) { view.onShow(); view.publish('DidShow'); }
 			};
 		
 		$.style(el, {opacity: 0});
 		this._parent.appendChild(el);
 		
-		if (view) { view.onBeforeShow(); }
+		if (view) { view.onBeforeShow(); view.publish('BeforeShow'); }
 		if (!dontAnimate) {
 			new Animation({
 				duration: 250,
