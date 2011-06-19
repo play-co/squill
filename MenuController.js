@@ -4,6 +4,7 @@ import lib.PubSub;
 import util.Animation as Animation;
 from util.browser import $;
 import .Widget;
+import .transforms;
 
 exports = Class(Widget, function(supr) {
 	this._def = {className: 'menuController'};
@@ -60,7 +61,7 @@ exports = Class(Widget, function(supr) {
 				transition: Animation.easeInOut,
 				duration: 500,
 				subject: function(t) {
-					el.style.left = t * (backward ? 1 : -1) * w + 'px';
+					transforms.setLeft(el, t * (backward ? 1 : -1) * w);
 				},
 				onFinish: onFinish
 			}).seekTo(1);
@@ -77,7 +78,7 @@ exports = Class(Widget, function(supr) {
 		this.getElement().appendChild(el);
 		
 		var onFinish = bind(this, function() {
-			el.style.left = '0px';
+			transforms.setLeft(el, 0);
 			el.style.visibility = 'visible';
 			view.onShow();
 			this.publish('DidShow', view);
@@ -87,13 +88,13 @@ exports = Class(Widget, function(supr) {
 		view.onBeforeShow();
 		view.publish('BeforeShow');
 		if (!dontAnimate) {
-			el.style.left = (backward ? -1 : 1) * w + 'px';
+			transforms.setLeft(el, (backward ? -1 : 1) * w);
 			el.style.visibility = 'visible';
 			new Animation({
 				transition: Animation.easeInOut,
 				duration: 500,
 				subject: function(t) {
-					el.style.left = (1 - t) * (backward ? -1 : 1) * w + 'px';
+					transforms.setLeft(el, (1 - t) * (backward ? -1 : 1) * w);
 				},
 				onFinish: onFinish
 			}).seekTo(1);
@@ -135,6 +136,7 @@ exports = Class(Widget, function(supr) {
 				if (view) { view.onShow(); view.publish('DidShow'); }
 			};
 		
+		transforms.setLeft(viewEl, 0);
 		$.style(el, {opacity: 0});
 		this._parent.appendChild(el);
 		
