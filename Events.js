@@ -82,46 +82,46 @@ exports = Class(lib.PubSub, function() {
 		this.onMouseOut(e);
 	}
 	
-	this.onMouseOver = function() {
+	this.onMouseOver = function(e) {
 		if (!this._enableMouseEvents) 
 		this._isOver = true;
 		$.addClass(this._el, this._class + '-hover');
-		this.publish('Over');
+		this.publish('Over', e);
 	}
 	
-	this.onMouseOut = function() {
+	this.onMouseOut = function(e) {
 		this._isOver = false;
 		this.onMouseUp();
 		$.removeClass(this._el, this._class + '-hover');
-		this.publish('Out');
+		this.publish('Out', e);
 	}
 
-	this.onMouseDown = function() {
+	this.onMouseDown = function(e) {
 		this._isDown = true;
 		$.addClass(this._el, this._class + '-down');
-		this.publish('Down');
+		this.publish('Down', e);
 	}
 	
-	this.onMouseUp = function() {
+	this.onMouseUp = function(e) {
 		this._isDown = false;
 		$.removeClass(this._el, this._class + '-down');
-		this.publish('Up');
+		this.publish('Up', e);
 	}
 	
-	this.onClick = function() {
-		this.publish('Select');
+	this.onClick = function(e) {
+		this.publish('Select', e);
 	}
 	
-	this.onFocus = function() {
+	this.onFocus = function(e) {
 		this._isFocused = true;
 		$.addClass(this._el, this._class + '-focused');
-		this.publish('Focus');
+		this.publish('Focus', e);
 	}
 	
-	this.onBlur = function() {
+	this.onBlur = function(e) {
 		this._isFocused = false;
 		$.removeClass(this._el, this._class + '-focused');
-		this.publish('Blur');
+		this.publish('Blur', e);
 	}
 	
 	this.onKeyUp = function(e) {
