@@ -15,6 +15,8 @@ exports = Class(Widget, function(supr) {
 		if (opts.controller) {
 			this._controller = opts.controller;
 		}
+		
+		this._isVisible = true;
 	}
 	
 	this.getCurrentView = function() {
@@ -107,6 +109,8 @@ exports = Class(Widget, function(supr) {
 		var view = this._stack[this._stack.length - 1],
 			el = this.getElement();
 		
+		this._isVisible = false;
+		
 		if (view) { view.onBeforeHide(); view.publish('BeforeHide'); }
 		
 		var onFinish = bind(this, function() {
@@ -136,7 +140,12 @@ exports = Class(Widget, function(supr) {
 				if (view) { view.onShow(); view.publish('DidShow'); }
 			};
 		
+		this._isVisible = true;
+
+		var viewEl = view.getElement();
 		transforms.setLeft(viewEl, 0);
+		el.appendChild(viewEl);
+		
 		$.style(el, {opacity: 0});
 		this._parent.appendChild(el);
 		
@@ -168,7 +177,7 @@ exports = Class(Widget, function(supr) {
 		var view = this._stack.pop();
 		this._hide(view, dontAnimate, true);
 		
-		if (this._stack.length) {
+		if (this._isVisible && this._stack[0]) {
 			this._show(this._stack[this._stack.length - 1], dontAnimate, true);
 		}
 		
