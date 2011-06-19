@@ -60,11 +60,11 @@ var Dialog = exports = Class(Widget, function(supr) {
 		this._el.style.top = Math.max(0, pos.y) + 'px';
 	}
 	
-	this.dismiss = function(data) {
+	this.dismiss = function(action, data) {
 		$(this._el);
 		this.publish('Close');
 		this._delegate && this._delegate(null, {
-			action: 'closed',
+			action: action || 'closed',
 			data: data
 		});
 	}
