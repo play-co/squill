@@ -29,6 +29,7 @@ exports = Class(Widget, function(supr) {
 		
 		this._scrollTop = 0;
 		this.initDragEvents();
+		this.initMouseEvents();
 		
 		this._lastDelta = {
 			diff: 0,
@@ -52,6 +53,10 @@ exports = Class(Widget, function(supr) {
 	this.onShow = function() {}
 	this.onBeforeHide = function() {}
 	this.onHide = function() {}
+	
+	this.onClick = function(e) {
+		this.onInputSelect((e.target || e.srcElement).id, e);
+	}
 	
 	this.onTouchStart = function() {
 		if (this._momentum) { clearInterval(this._momentum); }
