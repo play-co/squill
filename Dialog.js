@@ -48,6 +48,12 @@ var Dialog = exports = Class(Widget, function(supr) {
 		supr(this, 'buildContent');
 	}
 	
+	this.onInputSelect = function(target) {
+		this.dismiss(target);
+	}
+	
+	this.setTitle = function(title) { $.setText(this._titlebar, title); }
+	
 	this.onDrag = function(dragEvt, moveEvt, delta) {
 		if (!dragEvt.data) {
 			dragEvt.data = new Point(parseInt(this._el.style.left), parseInt(this._el.style.top));
