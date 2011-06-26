@@ -113,8 +113,8 @@ exports = Class(lib.PubSub, function(supr) {
 	this.onMouseUp = function(upEvt) {
 		gRemoveItem(this);
 		if (this._isActive) {
-			this.publish('DragStop', this._evt, upEvt);
 			this._isActive = false;
+			this.publish('DragStop', this._evt, upEvt);
 		}
 	}
 });
