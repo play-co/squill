@@ -27,20 +27,6 @@ exports = Class(Widget, function(supr) {
 			});
 		}
 		
-		this._scrollTop = 0;
-		this.initDragEvents();
-		this.initMouseEvents();
-		
-		this._lastDelta = {
-			diff: 0,
-			when: 0,
-			duration: 0
-		};
-		
-		if (this._el.addEventListener) {
-			this._el.addEventListener('touchstart', bind(this, 'onTouchStart'), true);
-		}
-		
 		return supr(this, 'buildContent', arguments);
 	}
 	
@@ -56,61 +42,6 @@ exports = Class(Widget, function(supr) {
 	
 	this.onClick = function(e) {
 		this.onInputSelect((e.target || e.srcElement).id, e);
-	}
-	
-	this.onTouchStart = function() {
-		if (this._momentum) { clearInterval(this._momentum); }
-	}
-	
-	this.onDragStart = function(dragEvt, mouseEvt) {
-		this._height = this._el.offsetHeight - this._el.parentNode.offsetHeight;
-		this._lastDelta.when = +new Date();
-		if (this._momentum) { clearInterval(this._momentum); }
-	}
-	
-	this.onDrag = function(dragEvt, moveEvt, delta) {
-		var now = +new Date(),
-			d = this._lastDelta;
-		
-		d.diff = delta.y;
-		d.duration = d.when && (now - d.when) || 0;
-		d.when = now;
-		
-		this.scrollTo(this._scrollTop + delta.y);
-	}
-	
-	this.scrollTo = function(y) {
-		this._scrollTop = y;
-		if (this._scrollTop > 0) { this._scrollTop = 0; }
-		if (this._scrollTop < -this._height) { this._scrollTop = -this._height; }
-		this._el.style.webkitTransform = 'translate3d(0,' + this._scrollTop + 'px,0)';
-	}
-	
-	this.onDragStop = function(dragEvt, selectEvt) {
-		if (this._lastDelta.duration != 0) {
-			var d = this._lastDelta,
-				speed = d.diff / d.duration,
-				start = d.when,
-				time = d.when,
-				dir = speed > 0 ? 1 : -1,
-				dur = 2;
-			
-			this._momentum = setInterval(bind(this, function() {
-				var now = +new Date(),
-					dt = now - time,
-					distance = speed * dt;
-				
-				this.scrollTo(this._scrollTop + distance);
-				
-				// TODO: this isn't based on dt which is bad!!!
-				speed *= 0.95;
-				if (Math.abs(speed) < 0.01) {
-					clearTimeout(this._momentum);
-					this._momentum = null;
-				}
-				time = now;
-			}), 10);
-		}
 	}
 	
 	this.show = function() { $.show(this._el); }
