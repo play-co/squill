@@ -99,6 +99,14 @@ var Widget = exports = Class([Element, Events], function() {
 					
 					el = new TextInput(def);
 					break;
+				case 'scroller':
+					if (typeof Scroller == 'undefined') {
+						import .Scroller;
+					}
+					
+					el = new Scroller(def);
+					newParent = el.getScrollPane();
+					break;
 				default:
 					el = $(def);
 					break;
@@ -127,8 +135,10 @@ var Widget = exports = Class([Element, Events], function() {
 	
 	this.buildContent = function() {
 		$.addClass(this._el, global.getWidgetPrefix() + this._css);
+		
+		// TODO: what's this doing here?
 		if (this._params.errorLabel) {
-			this._errorLabel = $.create({html: this._params.errorLabel, className: global.getWidgetPrefix() + 'textInputErrorLabel', parent: this._el})
+			this._errorLabel = $.create({html: this._params.errorLabel, className: global.getWidgetPrefix() + 'textInputErrorLabel', parent: this._el});
 		}
 		
 		if (this._def) { this.buildChildren(merge({el: this._el}, this._def)); }
@@ -137,7 +147,8 @@ var Widget = exports = Class([Element, Events], function() {
 	
 	this.buildWidget = function() {}
 	
-	this.errors = function(){
+	// TODO: what's this doing here?
+	this.errors = function() {
 		return this.validators.map(function(item){
 			if (item.isValid == false){
 				return item.message;
@@ -145,6 +156,7 @@ var Widget = exports = Class([Element, Events], function() {
 		});
 	}
 	
+	// TODO: what's this doing here?
 	this.validate = function() {
 		var isValid = true;
 		for (var i = 0, len = this.validators.length; i < len; ++i) {
@@ -154,9 +166,9 @@ var Widget = exports = Class([Element, Events], function() {
 		return (this._isValid = isValid);
 	}
 	
+	// TODO: what's this doing here?
 	this._isValid = true;
 	this.isValid = function() { return this._isValid; }
-	
 	this.validators = [];
 	
 	this.getI18n = function(key, id) {
