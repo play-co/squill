@@ -14,9 +14,17 @@ if (hasTransform) {
 	exports.setLeft = function(el, left) {
 		el.style[vendor + 'Transform'] = translateStart + left + 'px,0' + translateEnd;
 	}
+	
+	exports.setTop = function(el, top) {
+		el.style[vendor + 'Transform'] = translateStart + '0,' + top + 'px' + translateEnd;
+	}
 } else {
 	exports.setLeft = function(el, left) {
 		el.style.left = left + 'px';
+	}
+	
+	exports.setTop = function(el, top) {
+		el.style.top = top + 'px';
 	}
 }
 
