@@ -19,6 +19,13 @@ exports = Class(Widget, function(supr) {
 		this._isVisible = true;
 	}
 	
+	this.setVisible = function(isVisible) {
+		if (this._isVisible != isVisible) {
+			this._isVisible = isVisible;
+			this.publish('VisibleChange', isVisible);
+		}
+	}
+	
 	this.getCurrentView = function() {
 		if (!this._stack.length) { return null; }
 		return this._stack[this._stack.length - 1];
@@ -52,7 +59,7 @@ exports = Class(Widget, function(supr) {
 			onFinish = bind(this, function() {
 				$.remove(el);
 				view.onHide();
-				this.publish('DidHide', view);
+				view.publish('DidHide');
 			});
 		
 		view.onBeforeHide();
@@ -109,7 +116,7 @@ exports = Class(Widget, function(supr) {
 		var view = this._stack[this._stack.length - 1],
 			el = this.getElement();
 		
-		this._isVisible = false;
+		this.setVisible(false);
 		
 		if (view) { view.onBeforeHide(); view.publish('BeforeHide'); }
 		
@@ -140,7 +147,7 @@ exports = Class(Widget, function(supr) {
 				if (view) { view.onShow(); view.publish('DidShow'); }
 			};
 		
-		this._isVisible = true;
+		this.setVisible(true);
 
 		var viewEl = view.getElement();
 		transforms.setLeft(viewEl, 0);
