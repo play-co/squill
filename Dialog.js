@@ -39,7 +39,7 @@ var Dialog = exports = Class(Widget, function(supr) {
 			this._titlebar.insertBefore(this._closeBtn, this._titlebar.firstChild);
 			
 			$.onEvent(this._closeBtn, 'click', this, function() {
-				this.dismiss(null);
+				this.hide(null);
 			});
 		}
 		
@@ -49,7 +49,7 @@ var Dialog = exports = Class(Widget, function(supr) {
 	}
 	
 	this.onInputSelect = function(target) {
-		this.dismiss(target);
+		this.hide(target);
 	}
 	
 	this.setTitle = function(title) { $.setText(this._titlebar, title); }
@@ -66,12 +66,31 @@ var Dialog = exports = Class(Widget, function(supr) {
 		this._el.style.top = Math.max(0, pos.y) + 'px';
 	}
 	
-	this.dismiss = function(action, data) {
+	this.hide = function(action, data) {
+		this.onBeforeHide();
+		
 		$(this._el);
+		
 		this.publish('Close');
 		this._delegate && this._delegate(null, {
 			action: action || 'closed',
 			data: data
 		});
+		
+		this.onHide();
 	}
+	
+	this.show = function() {
+		this.onBeforeShow();
+		
+		(this._parent._el || this._parent).appendChild(this._el);
+		
+		this.onShow();
+	}
+	
+	this.onBeforeHide =
+	this.onHide =
+	this.onBeforeShow =
+	this.onShow =
+		function() {}
 });
