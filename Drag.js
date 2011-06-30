@@ -6,6 +6,8 @@ var gCurrentDrag = [],
 	gCurrentMouse = {x: 0, y: 0};
 
 function resolveMouse(e) {
+	if (e.touches) { return resolveMouse(e.touches[0]); }
+	
 	if ('pageX' in e) {
 		gCurrentMouse.x = e.pageX;
 		gCurrentMouse.y = e.pageY;
