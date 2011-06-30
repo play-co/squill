@@ -14,7 +14,6 @@ var TextInput = exports= Class(Widget, function(supr) {
 		
 		$.style(el, {position: 'relative'});
 		
-		
 		this._input = $.create({
 			tag: 'input',
 			attrs: {
@@ -48,6 +47,7 @@ var TextInput = exports= Class(Widget, function(supr) {
 		if (this._input) { this._input.name = name; }
 	}
 	
+	this.setValue = function(value) { this._input.value = value; }
 	this.getValue = function() { return this._input.value; }
 	
 	this.onMouseDown = function(e) {
@@ -71,6 +71,12 @@ var TextInput = exports= Class(Widget, function(supr) {
 	this.onKeyUp = function() {
 		supr(this, 'onKeyUp', arguments);
 		this.checkLabel();
+	}
+	
+	this.onKeyPress = function(e) {
+		if (e.keyCode == 13) {
+			this.publish('EnterPressed');
+		}
 	}
 	
 	this.onBlur = function() {
