@@ -29,7 +29,7 @@ if (hasTransform) {
 }
 
 exports.rotate = function(el, rotation, transition, cb) {
-	if (!hasTransform) { cb(); return; }
+	if (!hasTransform) { cb && cb(); return; }
 	
 	if (transition && cb) {
 		var executed = false,
