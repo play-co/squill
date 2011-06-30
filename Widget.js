@@ -25,17 +25,26 @@ var Widget = exports = Class([Element, Events], function() {
 	this.init = function(params) {
 		this._params = params = merge(params, {});
 		if (params.name) { this._name = params.name; }
+		if (params.delegate) { this._delegate = params.delegate; }
+		if (params.controller) { this._controller = params.controller; }
 		if (params.parent) {
-			if (params.parent._el) {
-				this._parent = params.parent;
-				params.parent = params.parent._el;
-			} else if (!params.parent.appendChild) {
-				delete params.parent;
-			} else {
-				this._parent = params.parent;
-			}
-			
+			var parent = this._parent = params.parent;
+			if (parent._el) { params.parent = parent._el; }
+			else if (!parent.appendChild) { delete params.parent; }
 			this.build();
+		}
+	}
+	
+	this.setParent = function(parent) {
+		this._parent = parent;
+		var el = parent && (parent._el || (parent.appendChild && parent) || null);
+		if (el) {
+			if (!this._el) {
+				this._params.parent = el;
+				this.build();
+			} else {
+				el.appendChild(this._el);
+			}
 		}
 	}
 	
@@ -126,6 +135,8 @@ var Widget = exports = Class([Element, Events], function() {
 
 		return el;
 	}
+	
+	this.addChild = function(def) { this.buildChildren(merge(def, {parent: this._el})); }
 	
 	this.setDelegate = function(delegate) { this._delegate = delegate; }
 	this.setController = function(controller) { this._controller = controller; }
