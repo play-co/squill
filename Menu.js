@@ -23,7 +23,8 @@ exports = Class(Widget, function(supr) {
 			this._nav = new exports.NavBar({
 				title: this._def.name,
 				parent: this,
-				before: this._el.firstChild
+				before: this._el.firstChild,
+				delegate: bind(this, 'handleNavBar')
 			});
 		}
 		
@@ -31,6 +32,12 @@ exports = Class(Widget, function(supr) {
 	}
 	
 	this.onLayoutChange = function(layout) {}
+	
+	this.handleNavBar = function(target) {
+		if (target == 'btnBack') {
+			this._controller.pop();
+		}
+	}
 	
 	this.onBeforeShow = function() {
 		
@@ -53,23 +60,21 @@ exports.NavBar = Class(Widget, function(supr) {
 	this.init = function(opts) {
 		opts = merge(opts, {title: ''});
 		
-		this.menu = opts.parent;
-		
 		this._def = {
 			className: 'navBar',
 			children: [
 				{id: 'btnBack', className: 'navBarBackBtn', type: 'button', label: '\u25C0 back'},
-				{type: 'label', label: opts.title, className: 'navBarTitle'}
+				{id: 'title', type: 'label', label: opts.title, className: 'navBarTitle'}
 			]
 		};
 		
 		supr(this, 'init', arguments);
 	}
 	
+	this.setTitle = function(title) { this.title.setLabel(title); }
+	
 	this.onInputSelect = function(target) {
-		if (target == 'btnBack') {
-			this.menu._controller.pop();
-		}
+		this._delegate(target);
 	}
 	
 	this.showBackBtn = function(show) {
