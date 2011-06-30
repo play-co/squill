@@ -19,6 +19,7 @@ exports = Class(Widget, function(supr) {
 		this._isVisible = true;
 	}
 	
+	this.isVisible = function() { return this._isVisible; }
 	this.setVisible = function(isVisible) {
 		if (this._isVisible != isVisible) {
 			this._isVisible = isVisible;
@@ -121,7 +122,7 @@ exports = Class(Widget, function(supr) {
 		if (view) { view.onBeforeHide(); view.publish('BeforeHide'); }
 		
 		var onFinish = bind(this, function() {
-			this._parent = el.parentNode;
+			if (el.parentNode) { this._parent = el.parentNode; }
 			$.remove(el);
 			if (view) { view.onHide(); view.publish('DidHide'); }
 		});
