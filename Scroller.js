@@ -6,6 +6,8 @@ import .transforms;
 from util.browser import $;
 
 exports = Class(Widget, function(supr) {
+	this._css = 'scroller';
+	
 	this.init = function(opts) {
 		opts = merge(opts, {
 			momentum: true
@@ -26,7 +28,7 @@ exports = Class(Widget, function(supr) {
 	this.buildContent = function() {
 		var el = this._el;
 		
-		$.style(el, {height: '100%'});
+		$.style(el, {height: '100%', position: 'relative'});
 		
 		this._scrollPane = $({
 			parent: el,
