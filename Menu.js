@@ -3,6 +3,7 @@
 import .Widget;
 import .TextButton;
 import .Label;
+import .delegate;
 
 from util.browser import $;
 
@@ -11,6 +12,14 @@ exports = Class(Widget, function(supr) {
 	// 	var params = JS.merge(params, {parent: $.id('wrapper')});
 	// 	supr(this, 'init', [params]);
 	// }
+	
+	// the default menu delegate just forwards to the menu controller
+	this.delegate = delegate.create(function(on) {
+		on.call = function(ctx, name) {
+			var delegate = ctx.controller.delegate;
+			delegate.call.apply(delegate, [ctx.controller].concat(Array.prototype.slice.call(arguments, 1)));
+		}
+	});
 	
 	this.buildContent = function() {
 		$.apply(this._el, {
@@ -35,7 +44,7 @@ exports = Class(Widget, function(supr) {
 	
 	this.handleNavBar = function(target) {
 		if (target == 'btnBack') {
-			this._controller.pop();
+			this.controller.pop();
 		}
 	}
 	
@@ -72,10 +81,6 @@ exports.NavBar = Class(Widget, function(supr) {
 	}
 	
 	this.setTitle = function(title) { this.title.setLabel(title); }
-	
-	this.onInputSelect = function(target) {
-		this._delegate(target);
-	}
 	
 	this.showBackBtn = function(show) {
 		if (show) {

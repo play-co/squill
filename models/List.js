@@ -20,8 +20,8 @@ var List = exports = Class(Widget, function(supr) {
 	
 	this.setDataSource = function(dataSource) {
 		this._dataSource = dataSource;
-		this._dataSource.subscribe('UPDATE', this, 'needsSort');
-		this._dataSource.subscribe('REMOVE', this, 'needsSort');
+		this._dataSource.subscribe('Update', this, 'needsSort');
+		this._dataSource.subscribe('Remove', this, 'needsSort');
 	}
 	
 	this.needsSort = function() { this._needsSort = true; this._view.needsRepaint(); }

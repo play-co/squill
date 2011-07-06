@@ -15,8 +15,8 @@ var List = exports = Class(Widget, function(supr) {
 	
 	this.setDataSource = function(dataSource) {
 		this._dataSource = dataSource;
-		this._dataSource.subscribe('UPDATE', this, 'render');
-		this._dataSource.subscribe('REMOVE', this, 'render');
+		this._dataSource.subscribe('Update', this, 'render');
+		this._dataSource.subscribe('Remove', this, 'render');
 	}
 	
 	this.setSelected = function(data) { this._selected = data; }

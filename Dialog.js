@@ -38,18 +38,12 @@ var Dialog = exports = Class(Widget, function(supr) {
 			
 			this._titlebar.insertBefore(this._closeBtn, this._titlebar.firstChild);
 			
-			$.onEvent(this._closeBtn, 'click', this, function() {
-				this.hide(null);
-			});
+			$.onEvent(this._closeBtn, 'click', this, 'hide', null);
 		}
 		
 		this.initDragEvents(this._titlebar);
 		
 		supr(this, 'buildContent');
-	}
-	
-	this.onInputSelect = function(target) {
-		this.hide(target);
 	}
 	
 	this.setTitle = function(title) { $.setText(this._titlebar, title); }
@@ -66,16 +60,18 @@ var Dialog = exports = Class(Widget, function(supr) {
 		this._el.style.top = Math.max(0, pos.y) + 'px';
 	}
 	
-	this.hide = function(action, data) {
+	// override
+	this.dispatchButton = function(target, evt) {
+		this.hide(target);
+	}
+	
+	this.hide = function(action) {
 		this.onBeforeHide();
 		
 		$(this._el);
 		
 		this.publish('Close');
-		this._delegate && this._delegate(null, {
-			action: action || 'closed',
-			data: data
-		});
+		this.delegate && this.delegate.call(this, action || 'closed');
 		
 		this.onHide();
 	}
@@ -86,6 +82,21 @@ var Dialog = exports = Class(Widget, function(supr) {
 		(this._parent._el || this._parent).appendChild(this._el);
 		
 		this.onShow();
+	}
+	
+	this.fadeOut = function() {
+		var onFinish = bind(this, function() {
+			this.onHide();
+		});
+		
+		this.onBeforeHide();
+		new Animation({
+			duration: 250,
+			subject: function(t) {
+				$.style(el, {opacity: 1 - t});
+			},
+			onFinish: onFinish
+		}).seekTo(1);
 	}
 	
 	this.onBeforeHide =

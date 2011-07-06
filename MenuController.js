@@ -12,10 +12,6 @@ exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
 		supr(this, 'init', arguments);
 		this._stack = [];
-		if (opts.controller) {
-			this._controller = opts.controller;
-		}
-		
 		this._isVisible = true;
 	}
 	
@@ -45,7 +41,7 @@ exports = Class(Widget, function(supr) {
 			dontAnimate = true;
 		}
 		
-		view.setController(this);
+		view.controller = this;
 		
 		var current = this.getCurrentView();
 		this._stack.push(view);

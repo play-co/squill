@@ -25,8 +25,8 @@ var Widget = exports = Class([Element, Events], function() {
 	this.init = function(params) {
 		this._params = params = merge(params, {});
 		if (params.name) { this._name = params.name; }
-		if (params.delegate) { this._delegate = params.delegate; }
-		if (params.controller) { this._controller = params.controller; }
+		if (params.delegate) { this.delegate = params.delegate; }
+		if (params.controller) { this.controller = params.controller; }
 		if (params.parent) {
 			var parent = this._parent = params.parent;
 			if (parent._el) { params.parent = parent._el; }
@@ -48,7 +48,9 @@ var Widget = exports = Class([Element, Events], function() {
 		}
 	}
 	
-	this.onInputSelect = function(evt) {}
+	this.dispatchButton = function(target, evt) {
+		this.delegate.call(this, target, evt);
+	}
 	
 	this.buildChildren = function(def, target) {
 		if (!target) { target = this; }
@@ -84,7 +86,7 @@ var Widget = exports = Class([Element, Events], function() {
 					}
 			
 					el = new TextButton(def);
-					el.subscribe('Select', target, 'onInputSelect', def.id);
+					el.subscribe('Select', target, 'dispatchButton', def.id);
 					break;
 				case 'label':
 					if (typeof Label == 'undefined') {
@@ -137,9 +139,6 @@ var Widget = exports = Class([Element, Events], function() {
 	}
 	
 	this.addChild = function(def) { this.buildChildren(merge(def, {parent: this._el})); }
-	
-	this.setDelegate = function(delegate) { this._delegate = delegate; }
-	this.setController = function(controller) { this._controller = controller; }
 	
 	this.getName = function() { return this._name; }
 	this.setName = function(name) { this._name = name; }
