@@ -1,5 +1,6 @@
 "use import";
 
+import std.uri;
 import util.ajax;
 from util.browser import $;
 
@@ -10,20 +11,32 @@ exports.get = function(opts, cb) {
 		opts = {url: opts};
 	}
 	
-	logger.debug(opts.url);
-	util.ajax.get(opts.url, function(err, content) {
-		if (err) { logger.error('could not fetch css at', url); return; }
-		var el = $({tag: 'style', text: content, parent: opts.el || document.getElementsByTagName('head')[0]});
-		
-		if (window.DEV_MODE) {
-			exports._styleTags.push({
-				el: el,
-				src: opts.url
-			});
-		}
-		
-		setTimeout(cb, 0);
-	});
+	var parent = opts.el || document.getElementsByTagName('head')[0];
+	
+	var uri = new std.uri(opts.url);
+	var host = uri.getHost();
+	if (host && (host != window.location.hostname)) {
+		var el = $({tag: 'link'});
+		el.type = 'text/css';
+		el.rel = 'stylesheet';
+		el.href = opts.url;
+		parent.appendChild(el);
+		setTimeout(cb, 500);
+	} else {
+		util.ajax.get(opts.url, function(err, content) {
+			if (err) { logger.error('could not fetch css at', url); return; }
+			var el = $({tag: 'style', text: content, parent: parent});
+
+			if (window.DEV_MODE) {
+				exports._styleTags.push({
+					el: el,
+					src: opts.url
+				});
+			}
+			
+			setTimeout(cb, 0);
+		});
+	}
 }
 
 if (window.DEV_MODE) {
