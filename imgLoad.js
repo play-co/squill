@@ -15,6 +15,8 @@ exports.register = function(baseDir, groups) {
 	}
 }
 
+exports.getGroups = function() { return _groups; }
+
 // The callback is called for each image in the group with the image
 // source that loaded and whether there was an error.
 // 
@@ -60,6 +62,7 @@ exports.get = function(src, copy, noWarn) {
 	
 	var img = new Image();
 	if (Image.get) { var b64 = Image.get(src); }
+	
 	if (b64) {
 		img.src = b64;
 	} else {
