@@ -1,4 +1,3 @@
-jsio('import std.js as JS');
 jsio('import .Widget');
 jsio('import .Events');
 jsio('import math2D.Point as Point');
@@ -7,12 +6,12 @@ jsio('import .Window');
 
 var Dialog = exports = Class(Widget, function(supr) {
 	this.init = function(params) {
-		var params = JS.merge(params, {
+		var params = merge(params, {
 			draggable: true,
 			closeable: true
 		});
 		
-		params.style = JS.merge(params.style, {
+		params.style = merge(params.style, {
 			position: 'absolute',
 			top: '10px',
 			left: '10px'
