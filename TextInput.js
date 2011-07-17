@@ -24,6 +24,29 @@ var TextInput = exports= Class(Widget, function(supr) {
 			parent: el
 		});
 		
+		if ('ontouchstart' in this._el) {
+			this._overlay = $({
+				parent: this._el,
+				attrs: {
+					noCapture: true
+				},
+				style: {
+					position: 'absolute',
+					top: '0px',
+					background: 'blue',
+					left: '0px',
+					width: '100%',
+					height: '100%',
+					zIndex: 1
+				}
+			});
+			
+			this._overlay.addEventListener('click', bind(this, function() {
+				$.hide(this._overlay);
+				this._input.focus();
+			}), true);
+		}
+		
 		if (this._input.getAttribute('placeholder') === null) {
 			this._input.setAttribute('placeholder', label);
 		} else {
@@ -47,21 +70,8 @@ var TextInput = exports= Class(Widget, function(supr) {
 		if (this._input) { this._input.name = name; }
 	}
 	
-	this.setValue = function(value) { this._input.value = value; }
+	this.setValue = function(value) { this._value = this._input.value = value; }
 	this.getValue = function() { return this._input.value; }
-	
-	this.onMouseDown = function(e) {
-		supr(this, 'onMouseDown', arguments);
-		this._input.focus();
-	}
-	
-	this.onClick = function(e) {
-		supr(this, 'onClick', arguments);
-		
-		var evt = document.createEvent("MouseEvents");
-		evt.initMouseEvent("touchend", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-		this._input.dispatchEvent(evt);
-	}
 	
 	this.onKeyDown = function() {
 		supr(this, 'onKeyDown', arguments);
@@ -71,23 +81,43 @@ var TextInput = exports= Class(Widget, function(supr) {
 	this.onKeyUp = function() {
 		supr(this, 'onKeyUp', arguments);
 		this.checkLabel();
+		this.checkValue();
 	}
 	
 	this.onKeyPress = function(e) {
+		supr(this, 'onKeyPress', arguments);
 		if (e.keyCode == 13) {
 			this.publish('EnterPressed');
 		}
+		this.checkValue();
 	}
 	
 	this.onBlur = function() {
 		supr(this, 'onBlur');
 		this.checkLabel();
+		
+		if (this._overlay) {
+			$.show(this._overlay);
+		}
+	}
+	
+	this.checkValue = function() {
+		if (this._value != this._input.value) {
+			this._value = this._input.value;
+			this.publish('ValueChange', this._value);
+		}
 	}
 	
 	this.checkLabel = function() {
 		if(this._label && /^\s*$/.test(this._input.value)) {
 			$.show(this._label);
 		}
+	}
+	
+	this.onClick = function() {
+		supr(this, 'onClick');
+		
+		//setTimeout(bind(this._input, 'focus'), 100);
 	}
 });
 
