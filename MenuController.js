@@ -12,7 +12,7 @@ exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
 		supr(this, 'init', arguments);
 		this._stack = [];
-		this._isVisible = true;
+		this._isVisible = false;
 	}
 	
 	this.isVisible = function() { return this._isVisible; }
@@ -45,8 +45,19 @@ exports = Class(Widget, function(supr) {
 		
 		var current = this.getCurrentView();
 		this._stack.push(view);
-		this._show(view, dontAnimate);
-		if (current) { this._hide(current, dontAnimate); }
+		
+		var calls = [
+			this._show(view, dontAnimate),
+			current && this._hide(current, dontAnimate)
+		];
+		
+		if (calls[0]) {
+			setTimeout(function() {
+				calls[0] && calls[0]();
+				calls[1] && calls[1]();
+			});
+		}
+		
 		return view;
 	}
 	
@@ -63,14 +74,9 @@ exports = Class(Widget, function(supr) {
 		view.publish('BeforeHide');
 		
 		if (!dontAnimate) {
-			new Animation({
-				transition: Animation.easeInOut,
-				duration: 500,
-				subject: function(t) {
-					transforms.setLeft(el, t * (backward ? 1 : -1) * w);
-				},
-				onFinish: onFinish
-			}).seekTo(1);
+			return function() {
+				transforms.move(el, (backward ? 1 : -1) * w, 0, '0.5s ease-in-out', onFinish);
+			};
 		} else {
 			onFinish();
 		}
@@ -96,14 +102,9 @@ exports = Class(Widget, function(supr) {
 		if (!dontAnimate) {
 			transforms.setLeft(el, (backward ? -1 : 1) * w);
 			el.style.visibility = 'visible';
-			new Animation({
-				transition: Animation.easeInOut,
-				duration: 500,
-				subject: function(t) {
-					transforms.setLeft(el, (1 - t) * (backward ? -1 : 1) * w);
-				},
-				onFinish: onFinish
-			}).seekTo(1);
+			return function() {
+				transforms.move(el, 0, 0, '0.5s ease-in-out', onFinish);
+			};
 		} else {
 			onFinish();
 		}
@@ -135,7 +136,7 @@ exports = Class(Widget, function(supr) {
 			onFinish();
 		}
 	}
-
+	
 	this.fadeIn = function(dontAnimate) {
 		var view = this._stack[this._stack.length - 1],
 			el = this.getElement(),
@@ -179,10 +180,17 @@ exports = Class(Widget, function(supr) {
 		if (!this._stack.length) { return false; }
 		
 		var view = this._stack.pop();
-		this._hide(view, dontAnimate, true);
 		
-		if (this._isVisible && this._stack[0]) {
-			this._show(this._stack[this._stack.length - 1], dontAnimate, true);
+		var calls = [
+			this._hide(view, dontAnimate, true),
+			this._isVisible && this._stack[0] && this._show(this._stack[this._stack.length - 1], dontAnimate, true)
+		];
+		
+		if (calls[0]) {
+			setTimeout(function() {
+				calls[0] && calls[0]();
+				calls[1] && calls[1]();
+			});
 		}
 		
 		return view;
