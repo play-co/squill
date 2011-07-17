@@ -28,40 +28,51 @@ if (hasTransform) {
 	}
 }
 
-exports.rotate = function(el, rotation, transition, cb) {
-	if (!hasTransform) { cb && cb(); return; }
-	
-	if (transition && cb) {
-		var executed = false,
-			finished = function() {
-				if (executed) { return; }
-				executed = true;
-				for (var i = 0, remove; remove = evts[i]; ++i) {
-					remove();
-				}
-				
-				cb();
-			};
-		
-		var evts = [
-			$.onEvent(el, 'webkitTransitionEnd', finished),
-			$.onEvent(el, 'transitionend', finished),
-			$.onEvent(el, 'oTransitionEnd', finished)
-		];
+exports.onTransitionEnd = function(el, cb) {
+	var executed = false;
+	var finished = function() {
+		if (executed) { return; }
+		executed = true;
+		for (var i = 0, remove; remove = evts[i]; ++i) {
+			remove();
+		}
+		cb();
 	}
 	
+	var evts = [
+		$.onEvent(el, 'webkitTransitionEnd', finished),
+		$.onEvent(el, 'transitionend', finished),
+		$.onEvent(el, 'oTransitionEnd', finished)
+	];
+}
+
+exports.setTransition = function(el, transition, cb) {
 	if (transition) {
+		var oldTransition = el.style[vendor + 'Transition'];
+		exports.onTransitionEnd(el, function() {
+			el.style[vendor + 'Transition'] = oldTransition;
+			cb && cb();
+		});
 		el.style[vendor + 'Transition'] = '-' + vendor + '-transform ' + transition;
 	} else {
 		el.style[vendor + 'Transition'] = 'none';
 	}
+}
+
+exports.rotate = function(el, rotation, transition, cb) {
+	if (!hasTransform) { cb && cb(); return; }
+	exports.setTransition(el, transition, cb);
 	
 	el.style[vendor + 'Transform'] = 'rotate(' + rotation + ')';
 	
-	if (cb && !transition) {
-		cb();
-		
-	}
+	if (cb && !transition) { cb(); }
+}
+
+exports.move = function(el, x, y, transition, cb) {
+	if (!hasTransform) { cb && cb(); return; }
+	exports.setTransition(el, transition, cb);
+	el.style[vendor + 'Transform'] = translateStart + x + 'px,' + y + 'px' + translateEnd;
+	if (cb && !transition) { cb(); }
 }
 
 exports.hasTransform = hasTransform;
