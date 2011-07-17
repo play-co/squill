@@ -1,13 +1,15 @@
 "use import";
 
 import .Widget;
+import .Scroller;
 import .TextButton;
 import .Label;
 import .delegate;
 
 from util.browser import $;
+import util.Animation;
 
-exports = Class(Widget, function(supr) {
+exports = Class(Scroller, function(supr) {
 	// this.init = function(params) {
 	// 	var params = JS.merge(params, {parent: $.id('wrapper')});
 	// 	supr(this, 'init', [params]);
@@ -49,7 +51,9 @@ exports = Class(Widget, function(supr) {
 	}
 	
 	this.onBeforeShow = function() {
-		
+		if (this._nav) {
+			this._scrollPane.style.marginTop = this._nav.getElement().offsetHeight + 'px';
+		}
 	}
 	
 	this.onShow = function() {}
@@ -77,8 +81,20 @@ exports.NavBar = Class(Widget, function(supr) {
 			]
 		};
 		
+		this._hide = new util.Animation({
+			duration: 500,
+			subject: bind(this, function(t) {
+				var height = this._el.offsetHeight;
+				this._parent._scrollPane.style.marginTop = (height * (1 - t)) + 'px';
+				this._el.style.top = -(height * t) + 'px';
+			})
+		});
+		
 		supr(this, 'init', arguments);
 	}
+	
+	this.hide = function() { this._hide.seekTo(1); }
+	this.show = function() { this._hide.seekTo(0); }
 	
 	this.setTitle = function(title) { this.title.setLabel(title); }
 	
