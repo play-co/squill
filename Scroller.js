@@ -28,10 +28,11 @@ exports = Class(Widget, function(supr) {
 	this.buildContent = function() {
 		var el = this._el;
 		
-		$.style(el, {height: '100%', position: 'relative'});
+		$.style(el, {height: '100%'});
 		
 		this._scrollPane = $({
 			parent: el,
+			className: 'squill-scrollPane',
 			minHeight: '100%'
 		});
 		
@@ -56,6 +57,7 @@ exports = Class(Widget, function(supr) {
 		return supr(this, 'buildContent', arguments);
 	}
 	
+	this.getScrollTop = function() { return this._scrollTop; }
 	this.getScrollPane = function() { return this._scrollPane; }
 	
 	this.onTouchStart = function() {
@@ -79,11 +81,12 @@ exports = Class(Widget, function(supr) {
 		this.scrollTo(this._scrollTop + delta.y);
 	}
 
-	this.scrollTo = function(y) {
+	this.scrollTo = function(y, animate) {
 		this._scrollTop = y;
-		if (this._scrollTop > 0) { this._scrollTop = 0; }
 		if (this._scrollTop < -this._height) { this._scrollTop = -this._height; }
-		transforms.setTop(this._scrollPane, this._scrollTop);
+		if (this._scrollTop > 0) { this._scrollTop = 0; }
+		
+		transforms.move(this._scrollPane, 0, this._scrollTop, animate ? '0.5s ease-in-out' : null);
 	}
 
 	this.onDragStop = function(dragEvt, selectEvt) {
