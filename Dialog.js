@@ -25,19 +25,20 @@ var Dialog = exports = Class(Widget, function(supr) {
 		
 		this._titlebar = $({
 			className: 'titlebar',
-			text: this._def.title,
+			text: this._def.title || '',
 			parent: this._el
 		});
 		
 		if (this._params.closeable) {
 			this._closeBtn = $({
 				className: 'closeBtn',
-				text: 'x'
+				text: 'x',
+				parent: this._titlebar,
+				first: true
 			});
 			
-			this._titlebar.insertBefore(this._closeBtn, this._titlebar.firstChild);
-			
 			$.onEvent(this._closeBtn, 'click', this, 'hide', null);
+			$.onEvent(this._closeBtn, 'touchend', this, 'hide', null);
 		}
 		
 		this.initDragEvents(this._titlebar);
@@ -81,6 +82,7 @@ var Dialog = exports = Class(Widget, function(supr) {
 		(this._parent._el || this._parent).appendChild(this._el);
 		
 		this.onShow();
+		this.center();
 	}
 	
 	this.fadeOut = function() {
