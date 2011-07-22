@@ -33,7 +33,6 @@ var TextInput = exports= Class(Widget, function(supr) {
 				style: {
 					position: 'absolute',
 					top: '0px',
-					background: 'blue',
 					left: '0px',
 					width: '100%',
 					height: '100%',
