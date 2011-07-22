@@ -13,6 +13,8 @@ var List = exports = Class(Widget, function(supr) {
 		this._isFixedHeight = true;
 		this._cells = [];
 		this._cellsByID = {};
+		this._margin = params.margin;
+		this._isTiled = params.isTiled;
 		
 		supr(this, 'init', arguments);
 	}
@@ -87,17 +89,21 @@ var List = exports = Class(Widget, function(supr) {
 		}
 	}
 	
-	this.getCellHeight = function() {
-		if (this._cellHeight) { return this._cellHeight; }
+	this.getCellDim = function() {
+		if (this._cellDim) { return this._cellDim; }
 		
 		if (this._isFixedHeight) {
-			var key = this._dataSource.key;
 			var item = this._dataSource.getItemForIndex(0);
-			var cell = this._createCell(item);
-			var height = cell.getElement().offsetHeight;
-			this._cellsByID[item[key]] = cell;
-			this._cellHeight = height;
-			return height;
+			var key = item[this._dataSource.key];
+			var cell = this._cellsByID[key] || (this._cellsByID[key] = this._createCell(item));
+			var dim = $.size(cell.getElement());
+			if (this._margin) {
+				dim.width += this._margin;
+				dim.height += this._margin;
+			}
+			
+			this._cellDim = dim;
+			return dim;
 		} else {
 			throw 'unimplemented'
 		}
@@ -111,6 +117,10 @@ var List = exports = Class(Widget, function(supr) {
 		return cell;
 	}
 	
+	this.renderAllDelayed = function() {
+		// TODO
+	}
+	
 	this.renderFixedHeight = function() {
 		// the list might be contained in some other scrolling div
 		var parent = this._testEl.offsetParent;
@@ -119,44 +129,73 @@ var List = exports = Class(Widget, function(supr) {
 		if (parent != this._offsetParent) {
 			if (this._removeScrollEvt) { this._removeScrollEvt(); }
 			this._offsetParent = parent;
-			this._removeScrollEvt = $.onEvent(parent, 'scroll', this, 'render');
+			this._removeScrollEvt = $.onEvent(parent, 'scroll', this, 'needsRender');
 		}
 		
-		var offsetTop = parent == this._el ? 0 : this._el.offsetTop,
-			top = parent.scrollTop - offsetTop,
-			height = parent.offsetHeight,
-			bottom = top + height,
-			cellHeight = this.getCellHeight();
+		// render data
+		var src = this._renderedDataSource;
+		var key = src.key;
+		var n = src.length;
+		if (n) {
+			// do this before swapping lists so that if we create a cell, it doesn't get lost!
+			var cellDim = this.getCellDim();
+		}
 		
-		var start = Math.max(0, top / cellHeight | 0);
-		var end = (bottom / cellHeight + 1) | 0;
-		
+		// swap lists
 		var oldCellsByID = this._cellsByID;
 		this._cellsByID = {};
 		
-		var src = this._renderedDataSource;
-		
-		this._el.style.height = src.length * cellHeight + 'px';
-		
-		var key = src.key;
-		for (var i = start; i < end; ++i) {
-			var item = src.getItemForIndex(i);
-			if (!item) { break; }
+		// render new items
+		if (n) {
+			var offsetTop = parent == this._el ? 0 : this._el.offsetTop,
+				top = (parent.getAttribute('squill-scroller-top') || parent.scrollTop) - offsetTop,
+				height = parent.offsetHeight,
+				bottom = top + height;
 			
-			var id = item[key];
-			var cell = oldCellsByID[id];
-			if (!cell) {
-				cell = this._createCell(item);
+			var isTiled = this._isTiled;
+			
+			if (isTiled) {
+				var maxWidth = parent.offsetWidth;
+				var numPerRow = maxWidth / cellDim.width | 0;
+				var start = Math.max(0, (top / cellDim.height | 0) * numPerRow);
+				var end = Math.ceil(bottom / cellDim.height) * numPerRow;
 			} else {
-				delete oldCellsByID[id];
+				var start = Math.max(0, top / cellDim.height | 0);
+				var end = (bottom / cellDim.height + 1) | 0;
 			}
 			
-			cell.getElement().style.top = i * cellHeight + offsetTop + 'px';
-			this._cellsByID[id] = cell;
+			var numRows = (isTiled ? Math.ceil(n / numPerRow) : n);
+			this._el.style.height = numRows * cellDim.height + 'px';
+			
+			for (var i = start; i < end; ++i) {
+				var item = src.getItemForIndex(i);
+				if (!item) { break; }
+
+				var id = item[key];
+				var cell = oldCellsByID[id];
+				if (!cell) {
+					cell = this._createCell(item);
+				} else {
+					delete oldCellsByID[id];
+				}
+
+				if (isTiled) {
+					var el = cell.getElement();
+					var x = i % numPerRow;
+					var y = (i / numPerRow) | 0;
+					el.style.left = x * cellDim.width + 'px';
+					el.style.top = y * cellDim.height + offsetTop + 'px';
+				} else {
+					cell.getElement().style.top = i * cellDim.height + offsetTop + 'px';
+				}
+				
+				this._cellsByID[id] = cell;
+			}
+			
 		}
 		
+		// remove old items
 		for (var id in oldCellsByID) {
-			logger.log('removing', id);
 			oldCellsByID[id].remove();
 			delete oldCellsByID[id];
 		}
