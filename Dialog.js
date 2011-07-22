@@ -17,6 +17,12 @@ var Dialog = exports = Class(Widget, function(supr) {
 			left: '10px'
 		});
 		
+		// create a copy in case it's on the prototype
+		// and override the children by wrapping it in the extra div.dialogContents
+		this._def = merge({
+			children: [{className: 'dialogContents', children: this._def.children}]
+		}, this._def);
+		
 		supr(this, 'init', [params]);
 	}
 	
@@ -29,7 +35,8 @@ var Dialog = exports = Class(Widget, function(supr) {
 			parent: this._el
 		});
 		
-		if (this._params.closeable) {
+		// don't show close button for touch devices
+		if (!('ontouchstart' in this._titlebar) && this._params.closeable) {
 			this._closeBtn = $({
 				className: 'closeBtn',
 				text: 'x',
@@ -62,7 +69,9 @@ var Dialog = exports = Class(Widget, function(supr) {
 	
 	// override
 	this.dispatchButton = function(target, evt) {
-		this.hide(target);
+		if (this.delegate && this.delegate.call(this, target) !== false) {
+			this.hide(target);
+		}
 	}
 	
 	this.hide = function(action) {
@@ -71,7 +80,7 @@ var Dialog = exports = Class(Widget, function(supr) {
 		$(this._el);
 		
 		this.publish('Close');
-		this.delegate && this.delegate.call(this, action || 'closed');
+		//this.delegate && this.delegate.call(this, action || 'closed');
 		
 		this.onHide();
 	}
