@@ -77,7 +77,7 @@ exports = Class(Widget, function(supr) {
 		d.diff = delta.y;
 		d.duration = d.when && (now - d.when) || 0;
 		d.when = now;
-	
+		
 		this.scrollTo(this._scrollTop + delta.y);
 	}
 
@@ -86,9 +86,24 @@ exports = Class(Widget, function(supr) {
 		if (this._scrollTop < -this._height) { this._scrollTop = -this._height; }
 		if (this._scrollTop > 0) { this._scrollTop = 0; }
 		
-		transforms.move(this._scrollPane, 0, this._scrollTop, animate ? '0.5s ease-in-out' : null);
+		this._el.setAttribute('squill-scroller-top', -this._scrollTop);
+		
+		var onFinish = bind(this, function() {
+			if (document.createEvent) {
+				var e = document.createEvent('HTMLEvents');
+				e.initEvent('scroll', true, false);
+				this._el.dispatchEvent(e);
+			}
+		});
+		
+		if (animate) {
+			transforms.move(this._scrollPane, 0, this._scrollTop, '0.5s ease-in-out', onFinish);
+		} else {
+			transforms.move(this._scrollPane, 0, this._scrollTop);
+			onFinish();
+		}
 	}
-
+	
 	this.onDragStop = function(dragEvt, selectEvt) {
 		$.stopEvent(selectEvt);
 		if (this._hasMomentum && this._lastDelta.duration != 0) {
