@@ -25,7 +25,7 @@ exports = Class(Scroller, function(supr) {
 	
 	this.buildContent = function() {
 		$.apply(this._el, {
-			className: 'menu',
+			className: 'menu'
 		});
 		
 		if (!this._def || !this._def.navHidden) {
