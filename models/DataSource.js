@@ -2,12 +2,25 @@ jsio('import lib.PubSub');
 jsio('import std.js as JS');
 
 var DataSource = exports = Class(lib.PubSub, function() {
-	this.init = function(channel, hasRemote) {
-		this._channel = channel;
+	
+	var defaults = {
+		key: 'id',
+		channel: null,
+		hasRemote: false
+	};
+	
+	this.init = function(opts) {
+		opts = merge(opts, defaults);
+		this.key = opts.key || 'id';
+		this._channel = opts.channel;
+		this._hasRemote = opts.hasRemote;
 		this._byIndex = [];
 		this._byId = {};
-		this._hasRemote = hasRemote || false;
-		this._count = 0;
+		this.length = 0;
+		
+		if (opts.sorter) {
+			this.setSorter(opts.sorter);
+		}
 	}
 	
 	this.onMessage = function(data) {
@@ -16,39 +29,47 @@ var DataSource = exports = Class(lib.PubSub, function() {
 				this.add(data.item);
 				break;
 			case 'REMOVE':
-				this.remove(data.id);
+				this.remove(data[this.key]);
 				break;
 		}
 	}
 	
 	// signals an item has changed -- see replace
 	this.signalUpdate = function(item) {
-		this.publish('Update', item.id);
+		this.publish('Update', item[this.key]);
 		if (this._hasRemote) {
 			this.publish('Remote', {type: 'UPDATE', channel: this._channel, item: item});
 		}
 	}
 	
+	var toStringSort = function() { return this._sortKey; }
+	
 	this.add = function(item) {
 		if (JS.isArray(item)) {
 			for (var i = 0, len = item.length; i < len; ++i) {
-				this.add(item[i]);
+				item[i] && this.add(item[i]);
 			}
 		} else {
-			if (this._byId[item.id]) { this.remove(item); }
-			var index = this._count++;
-			this._byIndex[index] = this._byId[item.id] = item;
+			if (this._byId[item[this.key]]) { this.remove(item); }
+			var index = this.length++;
+			this._byIndex[index] = this._byId[item[this.key]] = item;
 			this.signalUpdate(item);
+			
+			if (this._sorter) {
+				item._sortKey = this._sorter(item);
+				item.toString = toStringSort;
+			}
 		}
+		
 		return this;
 	}
 	
 	this.remove = function(id) {
-		if (typeof id == 'object') { id = id.id; }
+		if (typeof id == 'object') { id = id[this.key]; }
 		if (this._byId[id]) {
 			delete this._byId[id];
 			for (var i = 0, item; item = this._byIndex[i]; ++i) {
-				if (item.id == id) {
+				if (item[this.key] == id) {
 					this._byIndex.splice(i, 1);
 					break;
 				}
@@ -60,27 +81,60 @@ var DataSource = exports = Class(lib.PubSub, function() {
 			}
 		}
 		
-		--this._count;
+		--this.length;
 		return this;
+	}
+	
+	this.keepOnly = function(list) {
+		var key = this.key;
+		
+		if (isArray(list)) {
+			var ids = {};
+			for (var i = 0, n = list.length; i < n; ++i) {
+				ids[list[i]] = true;
+			}
+			list = ids;
+		}
+		
+		for (var i = 0; i < this.length; ++i) {
+			var id = this._byIndex[i][key];
+			if (!(id in list)) {
+				this.remove(id);
+				--i;
+			}
+		}
 	}
 	
 	this.clear = function() {
 		var index = this._byIndex;
 		this._byIndex = [];
 		this._byId = {};
-		this._count = 0;
+		this.length = 0;
 		for (var i = 0, item; item = index[i]; ++i) {
-			this.publish('Remove', item.id);
+			this.publish('Remove', item[this.key]);
 		}
 	}
 	
-	this.getCount = function() { return this._count; }
+	this.getCount = function() { return this.length; }
 	
-	this.setSorter = function(sorter) { this._sorter = sorter; return this; }
+	this.setSorter = function(sorter) {
+		this._sorter = sorter;
+		for (var i = 0, item; item = this._byIndex[i]; ++i) {
+			item._sortKey = sorter(item);
+			item.toString = toStringSort;
+		}
+		return this;
+	}
 	
 	this.contains = function(id) { return !!this._byId[id]; }
 	this.get = function(id) { return typeof id == 'string' ? this._byId[id] : this._byIndex[id]; }
 	this.getItemForId = function(id) { return this._byId[id] || null; }
 	this.getItemForIndex = function(index) { return this._byIndex[index]; }
-	this.sort = function() {}
+	this.sort = function() { this._byIndex.sort(); }
+	
+	this.each = function(cb) {
+		for (var i = 0; i < this.length; ++i) {
+			cb(this._byIndex[i]);
+		}
+	}
 });
