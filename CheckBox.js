@@ -1,33 +1,36 @@
-jsio("import .Widget");
+"use import";
 
+import .Widget;
+from util.browser import $;
 
 var CheckBox = exports = Class(Widget, function(supr) {
+	this._def = {
+		tag: 'label',
+		children: [
+			{id: 'checkbox', tag: 'input', attrs: {type: 'checkbox'}},
+			{tag: 'span', id: 'label', text: ''}
+		]
+	};
+	
 	this.buildWidget = function() {
-		this._label = $({
-			tag: 'label',
-			text: this._params.label,
-			parent: this._el
-		});
+		this.setLabel(this._params.label || '');
+		if (this._params.name) {
+			this.setName(this._params.name);
+		}
 		
-		this._checkbox = $({
-			tag: 'input',
-			attrs: {
-				type: 'checkbox'
-			},
-			name: this._params.name,
-			value: this._params.value,
-			before: this._label.firstChild
-		});
+		if (this._params.value) {
+			this.setValue(this._params.value);
+		}
 		
-		this.initMouseEvents(this._checkbox);
-		this.subscribe('Click', this, 'onClick');
+		this.initMouseEvents(this.checkbox);
 	}
 	
-	this.onClick = function() {
-		logger.info('checkbox clicked');
-	}
-			
-	this.getValue = function() { return !!this._checkbox.value; }
-});
+	this.setLabel = function(label) { $.setText(this.label, label); }
+	this.setName = function(name) { this.checkbox.name = name; }
+	this.setValue = function(value) { this.checkbox.value = value; }
 
-Widget.register(CheckBox, 'CheckBox');
+	this.isChecked = function() { return this.checkbox.checked; }
+	this.setChecked = function(isChecked) { this.checkbox.checked = isChecked; }
+	
+	this.getValue = function() { return this.checkbox.value; }
+});
