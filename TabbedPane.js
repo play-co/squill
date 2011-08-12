@@ -2,7 +2,6 @@
 
 from util.browser import $;
 import .Widget;
-import .Showable;
 import lib.sort;
 
 var TabbedPane = exports = Class(Widget, function(supr) {
