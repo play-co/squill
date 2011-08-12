@@ -1,87 +1,82 @@
-jsio('from util.browser import $');
-jsio('import .Widget');
+"use import";
+
+from util.browser import $;
+import .Widget;
+import .Showable;
+import lib.sort;
 
 var TabbedPane = exports = Class(Widget, function(supr) {
 
-	Class.ctor(this, supr, {className: 'tabbedPane'});
+	this._def = {
+		className: 'tabbedPane',
+		children: [
+			{className: 'tabContainerWrapper', children: [
+				{id: 'tabContainer', className: 'tabContainer'}
+			]},
+			{className: 'tabContentsWrapper', children: [
+				{id: 'content', className: 'tabContents'}
+			]}
+		]
+	};
 	
 	this.buildWidget = function(el) {
-		this._tabContainer = $({
-			className: 'tabContainer',
-			parent: $({className: 'tabContainerWrapper', parent: el}),
-			style: {
-				
-			}
-		});
-		
-		
-		this._content = $({
-			className: 'tabContents',
-			parent: $({className: 'tabContentsWrapper', parent: el}),
-			style: {
-				
-			}
-		});
-		
-		this._tabs = {};
-		this._panes = {};
+		this._panes = [];
 	}
 	
-	this.select = function(title) {
-		this.showTab(title);
-	}
-	
-	this.newPane = function(title) {
-		var tab = $({
-			parent: this._tabContainer,
-			text: title,
-			tagName: 'a',
-			className: 'tab',
-			style: {
-				
-			}
-		});
+	this.newPane = function(def) {
+		var pane = this._currentPane = new exports.Pane(merge({parent: this.content}, def));
+		if (def.title) { this._panes[def.title] = pane; }
 		
-		$.onEvent(tab, 'mousedown', this, 'showTab', title);
+		this._panes.push(pane);
+		lib.sort(this._panes, function(pane) { return pane._sortIndex; });
 		
-		this._tabs[title] = tab;
-		this._currentPane = this._panes[title] = $({
-				className: 'tabPane',
-				style: {
-					display: 'none'
-				}
-			});
+		this.tabContainer.appendChild(pane.tab);
 		
-		this._content.appendChild(this._panes[title]);
-		if (!this._selectedTab) {
-			this.showTab(title);
-		}
-		
-		return this._currentPane;
+		$.onEvent(pane.tab, 'mousedown', this, 'showPane', pane);
+		if (!this._selectedTab) { this.showPane(pane); }
+		return pane;
 	}
 	
 	this.getTabs = function() { return this._tabs; }
 	this.getPanes = function() { return this._panes; }
 	
-	this.addNode = function(node) {
-		this._currentPane.appendChild(node);
-		return node;
-	}
-	
 	this.write = function(buffer) {
 		this._currentPane.innerHTML = String(buffer);
 	}
 	
-	this.showTab = function(title) {
-		if (!this._panes[title]) { return; }
-		
-		var tab = this._tabs[title];
+	this.selectPane = this.showPane = function(pane) {
+		var tab = pane.tab;
 		$.removeClass(this._selectedTab, 'selected');
 		$.addClass(tab, 'selected');
 		this._selectedTab = tab;
 		
-		if (this._selectedPane) { $.hide(this._selectedPane); }
-		this._selectedPane = this._panes[title];
-		$.show(this._panes[title]);
+		if (this._selectedPane) { this._selectedPane.hide(); }
+		
+		this._selectedPane = pane;
+		pane.show();
 	}
+});
+
+
+exports.Pane = Class(Widget, function() {
+	var sortID = 0;
+	
+	this._def = {
+		className: 'tabPane',
+		style: {
+			display: 'none'
+		}
+	}
+	
+	this.buildWidget = function() {
+		this._sortIndex = ++sortID;
+		
+		this.tab =  $({
+			text: this._params.title,
+			tagName: 'a',
+			className: 'tab'
+		});
+	}
+	
+	this.setSortIndex = function(sortIndex) { this._sortIndex = sortIndex; }
 });
