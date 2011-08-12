@@ -8,7 +8,8 @@ var Button = exports = Class(Widget, function(supr) {
 	this._type = 'button';
 	
 	this.init = function(params) {
-		params = merge(params, {tag: 'button'});
+		params = merge(params, {tag: 'button', isEnabled: true});
+		this._isEnabled = params.isEnabled;
 		supr(this, 'init', [params]);
 	}
 	
@@ -37,6 +38,8 @@ var Button = exports = Class(Widget, function(supr) {
 	
 	this.onClick = function(e) {
 		$.stopEvent(e);
+		if (!this._isEnabled) { return; }
+
 		if (this._params.onClick) {
 			this._params.onClick(e, this);
 		}
