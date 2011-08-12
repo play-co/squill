@@ -23,7 +23,39 @@ var Widget = exports = Class([Element, Events], function() {
 	this._name = '';
 	
 	this.init = function(params) {
-		this._params = params = merge(params, {});
+		this._children = [];
+		
+		// ===
+		// merge this._def and params
+		var def = this._def;
+		if (!def) { def = this._def = {}};
+		
+		// className merges
+		if (def.className) {
+			params.className = params.className ? params.className + " " + def.className : def.className;
+		}
+		
+		// children from params gets added to def
+		if (params.children) {
+			// must make a local copy first, or else all instances of the class will share the same _def!
+			if (!this.hasOwnProperty('_def')) {
+				def = this._def = merge({}, this._def);
+			}
+			
+			if (!def.children) {
+				def.children = params.children;
+			} else {
+				def.children = def.children.concat(params.children);
+			}
+		}
+		
+		// params take precedence over def
+		this._params = params = merge(params, def);
+		delete params.children;
+		
+		// end merge
+		// ===
+		
 		if (params.name) { this._name = params.name; }
 		if (params.delegate) { this.delegate = params.delegate; }
 		if (params.controller) { this.controller = params.controller; }
@@ -52,7 +84,7 @@ var Widget = exports = Class([Element, Events], function() {
 		this.delegate.call(this, target, evt);
 	}
 	
-	this.buildChildren = function(def, target) {
+	this.addNode = function(def, target) {
 		if (!target) { target = this; }
 		
 		if (def.children) {
@@ -75,7 +107,12 @@ var Widget = exports = Class([Element, Events], function() {
 								]})
 							]})
 						]
-					}, def))
+					}, def));
+					break;
+				case 'checkbox':
+					import .CheckBox;
+					el = new CheckBox(def);
+					el.subscribe('Select', target, 'dispatchButton', def.id);
 					break;
 				case 'image':
 					el = $(merge({tag: 'img'}, def));
@@ -126,19 +163,22 @@ var Widget = exports = Class([Element, Events], function() {
 			el = new def.type(def);
 		}
 		
-		target[def.id] = el;
+		if (el instanceof Widget) { this._children.push(el); }
+		if (def.id) { target[def.id] = el; }
 		
 		if (children) {
-			var parent = newParent && newParent._el || newParent || el && el._el || el;
+			var parent = newParent || el;
 			for (var i = 0, c; c = children[i]; ++i) {
-				this.buildChildren(merge({parent: parent}, c), target);
+				if (parent.addNode) {
+					parent.addNode(c, target);
+				} else {
+					this.addNode(merge({parent: parent._el || parent}, c), target);
+				}
 			}
 		}
 
 		return el;
 	}
-	
-	this.addChild = function(def) { this.buildChildren(merge(def, {parent: this._el})); }
 	
 	this.getName = function() { return this._name; }
 	this.setName = function(name) { this._name = name; }
@@ -151,8 +191,15 @@ var Widget = exports = Class([Element, Events], function() {
 			this._errorLabel = $.create({html: this._params.errorLabel, className: global.getWidgetPrefix() + 'textInputErrorLabel', parent: this._el});
 		}
 		
-		if (this._def) { this.buildChildren(merge({el: this._el}, this._def)); }
+		if (this._def) { this.buildChildren(this); }
 		this.buildWidget(this._el);
+	}
+	
+	this.buildChildren = function(target) {
+		var children = (this._def.children || []).concat(this._params.children || []);
+		for (var i = 0, n = children.length; i < n; ++i) {
+			this.addNode(merge({parent: this._el}, children[i]), target);
+		}
 	}
 	
 	this.buildWidget = function() {}
@@ -194,15 +241,44 @@ var Widget = exports = Class([Element, Events], function() {
 		return this._el;
 	}
 	
-	this.hide = function() {
-		$.hide(this.getElement());
+	this.onBeforeShow = function() {
+		for (var i = 0, child; child = this._children[i]; ++i) {
+			child.onBeforeShow.apply(child, arguments);
+		}
+	}
+	
+	this.onShow = function() {
+		for (var i = 0, child; child = this._children[i]; ++i) {
+			child.onShow.apply(child, arguments);
+		}
+	}
+	
+	this.onBeforeHide = function() {
+		for (var i = 0, child; child = this._children[i]; ++i) {
+			child.onBeforeHide.apply(child, arguments);
+		}
+	}
+	
+	this.onHide = function() {
+		for (var i = 0, child; child = this._children[i]; ++i) {
+			child.onHide.apply(child, arguments);
+		}
 	}
 	
 	this.show = function() {
+		this.onBeforeShow();
 		$.show(this.getElement());
+		this.onShow();
+	}
+	
+	this.hide = function() {
+		this.onBeforeHide();
+		$.hide(this.getElement());
+		this.onHide();
 	}
 	
 	this.remove = function() {
+		this.hide();
 		$.remove(this.getElement());
 	}
 	
