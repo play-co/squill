@@ -1,16 +1,15 @@
-jsio('import std.js as JS');
-jsio('from util.browser import $');
-jsio('import .Widget, .Events, .global');
+"use import";
 
-var Button = exports = Class([Widget, Events], function(supr) {
+from util.browser import $;
+import .Widget;
+
+var Button = exports = Class(Widget, function(supr) {
 	this._css = 'btn';
 	this._type = 'button';
 	
 	this.init = function(params) {
-		params = JS.merge(params, {
-			tag: 'button'
-		});
-		
+		params = merge(params, {tag: 'button', isEnabled: true});
+		this._isEnabled = params.isEnabled;
 		supr(this, 'init', [params]);
 	}
 	
@@ -39,8 +38,10 @@ var Button = exports = Class([Widget, Events], function(supr) {
 	
 	this.onClick = function(e) {
 		$.stopEvent(e);
-		if (this._params.onclick) {
-			this._params.onclick(e, this);
+		if (!this._isEnabled) { return; }
+
+		if (this._params.onClick) {
+			this._params.onClick(e, this);
 		}
 		
 		supr(this, 'onClick', arguments);
@@ -60,8 +61,20 @@ var Button = exports = Class([Widget, Events], function(supr) {
 	}
 	
 	this.show = function() {
+		this.onBeforeShow();
 		this.getElement().style.display = 'inline-block';
+		this.onShow();
+	}
+	
+	this.setEnabled = function(isEnabled) {
+		if (this._isEnabled != isEnabled) {
+			this._isEnabled = isEnabled;
+			if (!isEnabled) {
+				$.addClass(this._el, 'disabled')
+			} else {
+				$.removeClass(this._el, 'disabled')
+			}
+		}
 	}
 });
 
-Widget.register(Button, 'Button');
