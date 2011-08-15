@@ -6,24 +6,34 @@ var TextInput = exports= Class(Widget, function(supr) {
 	this._css = 'textInput';
 	this._class = global.getWidgetPrefix() + this._css;
 	
-	this.buildWidget = function() {
-		var el = this._el,
-			type = this._params.type,
-			label = this.getI18n('label') || '',
-			value = this.getI18n('value') || '';
-		
-		$.style(el, {position: 'relative'});
-		
-		this._input = $.create({
-			tag: 'input',
-			attrs: {
-				type: type || this._type,
-				value: value,
-				name: this._name
-			},
-			parent: el
+	this.init = function(opts) {
+		opts = merge(opts, {
+			name: '',
+			value: '',
+			type: 'text'
 		});
 		
+		this._def = {
+			children: [
+				{tag: 'input', id: '_input', attrs: {
+					type: opts.type,
+					value: opts.value,
+					name: opts.name
+				}}
+			],
+			style: {position: 'relative'}
+		};
+		
+		if (opts.prefixLabel) {
+			this._def.children.unshift({id: '_label', text: opts.label});
+		}
+		
+		supr(this, 'init', [opts]);
+	}
+	
+	this.buildWidget = function() {
+		var el = this._el;
+		var type = this._opts.type;
 		if ('ontouchstart' in this._el) {
 			this._overlay = $({
 				parent: this._el,
@@ -46,16 +56,19 @@ var TextInput = exports= Class(Widget, function(supr) {
 			}), true);
 		}
 		
-		if (this._input.getAttribute('placeholder') === null) {
-			this._input.setAttribute('placeholder', label);
-		} else {
-			this._label = $.create({
-				tag: 'button',
-				text: label,
-				className: global.getWidgetPrefix() + 'textInputLabel',
-				style: {position: 'absolute'},
-				parent: el
-			});	
+		if (!this._opts.prefixLabel || this._opts.placeholder) {
+			var label = this.getI18n('label');
+			if (this._input.getAttribute('placeholder') === null) {
+				this._input.setAttribute('placeholder', this._opts.placeholder || label);
+			} else {
+				this._placeholder = $.create({
+					tag: 'button',
+					text: label,
+					className: global.getWidgetPrefix() + 'textInputLabel',
+					style: {position: 'absolute'},
+					parent: el
+				});	
+			}
 		}
 		
 		this.initMouseEvents(el);
@@ -74,7 +87,7 @@ var TextInput = exports= Class(Widget, function(supr) {
 	
 	this.onKeyDown = function() {
 		supr(this, 'onKeyDown', arguments);
-		if (this._label) { $.hide(this._label); }
+		if (this._placeholder) { $.hide(this._placeholder); }
 	}
 	
 	this.onKeyUp = function() {
@@ -108,8 +121,8 @@ var TextInput = exports= Class(Widget, function(supr) {
 	}
 	
 	this.checkLabel = function() {
-		if(this._label && /^\s*$/.test(this._input.value)) {
-			$.show(this._label);
+		if(this._placeholder && /^\s*$/.test(this._input.value)) {
+			$.show(this._placeholder);
 		}
 	}
 	

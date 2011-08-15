@@ -34,7 +34,7 @@ exports.Selectable = Class(Cell, function(supr) {
 	this.onClick = 
 	this.onSelect = function() {
 		var prev = this._parent.getSelected(),
-			cell = prev && this._parent.getCellById(prev[this._params.key]);
+			cell = prev && this._parent.getCellById(prev[this._opts.key]);
 		
 		if (cell) { cell.setSelected(false); }
 		

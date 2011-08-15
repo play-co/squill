@@ -138,12 +138,12 @@ var List = exports = Class(Widget, function(supr) {
 	}
 	
 	this.setOffsetParent = function(offsetParent) {
-		this._params.offsetParent = offsetParent;
+		this._opts.offsetParent = offsetParent;
 	}
 	
 	this.renderFixedHeight = function() {
 		// the list might be contained in some other scrolling div
-		var parent = this._params.offsetParent || this._container.offsetParent;
+		var parent = this._opts.offsetParent || this._container.offsetParent;
 		if (!parent) { return; }
 		
 		if (parent != this._offsetParent) {
@@ -217,7 +217,7 @@ var List = exports = Class(Widget, function(supr) {
 		}
 		
 		// remove old items
-		if (!this._params.preserveCells) {
+		if (!this._opts.preserveCells) {
 			for (var id in oldCellsByID) {
 				oldCellsByID[id].remove();
 			}

@@ -1,10 +1,11 @@
-jsio('import lib.PubSub');
-jsio('import std.js as JS');
-jsio('from util.browser import $');
+"use import";
+
+import lib.PubSub;
+from util.browser import $;
 
 var Element = exports = Class(lib.PubSub, function(supr) {
-	this.init = function(params) {
-		this._params = JS.merge(params, {
+	this.init = function(opts) {
+		this._opts = JS.merge(opts, {
 			win: window,
 			tag: 'div'
 		});
@@ -12,11 +13,11 @@ var Element = exports = Class(lib.PubSub, function(supr) {
 	
 	this.build = function() {
 		if (!this._el) {
-			if (this._params.el) {
-				this._el = this._params.el;
-				$.apply(this._el, this._params);
+			if (this._opts.el) {
+				this._el = this._opts.el;
+				$.apply(this._el, this._opts);
 			} else {
-				this._el = $.create(this._params);
+				this._el = $.create(this._opts);
 			}
 		
 			this.buildContent();
@@ -25,7 +26,7 @@ var Element = exports = Class(lib.PubSub, function(supr) {
 		return this;
 	}
 	
-	this.getId = function() { return this._el && this._el.id || this._params && this._params.id; }
+	this.getId = function() { return this._el && this._el.id || this._opts && this._opts.id; }
 	
 	this.buildContent = function() {}
 	

@@ -71,7 +71,7 @@ exports.Pane = Class(Widget, function() {
 		this._sortIndex = ++sortID;
 		
 		this.tab =  $({
-			text: this._params.title,
+			text: this._opts.title,
 			tagName: 'a',
 			className: 'tab'
 		});

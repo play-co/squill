@@ -13,13 +13,13 @@ var CheckBox = exports = Class(Widget, function(supr) {
 	};
 	
 	this.buildWidget = function() {
-		this.setLabel(this._params.label || '');
-		if (this._params.name) {
-			this.setName(this._params.name);
+		this.setLabel(this._opts.label || '');
+		if (this._opts.name) {
+			this.setName(this._opts.name);
 		}
 		
-		if (this._params.value) {
-			this.setValue(this._params.value);
+		if (this._opts.value) {
+			this.setValue(this._opts.value);
 		}
 		
 		this.initMouseEvents(this.checkbox);
