@@ -3,8 +3,8 @@
 import lib.PubSub;
 
 exports = Class(lib.PubSub, function() {
-	this.init = function(params) {
-		this._params = params;
-		this._view = params.view;
+	this.init = function(opts) {
+		this._opts = opts;
+		this._view = opts.view;
 	}
 });

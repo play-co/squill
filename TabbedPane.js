@@ -53,6 +53,7 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 		
 		this._selectedPane = pane;
 		pane.show();
+		this.publish('ShowPane', pane);
 	}
 });
 
@@ -67,11 +68,13 @@ exports.Pane = Class(Widget, function() {
 		}
 	}
 	
+	this.getTitle = function() { return this._opts.title; }
+	
 	this.buildWidget = function() {
 		this._sortIndex = ++sortID;
 		
 		this.tab =  $({
-			text: this._params.title,
+			text: this._opts.title,
 			tagName: 'a',
 			className: 'tab'
 		});

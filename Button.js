@@ -14,14 +14,14 @@ var Button = exports = Class(Widget, function(supr) {
 	}
 	
 	this.create = function() {
-		this._params.style = JS.merge(this._params.style, {
+		this._opts.style = JS.merge(this._opts.style, {
 				whiteSpace: 'nowrap',
 				display: 'block'
 			});
 		
 		supr(this, 'create', arguments);
 		
-		this._el.href = 'javascript:> ' + this._params.label;
+		this._el.href = 'javascript:> ' + this._opts.label;
 	};
 	
 	this.buildWidget = function() {
@@ -40,8 +40,8 @@ var Button = exports = Class(Widget, function(supr) {
 		$.stopEvent(e);
 		if (!this._isEnabled) { return; }
 
-		if (this._params.onClick) {
-			this._params.onClick(e, this);
+		if (this._opts.onClick) {
+			this._opts.onClick(e, this);
 		}
 		
 		supr(this, 'onClick', arguments);

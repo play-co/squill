@@ -3,6 +3,7 @@
 from util.browser import $;
 import .Element, .Events, .global;
 import .i18n;
+import .delegate;
 
 var uid = 0;
 
@@ -22,47 +23,47 @@ var Widget = exports = Class([Element, Events], function() {
 	this._css = 'widget';
 	this._name = '';
 	
-	this.init = function(params) {
+	this.init = function(opts) {
 		this._children = [];
 		
 		// ===
-		// merge this._def and params
+		// merge this._def and opts
 		var def = this._def;
 		if (!def) { def = this._def = {}};
 		
 		// className merges
 		if (def.className) {
-			params.className = params.className ? params.className + " " + def.className : def.className;
+			opts.className = opts.className ? opts.className + " " + def.className : def.className;
 		}
 		
-		// children from params gets added to def
-		if (params.children) {
+		// children from opts gets added to def
+		if (opts.children) {
 			// must make a local copy first, or else all instances of the class will share the same _def!
 			if (!this.hasOwnProperty('_def')) {
 				def = this._def = merge({}, this._def);
 			}
 			
 			if (!def.children) {
-				def.children = params.children;
+				def.children = opts.children;
 			} else {
-				def.children = def.children.concat(params.children);
+				def.children = def.children.concat(opts.children);
 			}
 		}
 		
-		// params take precedence over def
-		this._params = params = merge(params, def);
-		delete params.children;
+		// opts take precedence over def
+		this._opts = opts = merge(opts, def);
+		delete opts.children;
 		
 		// end merge
 		// ===
 		
-		if (params.name) { this._name = params.name; }
-		if (params.delegate) { this.delegate = params.delegate; }
-		if (params.controller) { this.controller = params.controller; }
-		if (params.parent) {
-			var parent = this._parent = params.parent;
-			if (parent._el) { params.parent = parent._el; }
-			else if (!parent.appendChild) { delete params.parent; }
+		if (opts.name) { this._name = opts.name; }
+		if (opts.delegate) { this.delegate = opts.delegate; }
+		if (opts.controller) { this.controller = opts.controller; }
+		if (opts.parent) {
+			var parent = this._parent = opts.parent;
+			if (parent._el) { opts.parent = parent._el; }
+			else if (!parent.appendChild) { delete opts.parent; }
 			this.build();
 		}
 	}
@@ -72,7 +73,7 @@ var Widget = exports = Class([Element, Events], function() {
 		var el = parent && (parent._el || (parent.appendChild && parent) || null);
 		if (el) {
 			if (!this._el) {
-				this._params.parent = el;
+				this._opts.parent = el;
 				this.build();
 			} else {
 				el.appendChild(this._el);
@@ -86,6 +87,8 @@ var Widget = exports = Class([Element, Events], function() {
 	
 	this.addNode = function(def, target) {
 		if (!target) { target = this; }
+		
+		if (!def.parent) { def.parent = this; }
 		
 		if (def.children) {
 			var children = def.children;
@@ -186,9 +189,11 @@ var Widget = exports = Class([Element, Events], function() {
 	this.buildContent = function() {
 		$.addClass(this._el, global.getWidgetPrefix() + this._css);
 		
+		if (!this.delegate) { this.delegate = delegate.create(); }
+		
 		// TODO: what's this doing here?
-		if (this._params.errorLabel) {
-			this._errorLabel = $.create({html: this._params.errorLabel, className: global.getWidgetPrefix() + 'textInputErrorLabel', parent: this._el});
+		if (this._opts.errorLabel) {
+			this._errorLabel = $.create({html: this._opts.errorLabel, className: global.getWidgetPrefix() + 'textInputErrorLabel', parent: this._el});
 		}
 		
 		if (this._def) { this.buildChildren(this); }
@@ -196,7 +201,7 @@ var Widget = exports = Class([Element, Events], function() {
 	}
 	
 	this.buildChildren = function(target) {
-		var children = (this._def.children || []).concat(this._params.children || []);
+		var children = (this._def.children || []).concat(this._opts.children || []);
 		for (var i = 0, n = children.length; i < n; ++i) {
 			this.addNode(merge({parent: this._el}, children[i]), target);
 		}
@@ -229,9 +234,9 @@ var Widget = exports = Class([Element, Events], function() {
 	this.validators = [];
 	
 	this.getI18n = function(key, id) {
-		var src = key in this._params
-			? this._params
-			: i18n.get(id || this._params.id);
+		var src = key in this._opts
+			? this._opts
+			: i18n.get(id || this._opts.id);
 		
 		return src && src[key] || '';
 	}

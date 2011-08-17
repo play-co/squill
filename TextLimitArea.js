@@ -6,7 +6,7 @@ var TextLimitArea = exports = Class(TextArea, function(supr){
 
 	this.buildWidget = function(){
 		supr(this,'buildWidget',arguments);
-		this._limit = this._params.limit || 140;
+		this._limit = this._opts.limit || 140;
 		this._limitLabel = $({
 			text: this._limit,
 			parent: this._el

@@ -6,8 +6,8 @@ var TextArea = exports = Class(Widget, function(supr) {
 	this.buildWidget = function() {
 
 		var el = this._el,
-			label = this._params.label || '',
-			value = this._params.value || '';
+			label = this._opts.label || '',
+			value = this._opts.value || '';
 
 		this._label = $.create({
 			tag: 'label',
@@ -18,7 +18,7 @@ var TextArea = exports = Class(Widget, function(supr) {
 
 		this._textarea = $.create({
 			tag: 'textarea',
-			attrs:{name:this._params.name},
+			attrs:{name:this._opts.name},
 			value: value,
 			parent: this._label
 		});

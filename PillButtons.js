@@ -8,7 +8,7 @@ var PillButtons = exports = Class(Widget, function(supr) {
 	this.buildWidget = function(el) {
 		this._options = {};
 		
-		var opts = this._params.options,
+		var opts = this._opts.options,
 			len = opts.length;
 		for (var i = 0; i < len; ++i) {
 			var optionEl = $({

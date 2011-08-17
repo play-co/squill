@@ -4,9 +4,9 @@ jsio('import .TextButton, .Widget');
 var SubmitButton  = exports = Class(TextButton, function(supr) {
 	this.putHere = function() {
 		supr(this, 'putHere', arguments);
-		if(this._params.form) {
+		if(this._opts.form) {
 			this.onclick(bind(this, function() {
-				this._params.form.submit();
+				this._opts.form.submit();
 			}));
 		} else {
 			setTimeout(bind(this, function() {

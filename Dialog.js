@@ -36,7 +36,7 @@ var Dialog = exports = Class(Widget, function(supr) {
 		});
 		
 		// don't show close button for touch devices
-		if (!('ontouchstart' in this._titlebar) && this._params.closeable) {
+		if (!('ontouchstart' in this._titlebar) && this._opts.closeable) {
 			this._closeBtn = $({
 				className: 'closeBtn',
 				text: 'x',

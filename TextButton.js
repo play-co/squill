@@ -15,7 +15,7 @@ var TextButton = exports = Class(Button, function(supr) {
 	}
 	
 	this.setLabel = function(label) {
-		this._params.label = label;
+		this._opts.label = label;
 		if(this._el) { $.setText(this._el, label); }
 	}
 });

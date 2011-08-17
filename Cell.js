@@ -15,8 +15,8 @@ exports.Selectable = Class(Cell, function(supr) {
 		this.initMouseEvents();
 	}
 	
-	this.isSelected = function() { return this._data.isSelected; }
-	this._setSelected = function(isSelected) { this._data.isSelected = isSelected; }
+	this.isSelected = function() { return this._isSelected; }
+	this._setSelected = function(isSelected) { this._isSelected = isSelected; }
 	
 	this.setData = function(data) {
 		supr(this, 'setData', arguments);
@@ -34,7 +34,7 @@ exports.Selectable = Class(Cell, function(supr) {
 	this.onClick = 
 	this.onSelect = function() {
 		var prev = this._parent.getSelected(),
-			cell = prev && this._parent.getCellById(prev[this._params.key]);
+			cell = prev && this._parent.getCellById(prev[this._opts.key]);
 		
 		if (cell) { cell.setSelected(false); }
 		
