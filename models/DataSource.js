@@ -128,7 +128,7 @@ var DataSource = exports = Class(lib.PubSub, function() {
 	
 	this.contains = function(id) { return !!this._byId[id]; }
 	this.get = function(id) { return typeof id == 'string' ? this._byId[id] : this._byIndex[id]; }
-	this.getItemForId = function(id) { return this._byId[id] || null; }
+	this.getItemForID = function(id) { return this._byId[id] || null; }
 	this.getItemForIndex = function(index) { return this._byIndex[index]; }
 	this.sort = function() { this._byIndex.sort(); }
 	

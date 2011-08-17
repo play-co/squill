@@ -224,7 +224,7 @@ var List = exports = Class(Widget, function(supr) {
 		} else {
 			for (var id in oldCellsByID) {
 				var cell = oldCellsByID[id];
-				if (!this._dataSource.getItemForId(id)) {
+				if (!this._dataSource.getItemForID(id)) {
 					cell.remove();
 				} else {
 					this._cellsByID[id] = cell;

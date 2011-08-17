@@ -3,6 +3,7 @@
 from util.browser import $;
 import .Element, .Events, .global;
 import .i18n;
+import .delegate;
 
 var uid = 0;
 
@@ -86,6 +87,8 @@ var Widget = exports = Class([Element, Events], function() {
 	
 	this.addNode = function(def, target) {
 		if (!target) { target = this; }
+		
+		if (!def.parent) { def.parent = this; }
 		
 		if (def.children) {
 			var children = def.children;
@@ -185,6 +188,8 @@ var Widget = exports = Class([Element, Events], function() {
 	
 	this.buildContent = function() {
 		$.addClass(this._el, global.getWidgetPrefix() + this._css);
+		
+		this.delegate = delegate.create();
 		
 		// TODO: what's this doing here?
 		if (this._opts.errorLabel) {
