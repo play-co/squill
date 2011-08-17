@@ -189,7 +189,7 @@ var Widget = exports = Class([Element, Events], function() {
 	this.buildContent = function() {
 		$.addClass(this._el, global.getWidgetPrefix() + this._css);
 		
-		this.delegate = delegate.create();
+		if (!this.delegate) { this.delegate = delegate.create(); }
 		
 		// TODO: what's this doing here?
 		if (this._opts.errorLabel) {
