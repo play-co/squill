@@ -1,6 +1,6 @@
 jsio('import .Resource');
 jsio('import .Widget');
-
+logger.setLevel(0);
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(params) {
 		supr(this, 'init', arguments);
@@ -49,13 +49,15 @@ var List = exports = Class(Widget, function(supr) {
 	}
 	
 	this.renderFixed = function(viewport) {
-		var top = viewport.y,
-			height = viewport.height,
-			bottom = top + height,
-			i = 0;
+		var top = viewport.y;
+		var height = viewport.height;
+		var bottom = top + height;
+		var i = 0;
+		var dataSource = this._dataSource;
+		var key = dataSource.key;
 		
 		if (!this._fixedHeightValue) {
-			var firstCell = this._getCell(this._dataSource.getItemForIndex(0), this._cellResource);
+			var firstCell = this._getCell(dataSource.getItemForIndex(0), this._cellResource);
 			this._fixedHeightValue = firstCell.getHeight();
 		}
 		
@@ -66,14 +68,14 @@ var List = exports = Class(Widget, function(supr) {
 			y = startCell * cellHeight;
 		
 		for (var i = startCell; i < endCell; ++i) {
-			var item = this._dataSource.getItemForIndex(i);
+			var item = dataSource.getItemForIndex(i);
 			if (!item) {
 				this._view.setMaxY(y);
 				break;
 			} else {
-				var cellView = this._cells[item.id];
+				var cellView = this._cells[item[key]];
 				if (!cellView) {
-					logger.debug("no cell for", item.id);
+					logger.debug("no cell for", item[key]);
 					
 					cellView = this._getCell(item, this._cellResource);
 					cellView.setData(item);
@@ -86,8 +88,8 @@ var List = exports = Class(Widget, function(supr) {
 					
 					// we delete everything from this._cells and then 
 					// replace this._cells with cells
-					delete this._cells[item.id];
-					cells[item.id] = cellView;
+					delete this._cells[item[key]];
+					cells[item[key]] = cellView;
 				}
 			}
 			
