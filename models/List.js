@@ -35,22 +35,22 @@ var List = exports = Class(Widget, function(supr) {
 	this.setSorter = function(sorter) { this._sorter = sorter; }
 	
 	// just render all cells for now
-	this.render = function(ctx) {
+	this.render = function(viewport) {
 		if (this._needsSort) {
 			this._needsSort = null;
 			this._dataSource.sort();
 		}
 		
 		if (this._fixedHeight) {
-			this.renderFixed(ctx);
+			this.renderFixed(viewport);
 		} else {
-			this.renderVariable(ctx);
+			this.renderVariable(viewport);
 		}
 	}
 	
-	this.renderFixed = function(ctx) {
-		var top = ctx._viewport.y,
-			height = ctx._viewport.height,
+	this.renderFixed = function(viewport) {
+		var top = viewport.y,
+			height = viewport.height,
 			bottom = top + height,
 			i = 0;
 		
