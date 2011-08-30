@@ -3,7 +3,7 @@
 from util.browser import $;
 import .Element, .Events, .global;
 import .i18n;
-import .delegate;
+import .Delegate;
 
 var uid = 0;
 
@@ -88,7 +88,7 @@ var Widget = exports = Class([Element, Events], function() {
 	this.addNode = function(def, target) {
 		if (!target) { target = this; }
 		
-		if (!def.parent) { def.parent = this; }
+		var def = merge({}, def, {parent: this});
 		
 		if (def.children) {
 			var children = def.children;
@@ -97,7 +97,7 @@ var Widget = exports = Class([Element, Events], function() {
 		
 		var el, newParent;
 		if (!def.type || typeof def.type == 'string') {
-			switch(def.type) {
+			switch (def.type) {
 				case 'vcenter':
 					el = $(merge({
 						tag: 'table',
@@ -124,7 +124,7 @@ var Widget = exports = Class([Element, Events], function() {
 					if (typeof TextButton == 'undefined') {
 						import .TextButton;
 					}
-			
+					
 					el = new TextButton(def);
 					el.subscribe('Select', target, 'dispatchButton', def.id);
 					break;
@@ -134,6 +134,9 @@ var Widget = exports = Class([Element, Events], function() {
 					}
 			
 					el = new Label(def);
+					break;
+				case 'select':
+					
 					break;
 				case 'list':
 					if (typeof List == 'undefined') {
@@ -189,7 +192,7 @@ var Widget = exports = Class([Element, Events], function() {
 	this.buildContent = function() {
 		$.addClass(this._el, global.getWidgetPrefix() + this._css);
 		
-		if (!this.delegate) { this.delegate = delegate.create(); }
+		if (!this.delegate) { this.delegate = new Delegate(); }
 		
 		// TODO: what's this doing here?
 		if (this._opts.errorLabel) {
@@ -283,8 +286,9 @@ var Widget = exports = Class([Element, Events], function() {
 	}
 	
 	this.remove = function() {
-		this.hide();
+		this.onBeforeHide();
 		$.remove(this.getElement());
+		this.onHide();
 	}
 	
 	this.putHere = function() {

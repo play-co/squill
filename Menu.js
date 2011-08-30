@@ -4,7 +4,7 @@ import .Widget;
 import .Scroller;
 import .TextButton;
 import .Label;
-import .delegate;
+import .Delegate;
 
 from util.browser import $;
 import util.Animation;
@@ -16,7 +16,7 @@ exports = Class(Scroller, function(supr) {
 	// }
 	
 	// the default menu delegate just forwards to the menu controller
-	this.delegate = delegate.create(function(on) {
+	this.delegate = new Delegate(function(on) {
 		on.call = function(ctx, name) {
 			var delegate = ctx.controller.delegate;
 			delegate.call.apply(delegate, [ctx.controller].concat(Array.prototype.slice.call(arguments, 1)));

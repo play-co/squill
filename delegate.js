@@ -1,12 +1,10 @@
-exports.create = function(def) {
-	var delegate = new exports.Delegate();
-	if (def) { def(delegate); }
-	return delegate;
-}
-
-exports.Delegate = Class(function() {
+var Delegate = exports = Class(function() {
+	this.init = function(def) {
+		def && def(this);
+	}
+	
 	this.extend = function(def) {
-		var delegate = exports.create(def);
+		var delegate = new Delegate(def);
 		delegate.parent = this;
 		return delegate;
 	}
