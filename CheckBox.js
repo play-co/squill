@@ -23,6 +23,11 @@ var CheckBox = exports = Class(Widget, function(supr) {
 		}
 		
 		this.initMouseEvents(this.checkbox);
+		$.onEvent(this.checkbox, 'change', this, '_onCheck');
+	}
+	
+	this._onCheck = function() {
+		this.publish('Check', this.isChecked());
 	}
 	
 	this.setLabel = function(label) { $.setText(this.label, label); }

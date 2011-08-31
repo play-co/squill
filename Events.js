@@ -85,26 +85,22 @@ exports = Class(lib.PubSub, function() {
 	this.onMouseOver = function(e) {
 		if (!this._enableMouseEvents) 
 		this._isOver = true;
-		$.addClass(this._el, this._class + '-hover');
 		this.publish('Over', e);
 	}
 	
 	this.onMouseOut = function(e) {
 		this._isOver = false;
 		this.onMouseUp();
-		$.removeClass(this._el, this._class + '-hover');
 		this.publish('Out', e);
 	}
 
 	this.onMouseDown = function(e) {
 		this._isDown = true;
-		$.addClass(this._el, this._class + '-down');
 		this.publish('Down', e);
 	}
 	
 	this.onMouseUp = function(e) {
 		this._isDown = false;
-		$.removeClass(this._el, this._class + '-down');
 		this.publish('Up', e);
 	}
 	
@@ -114,13 +110,11 @@ exports = Class(lib.PubSub, function() {
 	
 	this.onFocus = function(e) {
 		this._isFocused = true;
-		$.addClass(this._el, this._class + '-focused');
 		this.publish('Focus', e);
 	}
 	
 	this.onBlur = function(e) {
 		this._isFocused = false;
-		$.removeClass(this._el, this._class + '-focused');
 		this.publish('Blur', e);
 	}
 	

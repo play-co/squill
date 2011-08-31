@@ -18,22 +18,47 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 		]
 	};
 	
-	this.buildWidget = function(el) {
+	this.init = function() {
 		this._panes = [];
+		supr(this, 'init', arguments);
+	}
+
+	this.addNode = function(def, target) {
+		if (this.content) {
+			merge(def, {
+				parent: this.content
+			});
+		}
+		
+		var el = supr(this, 'addNode', arguments);
+		
+		if (el instanceof exports.Pane) {
+			this.addPane(el);
+			el.hide(); // hack for now!
+		}
+		
+		return el;
 	}
 	
 	this.newPane = function(def) {
-		var pane = this._currentPane = new exports.Pane(merge({parent: this.content}, def));
-		if (def.title) { this._panes[def.title] = pane; }
+		var pane = this._selectedPane = new exports.Pane(merge({parent: this.content}, def));
+		this.addPane(pane);
+		
+		return pane;
+	}
+	
+	this.addPane = function(pane) {
+		var title = pane.getTitle();
+		if (title) {
+			this._panes[title] = pane;
+		}
 		
 		this._panes.push(pane);
 		lib.sort(this._panes, function(pane) { return pane._sortIndex; });
-		
 		this.tabContainer.appendChild(pane.tab);
-		
 		$.onEvent(pane.tab, 'mousedown', this, 'showPane', pane);
 		if (!this._selectedTab) { this.showPane(pane); }
-		return pane;
+		return this;
 	}
 	
 	this.getTabs = function() { return this._tabs; }
@@ -44,6 +69,7 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 	}
 	
 	this.selectPane = this.showPane = function(pane) {
+		logger.log('select', pane);
 		var tab = pane.tab;
 		$.removeClass(this._selectedTab, 'selected');
 		$.addClass(tab, 'selected');
@@ -57,8 +83,7 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 	}
 });
 
-
-exports.Pane = Class(Widget, function() {
+exports.Pane = Class(Widget, function(supr) {
 	var sortID = 0;
 	
 	this._def = {
@@ -69,15 +94,16 @@ exports.Pane = Class(Widget, function() {
 	}
 	
 	this.getTitle = function() { return this._opts.title; }
-	
-	this.buildWidget = function() {
+	this.init = function(opts) {
 		this._sortIndex = ++sortID;
 		
 		this.tab =  $({
-			text: this._opts.title,
+			text: opts.title,
 			tagName: 'a',
 			className: 'tab'
 		});
+		
+		supr(this, 'init', arguments);
 	}
 	
 	this.setSortIndex = function(sortIndex) { this._sortIndex = sortIndex; }

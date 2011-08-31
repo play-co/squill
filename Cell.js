@@ -4,52 +4,31 @@ import .Widget;
 from util.browser import $;
 
 var Cell = exports = Class(Widget, function() {
-	this.setData = function(data) { this._data = data; }
-	this.getData = function() { return this._data; }
-	this.setParent = function(parent) { this._parent = parent; }
-	this.render = function() {}
-});
-
-exports.Selectable = Class(Cell, function(supr) {
 	this.buildWidget = function(el) {
 		this.initMouseEvents();
 	}
 	
-	this.isSelected = function() { return this._isSelected; }
-	this._setSelected = function(isSelected) { this._isSelected = isSelected; }
+	this.isSelected = function() { return this._parent.selection && this._parent.selection.isSelected(this._data); }
+	this.select = function() { this._parent.selection && this._parent.selection.select(this._data); }
+	this.deselect = function() { this._parent.selection && this._parent.selection.deselect(this._data); }
 	
-	this.setData = function(data) {
-		supr(this, 'setData', arguments);
-		var isSelected = this.updateSelected();
-		if (isSelected) {
-			this._parent.setSelected(this._data);
-		}
-	}
-	
-	this.onDeselect = function() {
-		this._onDeselect();
-		this._parent.publish('Deselect', this._data);
-	}
-	
+	this.setData = function(data) { this._data = data; this.updateSelected(); }
+	this.getData = function() { return this._data; }
+	this.setParent = function(parent) { this._parent = parent; }
+	this.render = function() {}
+
 	this.onClick = 
 	this.onSelect = function() {
-		var prev = this._parent.getSelected(),
-			cell = prev && this._parent.getCellById(prev[this._opts.key]);
-		
-		if (cell) { cell.setSelected(false); }
-		
-		this.setSelected(true);
-	}
-	
-	this.setSelected = function(isSelected) {
-		if (this.isSelected() != isSelected) {
-			if (isSelected) {
-				this._parent.setSelected(this._data);
-				this._parent.publish('Select', this._data);
+		if (!this._parent.selection) { return; }
+		var type = this._parent.selection.getType();
+		if (type == 'toggle' || type == 'multi') {
+			if (this.isSelected()) {
+				this.deselect();
+			} else {
+				this.select();
 			}
-			
-			this._setSelected(isSelected);
-			this.updateSelected();
+		} else if (type == 'single') {
+			this.select();
 		}
 	}
 	
@@ -62,8 +41,6 @@ exports.Selectable = Class(Cell, function(supr) {
 		}
 		return isSelected;
 	}
-	
-	this.render = function() {
-		$.setText(this._el, this._data.id);
-	}
 });
+
+exports.Selectable = exports;
