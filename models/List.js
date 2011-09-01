@@ -1,6 +1,7 @@
 jsio('import .Resource');
 jsio('import .Widget');
 logger.setLevel(0);
+
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(params) {
 		supr(this, 'init', arguments);
@@ -67,16 +68,15 @@ var List = exports = Class(Widget, function(supr) {
 			cells = {},
 			y = startCell * cellHeight;
 		
+		this._view.setMaxY(this._dataSource.length * cellHeight);
+		
 		for (var i = startCell; i < endCell; ++i) {
 			var item = dataSource.getItemForIndex(i);
 			if (!item) {
-				this._view.setMaxY(y);
 				break;
 			} else {
 				var cellView = this._cells[item[key]];
 				if (!cellView) {
-					logger.debug("no cell for", item[key]);
-					
 					cellView = this._getCell(item, this._cellResource);
 					cellView.setData(item);
 					cellView.model.setResource(this._cellResource);
@@ -97,7 +97,6 @@ var List = exports = Class(Widget, function(supr) {
 		}
 		
 		for (var id in this._cells) {
-			logger.debug("deleting cell", id);
 			var cell = this._cells[id];
 			cell.model.recycle();
 			delete this._cells[id];
