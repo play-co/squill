@@ -15,7 +15,7 @@ var DataSource = exports = Class(lib.PubSub, function() {
 		this._channel = opts.channel;
 		this._hasRemote = opts.hasRemote;
 		this._byIndex = [];
-		this._byId = {};
+		this._byID = {};
 		this.length = 0;
 		
 		if (opts.sorter) {
@@ -50,9 +50,9 @@ var DataSource = exports = Class(lib.PubSub, function() {
 				item[i] && this.add(item[i]);
 			}
 		} else {
-			if (this._byId[item[this.key]]) { this.remove(item); }
+			if (this._byID[item[this.key]]) { this.remove(item); }
 			var index = this.length++;
-			this._byIndex[index] = this._byId[item[this.key]] = item;
+			this._byIndex[index] = this._byID[item[this.key]] = item;
 			this.signalUpdate(item);
 			
 			if (this._sorter) {
@@ -66,8 +66,8 @@ var DataSource = exports = Class(lib.PubSub, function() {
 	
 	this.remove = function(id) {
 		if (typeof id == 'object') { id = id[this.key]; }
-		if (this._byId[id]) {
-			delete this._byId[id];
+		if (this._byID[id]) {
+			delete this._byID[id];
 			for (var i = 0, item; item = this._byIndex[i]; ++i) {
 				if (item[this.key] == id) {
 					this._byIndex.splice(i, 1);
@@ -108,7 +108,7 @@ var DataSource = exports = Class(lib.PubSub, function() {
 	this.clear = function() {
 		var index = this._byIndex;
 		this._byIndex = [];
-		this._byId = {};
+		this._byID = {};
 		this.length = 0;
 		for (var i = 0, item; item = index[i]; ++i) {
 			this.publish('Remove', item[this.key]);
@@ -126,9 +126,9 @@ var DataSource = exports = Class(lib.PubSub, function() {
 		return this;
 	}
 	
-	this.contains = function(id) { return !!this._byId[id]; }
-	this.get = function(id) { return typeof id == 'string' ? this._byId[id] : this._byIndex[id]; }
-	this.getItemForID = function(id) { return this._byId[id] || null; }
+	this.contains = function(id) { return !!this._byID[id]; }
+	this.get = function(id) { return typeof id == 'string' ? this._byID[id] : this._byIndex[id]; }
+	this.getItemForID = function(id) { return this._byID[id] || null; }
 	this.getItemForIndex = function(index) { return this._byIndex[index]; }
 	this.sort = function() { this._byIndex.sort(); }
 	
@@ -136,5 +136,18 @@ var DataSource = exports = Class(lib.PubSub, function() {
 		for (var i = 0; i < this.length; ++i) {
 			cb(this._byIndex[i]);
 		}
+	}
+	
+	this.toJSON = function() {
+		return {
+			key: this.key,
+			items: this._byIndex
+		};
+	}
+	
+	this.fromJSON = function(data) {
+		this.clear();
+		var key = this.key = data.key;
+		this.add(data.items);
 	}
 });
