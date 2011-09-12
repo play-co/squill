@@ -50,6 +50,10 @@ var List = exports = Class(Widget, function(supr) {
 	}
 	
 	this.renderFixed = function(viewport) {
+		if (!this._dataSource.getCount()) {
+			return;
+		}
+
 		var top = viewport.y;
 		var height = viewport.height;
 		var bottom = top + height;
