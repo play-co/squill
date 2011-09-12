@@ -14,7 +14,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._fixedHeight = true; // TODO: make this an option
 		
 		this._cellResource = new Resource();
-		this._cells = [];
+		this._cells = {};
 		this._cellsById = {};
 		this._needsSort = true;
 	}
@@ -58,7 +58,9 @@ var List = exports = Class(Widget, function(supr) {
 		var key = dataSource.key;
 		
 		if (!this._fixedHeightValue) {
-			var firstCell = this._getCell(dataSource.getItemForIndex(0), this._cellResource);
+			var item0 = dataSource.getItemForIndex(0);
+			if (!item0) { return; }
+			var firstCell = this._getCell(item0, this._cellResource);
 			this._fixedHeightValue = firstCell.getHeight();
 		}
 		
