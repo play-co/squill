@@ -1,6 +1,6 @@
 jsio('import .Widget');
 jsio('from util.browser import $');
-jsio('import GCDataSource');
+jsio('import .models.DataSource as DataSource');
 
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
@@ -68,7 +68,7 @@ var List = exports = Class(Widget, function(supr) {
 	
 	this._applyFilter = function() {
 		var filter = this._filter;
-		var ds = this._renderedDataSource = new GCDataSource();
+		var ds = this._renderedDataSource = new DataSource();
 		ds.key = this._dataSource.key;
 		var src = this._dataSource;
 		for (var i = 0, n = src.length; i < n; ++i) {
