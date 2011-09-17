@@ -1,6 +1,7 @@
 jsio('import .Resource');
 jsio('import .Widget');
 logger.setLevel(0);
+
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(params) {
 		supr(this, 'init', arguments);
@@ -13,7 +14,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._fixedHeight = true; // TODO: make this an option
 		
 		this._cellResource = new Resource();
-		this._cells = [];
+		this._cells = {};
 		this._cellsById = {};
 		this._needsSort = true;
 	}
@@ -49,6 +50,10 @@ var List = exports = Class(Widget, function(supr) {
 	}
 	
 	this.renderFixed = function(viewport) {
+		if (!this._dataSource.getCount()) {
+			return;
+		}
+
 		var top = viewport.y;
 		var height = viewport.height;
 		var bottom = top + height;
@@ -57,7 +62,9 @@ var List = exports = Class(Widget, function(supr) {
 		var key = dataSource.key;
 		
 		if (!this._fixedHeightValue) {
-			var firstCell = this._getCell(dataSource.getItemForIndex(0), this._cellResource);
+			var item0 = dataSource.getItemForIndex(0);
+			if (!item0) { return; }
+			var firstCell = this._getCell(item0, this._cellResource);
 			this._fixedHeightValue = firstCell.getHeight();
 		}
 		
@@ -67,16 +74,15 @@ var List = exports = Class(Widget, function(supr) {
 			cells = {},
 			y = startCell * cellHeight;
 		
+		this._view.setMaxY(this._dataSource.length * cellHeight);
+		
 		for (var i = startCell; i < endCell; ++i) {
 			var item = dataSource.getItemForIndex(i);
 			if (!item) {
-				this._view.setMaxY(y);
 				break;
 			} else {
 				var cellView = this._cells[item[key]];
 				if (!cellView) {
-					logger.debug("no cell for", item[key]);
-					
 					cellView = this._getCell(item, this._cellResource);
 					cellView.setData(item);
 					cellView.model.setResource(this._cellResource);
@@ -97,7 +103,6 @@ var List = exports = Class(Widget, function(supr) {
 		}
 		
 		for (var id in this._cells) {
-			logger.debug("deleting cell", id);
 			var cell = this._cells[id];
 			cell.model.recycle();
 			delete this._cells[id];
