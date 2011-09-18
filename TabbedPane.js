@@ -41,7 +41,7 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 	}
 	
 	this.newPane = function(def) {
-		var pane = this._selectedPane = new exports.Pane(merge({parent: this.content}, def));
+		var pane = new exports.Pane(merge({parent: this.content}, def));
 		this.addPane(pane);
 		
 		return pane;
@@ -74,7 +74,6 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 		$.removeClass(this._selectedTab, 'selected');
 		$.addClass(tab, 'selected');
 		this._selectedTab = tab;
-		
 		if (this._selectedPane) { this._selectedPane.hide(); }
 		
 		this._selectedPane = pane;
