@@ -3,7 +3,13 @@
 import .Widget;
 from util.browser import $;
 
-var Cell = exports = Class(Widget, function() {
+var Cell = exports = Class(Widget, function(supr) {
+	this.init = function(opts) {
+		supr(this, 'init', [opts]);
+		
+		if (opts.data) { this.setData(opts.data); }
+	}
+	
 	this.buildWidget = function(el) {
 		this.initMouseEvents();
 	}
@@ -14,7 +20,6 @@ var Cell = exports = Class(Widget, function() {
 	
 	this.setData = function(data) { this._data = data; this.updateSelected(); }
 	this.getData = function() { return this._data; }
-	this.setParent = function(parent) { this._parent = parent; }
 	this.render = function() {}
 
 	this.onClick = 

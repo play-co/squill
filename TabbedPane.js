@@ -22,18 +22,15 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 		this._panes = [];
 		supr(this, 'init', arguments);
 	}
-
-	this.addNode = function(def, target) {
-		if (this.content) {
-			merge(def, {
-				parent: this.content
-			});
-		}
-		
-		var el = supr(this, 'addNode', arguments);
+	
+	this.buildWidget = function() { this._container = this.content; }
+	this.getContainer = function() { return this._container || this._el; }
+	
+	this.addWidget = function(def, target) {
+		var el = supr(this, 'addWidget', arguments);
 		
 		if (el instanceof exports.Pane) {
-			this.addPane(el);
+			this._addPane(el);
 			el.hide(); // hack for now!
 		}
 		
@@ -41,13 +38,12 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 	}
 	
 	this.newPane = function(def) {
-		var pane = new exports.Pane(merge({parent: this.content}, def));
-		this.addPane(pane);
-		
+		var pane = new exports.Pane(def);
+		this.addWidget(pane);
 		return pane;
 	}
 	
-	this.addPane = function(pane) {
+	this._addPane = function(pane) {
 		var title = pane.getTitle();
 		if (title) {
 			this._panes[title] = pane;

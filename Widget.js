@@ -62,15 +62,17 @@ var Widget = exports = Class([Element, Events], function() {
 		if (opts.controller) { this.controller = opts.controller; }
 		if (opts.parent) {
 			var parent = this._parent = opts.parent;
-			if (parent._el) { opts.parent = parent._el; }
+			if (parent instanceof Widget) { opts.parent = parent.getContainer(); }
 			else if (!parent.appendChild) { delete opts.parent; }
 			this.build();
 		}
 	}
 	
+	this.getParent = function() { return this._parent; }
+	
 	this.setParent = function(parent) {
 		this._parent = parent;
-		var el = parent && (parent._el || (parent.appendChild && parent) || null);
+		var el = parent && (parent.getContainer && parent.getContainer() || parent.appendChild && parent || null);
 		if (el) {
 			if (!this._el) {
 				this._opts.parent = el;
@@ -85,100 +87,103 @@ var Widget = exports = Class([Element, Events], function() {
 		this.delegate.call(this, target, evt);
 	}
 	
-	this.addNode = function(def, target) {
+	this.addWidget = function(def, target) {
 		if (!target) { target = this; }
+		if (!this._el) { this.build(); }
 		
-		var def = merge({}, def, {parent: this});
-		
-		if (def.children) {
-			var children = def.children;
-			delete def.children;
-		}
-		
-		var el, newParent;
-		if (!def.type || typeof def.type == 'string') {
-			switch (def.type) {
-				case 'vcenter':
-					el = $(merge({
-						tag: 'table',
-						style: merge({height: '100%', width: '100%'}, def.style),
-						attrs: {cellpadding: 0, cellspacing: 0},
-						children: [
-							$({tag: 'tbody', children: [
-								$({tag: 'tr', children: [
-									newParent = $({tag: 'td', attrs: {valign: 'middle'}, style: {verticalAlign: 'middle'}})
-								]})
-							]})
-						]
-					}, def));
-					break;
-				case 'checkbox':
-					import .CheckBox;
-					el = new CheckBox(def);
-					el.subscribe('Select', target, 'dispatchButton', def.id);
-					break;
-				case 'image':
-					el = $(merge({tag: 'img'}, def));
-					break;
-				case 'button':
-					if (typeof TextButton == 'undefined') {
-						import .TextButton;
-					}
-					
-					el = new TextButton(def);
-					el.subscribe('Select', target, 'dispatchButton', def.id);
-					break;
-				case 'label':
-					if (typeof Label == 'undefined') {
-						import .Label;
-					}
+		// def is either a Widget or a definition for a Widget
+		if (!(def instanceof Widget)) {
+			// if it is not yet a widget, make it (or make a DOM node)
+			var def = merge({}, def, {parent: this.getContainer()});
 			
-					el = new Label(def);
-					break;
-				case 'select':
-					
-					break;
-				case 'list':
-					if (typeof List == 'undefined') {
-						import .List;
-					}
-			
-					el = new List(def);
-					break;
-				case 'text':
-				case 'password':
-					if (typeof TextInput == 'undefined') {
-						import .TextInput;
-					}
-					
-					el = new TextInput(def);
-					break;
-				case 'scroller':
-					if (typeof Scroller == 'undefined') {
-						import .Scroller;
-					}
-					
-					el = new Scroller(def);
-					newParent = el.getScrollPane();
-					break;
-				default:
-					el = $(def);
-					break;
+			if (def.children) {
+				var children = def.children;
+				delete def.children;
 			}
+		
+			var el;
+			if (!def.type || typeof def.type == 'string') {
+				switch (def.type) {
+					case 'vcenter':
+						import .VerticalCenter;
+						el = new VerticalCenter(def);
+						break;
+					case 'checkbox':
+						import .CheckBox;
+						el = new CheckBox(def);
+						el.subscribe('Select', target, 'dispatchButton', def.id);
+						break;
+					case 'image':
+						el = $(merge({tag: 'img'}, def));
+						break;
+					case 'button':
+						if (typeof TextButton == 'undefined') {
+							import .TextButton;
+						}
+					
+						el = new TextButton(def);
+						el.subscribe('Select', target, 'dispatchButton', def.id);
+						break;
+					case 'label':
+						if (typeof Label == 'undefined') {
+							import .Label;
+						}
+			
+						el = new Label(def);
+						break;
+					case 'select':
+					
+						break;
+					case 'list':
+						if (typeof List == 'undefined') {
+							import .List;
+						}
+			
+						el = new List(def);
+						break;
+					case 'text':
+					case 'password':
+						if (typeof TextInput == 'undefined') {
+							import .TextInput;
+						}
+					
+						el = new TextInput(def);
+						break;
+					case 'scroller':
+						if (typeof Scroller == 'undefined') {
+							import .Scroller;
+						}
+					
+						el = new Scroller(def);
+						break;
+					default:
+						el = $(def);
+						break;
+				}
+			} else {
+				el = new def.type(def);
+			}
+			
+			if (def.id) { target[def.id] = el; }
 		} else {
-			el = new def.type(def);
+			el = def;
 		}
 		
-		if (el instanceof Widget) { this._children.push(el); }
-		if (def.id) { target[def.id] = el; }
+		if (el instanceof Widget) {
+			if (!el.getParent()) { el.setParent(this); }
+			this._children.push(el);
+//			this.getContainer().appendChild(el.getElement());
+		} else {
+//			this.getContainer().appendChild(el);
+		}
 		
 		if (children) {
-			var parent = newParent || el;
+			var parent = el;
 			for (var i = 0, c; c = children[i]; ++i) {
-				if (parent.addNode) {
-					parent.addNode(c, target);
+				if (parent.addWidget) {
+					parent.addWidget(c, target);
 				} else {
-					this.addNode(merge({parent: parent._el || parent}, c), target);
+					this.addWidget(merge({parent: parent}, c), target);
 				}
 			}
 		}
@@ -186,6 +191,7 @@ var Widget = exports = Class([Element, Events], function() {
 		return el;
 	}
 	
+	this.getContainer = function() { return this._el; }
 	this.getName = function() { return this._name; }
 	this.setName = function(name) { this._name = name; }
 	
@@ -206,7 +212,7 @@ var Widget = exports = Class([Element, Events], function() {
 	this.buildChildren = function(target) {
 		var children = (this._def.children || []).concat(this._opts.children || []);
 		for (var i = 0, n = children.length; i < n; ++i) {
-			this.addNode(merge({parent: this._el}, children[i]), target);
+			this.addWidget(children[i], target);
 		}
 	}
 	

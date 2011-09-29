@@ -36,7 +36,7 @@ var DataSource = exports = Class(lib.PubSub, function() {
 	
 	// signals an item has changed -- see replace
 	this.signalUpdate = function(item) {
-		this.publish('Update', item[this.key]);
+		this.publish('Update', item[this.key], item);
 		if (this._hasRemote) {
 			this.publish('Remote', {type: 'UPDATE', channel: this._channel, item: item});
 		}
@@ -75,7 +75,7 @@ var DataSource = exports = Class(lib.PubSub, function() {
 				}
 			}
 			
-			this.publish('Remove', id);
+			this.publish('Remove', id, item);
 			if (this._hasRemote) {
 				this.publish('Remote', {type: 'REMOVE', channel: this._channel, id: id});
 			}
@@ -127,8 +127,7 @@ var DataSource = exports = Class(lib.PubSub, function() {
 	}
 	
 	this.contains = function(id) { return !!this._byID[id]; }
-	this.get = function(id) { return typeof id == 'string' ? this._byID[id] : this._byIndex[id]; }
-	this.getItemForID = function(id) { return this._byID[id] || null; }
+	this.get = this.getItemForID = function(id) { return this._byID[id] || null; }
 	this.getItemForIndex = function(index) { return this._byIndex[index]; }
 	this.sort = function() { this._byIndex.sort(); }
 	

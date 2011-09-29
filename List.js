@@ -39,12 +39,21 @@ var List = exports = Class(Widget, function(supr) {
 		supr(this, 'init', [opts]);
 	}
 	
+	// cells go in _container
+	this.getContainer = function() { return this._container; }
+	
 	this.onShow = function() { this.needsRender(); }
 	
 	this.setDataSource = function(dataSource) {
 		this._dataSource = dataSource;
-		this._dataSource.subscribe('Update', this, 'updateFilter');
+		this._dataSource.subscribe('Update', this, 'onUpdateItem');
 		this._dataSource.subscribe('Remove', this, 'onRemoveItem');
+	}
+	
+	this.onUpdateItem = function(id, item) {
+		var cell = this._cellsByID[id];
+		if (cell && cell.getData() != item) { cell.setData(item); }
+		this.updateFilter();
 	}
 	
 	this.onRemoveItem = function(id) {
@@ -165,9 +174,13 @@ var List = exports = Class(Widget, function(supr) {
 	
 	this._createCell = function(item) {
 		var key = this._dataSource.key;
-		var cell = new this._cellCtor({parent: this._container, key: key});
-		cell.setParent(this);
-		cell.setData(item);
+		var cell = new this._cellCtor({
+				parent: this,
+				controller: this,
+				key: key,
+				data: item
+			});
+		
 		cell.getElement().setAttribute('squill-data-id', item[key]);
 		cell.render();
 		return cell;

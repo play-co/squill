@@ -58,6 +58,7 @@ exports = Class(Widget, function(supr) {
 	}
 	
 	this.getScrollTop = function() { return this._scrollTop; }
+	this.getContainer = 
 	this.getScrollPane = function() { return this._scrollPane; }
 	
 	this.onTouchStart = function() {
