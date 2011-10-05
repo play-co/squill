@@ -15,7 +15,7 @@ var List = exports = Class(Widget, function(supr) {
 		
 		this._cellResource = new Resource();
 		this._cells = {};
-		this._cellsById = {};
+		this._cells = {};
 		this._needsSort = true;
 	}
 	
@@ -31,7 +31,7 @@ var List = exports = Class(Widget, function(supr) {
 	this.getSelected = function() { return this._selected; }
 	
 	this.setCellGetter = function(getCell) { this._getCell = getCell; }
-	this.getCellById = function(id) { return this._cellsById[id]; }
+	this.getCellById = function(id) { return this._cells[id]; }
 	
 	this.setSorter = function(sorter) { this._sorter = sorter; }
 	
@@ -42,17 +42,80 @@ var List = exports = Class(Widget, function(supr) {
 			this._dataSource.sort();
 		}
 		
-		if (this._fixedHeight) {
+		if (!this._dataSource.length) { return; }
+		
+		if (this._opts.isFixedHeight) {
 			this.renderFixed(viewport);
 		} else {
 			this.renderVariable(viewport);
 		}
 	}
 	
-	this.renderFixed = function(viewport) {
-		if (!this._dataSource.getCount()) {
-			return;
+	this.renderVariable = function() {
+		if (!this._dataSource) { return; }
+		
+		var i = 0;
+		var y = 0;
+		function renderOne() {
+			var item = this._dataSource.getItemForIndex(i);
+			if (!item) {
+				this._view.setMaxY(y);
+				return false;
+			}
+			
+			var id = item[this._dataSource.key];
+			var cell = this._createCell(item);
+			if (cell) {
+				var height = cell.getHeight();
+				cell.setSize(y, height);
+				y += height;
+				this._view.addCell(cell);
+			}
+			
+			cell.needsRepaint();
+			
+			//this.positionCell(cell, i);
+			++i;
+			return true;
 		}
+		
+		function renderMany() {
+			var THRESHOLD = 50; // ms to render
+			var n = 0, t = +new Date();
+			while (n++ < 10 || +new Date() - t < THRESHOLD) {
+				if (!renderOne.call(this)) { return; }
+			}
+			
+			setTimeout(bind(this, renderMany), 100);
+		}
+		
+		var removed = this._removed;
+		for (var id in removed) {
+			if (!this._dataSource.getItemForID(id)) {
+				var cell = this._cells[id];
+				if (cell) {
+					cell.remove();
+					delete this._cells[id];
+				}
+			}
+		}
+		
+		renderMany.call(this);
+	}
+	
+	this._createCell = function(item) {
+		var key = this._dataSource.key;
+		var cellView = this._cells[item[key]];
+		if (!cellView) {
+			cellView = this._getCell(item, this._cellResource);
+			this._cells[item[key]] = cellView;
+			cellView.setData(item);
+			cellView.model.setResource(this._cellResource);
+		}
+		return cellView;
+	}
+	
+	this.renderFixed = function(viewport) {
 
 		var top = viewport.y;
 		var height = viewport.height;
@@ -71,43 +134,34 @@ var List = exports = Class(Widget, function(supr) {
 		var cellHeight = this._fixedHeightValue,
 			startCell = (top / cellHeight | 0),
 			endCell = (bottom / cellHeight | 0) + 1,
-			cells = {},
+			prevCells = this._cells,
 			y = startCell * cellHeight;
 		
 		this._view.setMaxY(this._dataSource.length * cellHeight);
 		
+		this._cells = {};
 		for (var i = startCell; i < endCell; ++i) {
 			var item = dataSource.getItemForIndex(i);
 			if (!item) {
 				break;
 			} else {
-				var cellView = this._cells[item[key]];
-				if (!cellView) {
-					cellView = this._getCell(item, this._cellResource);
-					cellView.setData(item);
-					cellView.model.setResource(this._cellResource);
-				}
-				
+				var cellView = this._createCell(item);
 				if (cellView) {
 					cellView.setSize(y, cellHeight);
 					this._view.addCell(cellView);
 					
-					// we delete everything from this._cells and then 
-					// replace this._cells with cells
-					delete this._cells[item[key]];
-					cells[item[key]] = cellView;
+					// we remove all cells in prevCells that aren't used.
+					// mark it as used by deleting it.
+					delete prevCells[item[key]];
 				}
 			}
 			
 			y += cellHeight;
 		}
 		
-		for (var id in this._cells) {
-			var cell = this._cells[id];
-			cell.model.recycle();
-			delete this._cells[id];
+		for (var id in prevCells) {
+			prevCells[id].remove();
+			prevCells[id].model.recycle();
 		}
-		
-		this._cells = cells;
 	}
 });
