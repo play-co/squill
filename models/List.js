@@ -3,15 +3,14 @@ jsio('import .Widget');
 logger.setLevel(0);
 
 var List = exports = Class(Widget, function(supr) {
-	this.init = function(params) {
+	this.init = function(opts) {
+		opts = merge(opts, {isFixedHeight: true});
+		
 		supr(this, 'init', arguments);
 		
-		if (params.getCell) { this.setCellGetter(params.getCell); }
-		if (params.dataSource) { this.setDataSource(params.dataSource); }
-		if (params.sorter) { this.setSorter(params.sorter); }
-		if (params.fixedHeight) {}
-		
-		this._fixedHeight = true; // TODO: make this an option
+		if (opts.getCell) { this.setCellGetter(opts.getCell); }
+		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
+		if (opts.sorter) { this.setSorter(opts.sorter); }
 		
 		this._cellResource = new Resource();
 		this._cells = {};
@@ -134,12 +133,11 @@ var List = exports = Class(Widget, function(supr) {
 		var cellHeight = this._fixedHeightValue,
 			startCell = (top / cellHeight | 0),
 			endCell = (bottom / cellHeight | 0) + 1,
-			prevCells = this._cells,
 			y = startCell * cellHeight;
 		
 		this._view.setMaxY(this._dataSource.length * cellHeight);
 		
-		this._cells = {};
+		var newCells = {};
 		for (var i = startCell; i < endCell; ++i) {
 			var item = dataSource.getItemForIndex(i);
 			if (!item) {
@@ -147,21 +145,24 @@ var List = exports = Class(Widget, function(supr) {
 			} else {
 				var cellView = this._createCell(item);
 				if (cellView) {
+					newCells[item[key]] = cellView;
 					cellView.setSize(y, cellHeight);
 					this._view.addCell(cellView);
 					
 					// we remove all cells in prevCells that aren't used.
 					// mark it as used by deleting it.
-					delete prevCells[item[key]];
+					delete this._cells[item[key]];
 				}
 			}
 			
 			y += cellHeight;
 		}
 		
-		for (var id in prevCells) {
-			prevCells[id].remove();
-			prevCells[id].model.recycle();
+		for (var id in this._cells) {
+			this._cells[id].remove();
+			this._cells[id].model.recycle();
 		}
+		
+		this._cells = newCells;
 	}
 });
