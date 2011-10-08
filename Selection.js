@@ -38,8 +38,14 @@ exports = Class(lib.PubSub, function() {
 		return this._selection.isSelected(id);
 	}
 	
+	this.toggle = function(item) {
+		this._setSelected(item, !this.isSelected(item[this._dataSource.key]));
+	}
 	this.select = function(item) { this._setSelected(item, true); }
 	this.deselect = function(item) { this._setSelected(item, false); }
+	this.deselectAll = function() {
+		this._selection.deselectAll();
+	}
 	
 	this._setSelected = function(item, isSelected) {
 		if (!item) { return; }
@@ -75,6 +81,10 @@ exports.LocalStore = Class(function() {
 	
 	this.deselect = function(id) {
 		delete this._store[id];
+	}
+	
+	this.deselectAll = function(id) {
+		this._store = {};
 	}
 	
 	this.isSelected = function(id) {

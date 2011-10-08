@@ -1,5 +1,6 @@
 jsio('import .Resource');
 jsio('import .Widget');
+jsio('import ..Selection');
 logger.setLevel(0);
 
 var List = exports = Class(Widget, function(supr) {
@@ -16,6 +17,9 @@ var List = exports = Class(Widget, function(supr) {
 		this._cells = {};
 		this._cells = {};
 		this._needsSort = true;
+		if (opts.selectable) {
+			this.selection = new Selection({dataSource: this._dataSource, type: opts.selectable});
+		}
 	}
 	
 	this.setDataSource = function(dataSource) {
@@ -108,6 +112,7 @@ var List = exports = Class(Widget, function(supr) {
 		if (!cellView) {
 			cellView = this._getCell(item, this._cellResource);
 			this._cells[item[key]] = cellView;
+			cellView.controller = this;
 			cellView.setData(item);
 			cellView.model.setResource(this._cellResource);
 		}
