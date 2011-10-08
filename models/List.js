@@ -15,7 +15,6 @@ var List = exports = Class(Widget, function(supr) {
 		
 		this._cellResource = new Resource();
 		this._cells = {};
-		this._cells = {};
 		this._needsSort = true;
 		if (opts.selectable) {
 			this.selection = new Selection({dataSource: this._dataSource, type: opts.selectable});
@@ -24,8 +23,14 @@ var List = exports = Class(Widget, function(supr) {
 	
 	this.setDataSource = function(dataSource) {
 		this._dataSource = dataSource;
-		this._dataSource.subscribe('Update', this, 'needsSort');
+		this._dataSource.subscribe('Update', this, '_onUpdate');
 		this._dataSource.subscribe('Remove', this, 'needsSort');
+	}
+	
+	this._onUpdate = function(id, item) {
+		var cell = this._cells[id];
+		if (cell) { cell.setData(item); }
+		this.needsSort();
 	}
 	
 	this.needsSort = function() { this._needsSort = true; this._view.needsRepaint(); }
