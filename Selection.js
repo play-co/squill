@@ -38,14 +38,15 @@ exports = Class(lib.PubSub, function() {
 		return this._selection.isSelected(id);
 	}
 	
-	this.toggle = function(item) {
-		this._setSelected(item, !this.isSelected(item[this._dataSource.key]));
-	}
+	this.toggle = function(item) { this._setSelected(item, !this.isSelected(item[this._dataSource.key])); }
+	
 	this.select = function(item) { this._setSelected(item, true); }
 	this.deselect = function(item) { this._setSelected(item, false); }
 	this.deselectAll = function() {
 		this._selection.deselectAll();
 	}
+
+	this.get = function() { return this._selection.get(); }
 	
 	this._setSelected = function(item, isSelected) {
 		if (!item) { return; }
@@ -75,6 +76,10 @@ exports.LocalStore = Class(function() {
 		this._store = {};
 	}
 	
+	this.get = function() {
+		return merge({}, this._store);
+	}
+
 	this.select = function(id) {
 		this._store[id] = true;
 	}
@@ -88,7 +93,14 @@ exports.LocalStore = Class(function() {
 	}
 	
 	this.isSelected = function(id) {
-		return !!this._store[id];
+		if (id) {
+			return !!this._store[id];
+		} else {
+			for (var key in this._store) {
+				return true;
+			}
+			return false;
+		}
 	}
 });
 

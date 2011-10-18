@@ -1,7 +1,6 @@
 jsio('import .Resource');
 jsio('import .Widget');
 jsio('import ..Selection');
-logger.setLevel(0);
 
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
@@ -37,6 +36,7 @@ var List = exports = Class(Widget, function(supr) {
 	
 	this._onRemove = function(id, item) {
 		this._removed[id] = true;
+		this.needsSort();
 	}
 	
 	this.needsSort = function() { this._needsSort = true; this._view.needsRepaint(); }
@@ -65,6 +65,8 @@ var List = exports = Class(Widget, function(supr) {
 		}
 	}
 
+	this.getRenderOpts = function() { return this._renderOpts; }
+
 	// y is required for non-fixed-size lists.  Otherwise, y is ignored.
 	this._positionCell = function(cell, i, y) {
 		this._view.addCell(cell);
@@ -74,12 +76,22 @@ var List = exports = Class(Widget, function(supr) {
 			if (this._opts.isTiled) {
 				var x = i % r.numPerRow;
 				var y = (i / r.numPerRow) | 0;
-				cell.setPosition(x * r.cellWidth, y * r.cellHeight, r.cellWidth, r.cellHeight);
+				cell.setPosition({
+					x: x * r.cellWidth,
+					y: y * r.cellHeight
+				});
 			} else {
-				cell.setPosition(0, i * r.cellHeight || 0, r.cellWidth, r.cellHeight);
+				cell.setPosition({
+					x: 0,
+					y: i * r.cellHeight || 0
+				});
 			}
 		} else {
-			cell.setPosition(0, y, null, cell.getHeight());
+			cell.setPosition({
+					x: 0,
+					y: y,
+					height: cell.getHeight()
+				});
 		}
 	}
 	
@@ -132,15 +144,16 @@ var List = exports = Class(Widget, function(supr) {
 	}
 	
 	this._createCell = function(item) {
-		var key = this._dataSource.key;
-		var cell = this._cells[item[key]];
+		var id = item[this._dataSource.key];
+		var cell = this._cells[id];
 		if (!cell) {
 			cell = this._getCell(item, this._cellResource);
-			this._cells[item[key]] = cell;
+			this._cells[id] = cell;
 			cell.controller = this;
-			cell.setData(item);
+			cell.setData(item, id);
 			cell.model.setResource(this._cellResource);
 		}
+
 		return cell;
 	}
 	
@@ -160,6 +173,7 @@ var List = exports = Class(Widget, function(supr) {
 				var cell = this._cells[key] || (this._cells[key] = this._createCell(item));
 				r.cellWidth = cell.getWidth();
 				r.cellHeight = cell.getHeight();
+				cell.setPosition({width: r.cellWidth, height: r.cellHeight});
 				if (!r.cellWidth || !r.cellHeight) { return null; }
 				
 				var margin = this._opts.margin;
