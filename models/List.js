@@ -5,7 +5,7 @@ logger.setLevel(0);
 
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
-		opts = merge(opts, {isFixedHeight: true});
+		opts = merge(opts, {isFixedSize: true});
 		
 		supr(this, 'init', arguments);
 		
@@ -16,6 +16,8 @@ var List = exports = Class(Widget, function(supr) {
 		this._cellResource = new Resource();
 		this._cells = {};
 		this._needsSort = true;
+		this._removed = {};
+		this._renderOpts = {margin: 0};
 		if (opts.selectable) {
 			this.selection = new Selection({dataSource: this._dataSource, type: opts.selectable});
 		}
@@ -24,13 +26,17 @@ var List = exports = Class(Widget, function(supr) {
 	this.setDataSource = function(dataSource) {
 		this._dataSource = dataSource;
 		this._dataSource.subscribe('Update', this, '_onUpdate');
-		this._dataSource.subscribe('Remove', this, 'needsSort');
+		this._dataSource.subscribe('Remove', this, '_onRemove');
 	}
 	
 	this._onUpdate = function(id, item) {
 		var cell = this._cells[id];
 		if (cell) { cell.setData(item); }
 		this.needsSort();
+	}
+	
+	this._onRemove = function(id, item) {
+		this._removed[id] = true;
 	}
 	
 	this.needsSort = function() { this._needsSort = true; this._view.needsRepaint(); }
@@ -52,15 +58,34 @@ var List = exports = Class(Widget, function(supr) {
 		
 		if (!this._dataSource.length) { return; }
 		
-		if (this._opts.isFixedHeight) {
+		if (this._opts.isFixedSize) {
 			this.renderFixed(viewport);
 		} else {
 			this.renderVariable(viewport);
 		}
 	}
+
+	// y is required for non-fixed-size lists.  Otherwise, y is ignored.
+	this._positionCell = function(cell, i, y) {
+		this._view.addCell(cell);
+
+		var r = this._renderOpts;
+		if (this._opts.isFixedSize) {
+			if (this._opts.isTiled) {
+				var x = i % r.numPerRow;
+				var y = (i / r.numPerRow) | 0;
+				cell.setPosition(x * r.cellWidth, y * r.cellHeight, r.cellWidth, r.cellHeight);
+			} else {
+				cell.setPosition(0, i * r.cellHeight || 0, r.cellWidth, r.cellHeight);
+			}
+		} else {
+			cell.setPosition(0, y, null, cell.getHeight());
+		}
+	}
 	
-	this.renderVariable = function() {
+	this.renderVariable = function(viewport) {
 		if (!this._dataSource) { return; }
+		if (!this._updateRenderOpts(viewport)) { return; }
 		
 		var i = 0;
 		var y = 0;
@@ -73,17 +98,11 @@ var List = exports = Class(Widget, function(supr) {
 			
 			var id = item[this._dataSource.key];
 			var cell = this._createCell(item);
-			if (cell) {
-				var height = cell.getHeight();
-				cell.setSize(y, height);
-				y += height;
-				this._view.addCell(cell);
-			}
-			
+			this._positionCell(cell, i, y);
 			cell.needsRepaint();
 			
-			//this.positionCell(cell, i);
 			++i;
+			y += cell.style.height;
 			return true;
 		}
 		
@@ -98,6 +117,7 @@ var List = exports = Class(Widget, function(supr) {
 		}
 		
 		var removed = this._removed;
+		this._removed = {};
 		for (var id in removed) {
 			if (!this._dataSource.getItemForID(id)) {
 				var cell = this._cells[id];
@@ -113,59 +133,79 @@ var List = exports = Class(Widget, function(supr) {
 	
 	this._createCell = function(item) {
 		var key = this._dataSource.key;
-		var cellView = this._cells[item[key]];
-		if (!cellView) {
-			cellView = this._getCell(item, this._cellResource);
-			this._cells[item[key]] = cellView;
-			cellView.controller = this;
-			cellView.setData(item);
-			cellView.model.setResource(this._cellResource);
+		var cell = this._cells[item[key]];
+		if (!cell) {
+			cell = this._getCell(item, this._cellResource);
+			this._cells[item[key]] = cell;
+			cell.controller = this;
+			cell.setData(item);
+			cell.model.setResource(this._cellResource);
 		}
-		return cellView;
+		return cell;
 	}
 	
-	this.renderFixed = function(viewport) {
+	this._updateRenderOpts = function(viewport) {
+		var r = this._renderOpts;
+		r.top = viewport.y;
+		r.height = viewport.height;
+		r.bottom = r.top + r.height;
+		var n = r.numRows = this._dataSource.length;
 
-		var top = viewport.y;
-		var height = viewport.height;
-		var bottom = top + height;
+		if (this._opts.isFixedSize) {
+			if (!r.cellWidth || !r.cellHeight) {
+				var item = this._dataSource.getItemForIndex(0);
+				if (!item) { return false; }
+
+				var key = item[this._dataSource.key];
+				var cell = this._cells[key] || (this._cells[key] = this._createCell(item));
+				r.cellWidth = cell.getWidth();
+				r.cellHeight = cell.getHeight();
+				if (!r.cellWidth || !r.cellHeight) { return null; }
+				
+				var margin = this._opts.margin;
+				if (margin) { r.cellWidth += margin; r.cellHeight += margin; }
+			}
+			
+			if (this._opts.isTiled) {
+				r.maxWidth = viewport.width;
+				r.numPerRow = r.maxWidth / r.cellWidth | 0;
+				r.numRows = Math.ceil(n / r.numPerRow);
+				r.start = Math.max(0, (r.top / r.cellHeight | 0) * r.numPerRow);
+				r.end = Math.ceil(r.bottom / r.cellHeight) * r.numPerRow;
+			} else {
+				r.start = Math.max(0, r.top / r.cellHeight | 0);
+				r.end = (r.bottom / r.cellHeight + 1) | 0;
+			}
+
+			this._view.setMaxY(r.numRows * r.cellHeight);
+		}
+		
+		return true;
+	}
+
+	this.renderFixed = function(viewport) {
+		if (!(this._updateRenderOpts(viewport))) { return; }
+
+		var r = this._renderOpts;
 		var i = 0;
 		var dataSource = this._dataSource;
 		var key = dataSource.key;
-		
-		if (!this._fixedHeightValue) {
-			var item0 = dataSource.getItemForIndex(0);
-			if (!item0) { return; }
-			var firstCell = this._getCell(item0, this._cellResource);
-			this._fixedHeightValue = firstCell.getHeight();
-		}
-		
-		var cellHeight = this._fixedHeightValue,
-			startCell = (top / cellHeight | 0),
-			endCell = (bottom / cellHeight | 0) + 1,
-			y = startCell * cellHeight;
-		
-		this._view.setMaxY(this._dataSource.length * cellHeight);
-		
 		var newCells = {};
-		for (var i = startCell; i < endCell; ++i) {
+		for (var i = r.start; i < r.end; ++i) {
 			var item = dataSource.getItemForIndex(i);
 			if (!item) {
 				break;
 			} else {
-				var cellView = this._createCell(item);
-				if (cellView) {
-					newCells[item[key]] = cellView;
-					cellView.setSize(y, cellHeight);
-					this._view.addCell(cellView);
+				var cell = this._createCell(item);
+				if (cell) {
+					newCells[item[key]] = cell;
+					this._positionCell(cell, i);
 					
 					// we remove all cells in prevCells that aren't used.
 					// mark it as used by deleting it.
 					delete this._cells[item[key]];
 				}
 			}
-			
-			y += cellHeight;
 		}
 		
 		for (var id in this._cells) {
