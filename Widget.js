@@ -100,7 +100,6 @@ var Widget = exports = Class([Element, Events], function() {
 				var children = def.children;
 				delete def.children;
 			}
-		
 			var el;
 			if (!def.type || typeof def.type == 'string') {
 				switch (def.type) {
@@ -157,12 +156,11 @@ var Widget = exports = Class([Element, Events], function() {
 						el = new Scroller(def);
 						break;
 					case 'canvas':
-						console.log('here(a)');
 						if (typeof Canvas == 'undefined') {
 							import .Canvas;
 						}
+				
 						el = new Canvas(def);
-						console.log('here(b)');
 						break;
 					default:
 						el = $(def);

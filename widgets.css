@@ -68,3 +68,9 @@
 
 .squill-textInput-hover { border-color: #a7a8ac; }
 .squill-textInput-focused { border-color: #8c8cde; }
+
+.squill-cnvs {
+    position: relative;
+    cursor: pointer;
+	background-color: #000000;
+}
