@@ -162,6 +162,13 @@ var Widget = exports = Class([Element, Events], function() {
 				
 						el = new Canvas(def);
 						break;
+					case 'slider':
+						if (typeof Slider == 'undefined') {
+							import .Slider;
+						}
+
+						el = new Slider(def);
+						break;
 					default:
 						el = $(def);
 						break;
