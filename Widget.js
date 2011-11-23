@@ -166,8 +166,14 @@ var Widget = exports = Class([Element, Events], function() {
 						if (typeof Slider == 'undefined') {
 							import .Slider;
 						}
-
 						el = new Slider(def);
+						break;
+					case 'color':
+						if (typeof Color == 'undefined') {
+							import .Color;
+						}
+
+						el = new Color(def);
 						break;
 					default:
 						el = $(def);

@@ -146,7 +146,11 @@ var List = exports = Class(Widget, function(supr) {
 		}
 		
 		this._removed = {};
-	}
+	};
+
+	this.setCellDim = function(cellDim) {
+		this._cellDim = cellDim;
+	};
 	
 	this.getCellDim = function() {
 		if (this._cellDim) { return this._cellDim; }
@@ -251,7 +255,6 @@ var List = exports = Class(Widget, function(supr) {
 		if (this._opts.isFixedHeight) {
 			var cellDim = this.getCellDim();
 			if (!cellDim) { return false; }
-			
 			r.cellWidth = cellDim.width;
 			r.cellHeight = cellDim.height;
 		}
