@@ -13,7 +13,7 @@ var Delegate = exports = Class(function() {
 		if (this[name]) {
 			return this[name].apply(ctx, Array.prototype.slice.call(arguments, 1));
 		} else if (this.parent) {
-			this.parent.call(name);
+			this.parent.call(ctx, name);
 		}
 	}
 });

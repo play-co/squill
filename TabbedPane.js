@@ -4,21 +4,27 @@ from util.browser import $;
 import .Widget;
 import lib.sort;
 
-var TabbedPane = exports = Class(Widget, function(supr) {
+var TabbedPane = exports = Class(Widget, function(supr) {	
+	this.init = function(opts) {
+		opts = opts || {};
 
-	this._def = {
-		className: 'tabbedPane',
-		children: [
-			{className: 'tabContainerWrapper', children: [
-				{id: 'tabContainer', className: 'tabContainer'}
-			]},
-			{className: 'tabContentsWrapper', children: [
-				{id: 'content', className: 'tabContents'}
-			]}
-		]
-	};
-	
-	this.init = function() {
+		var paneClassName = (opts.paneClassName === undefined) ? 'tabbedPane' : opts.paneClassName,
+			containerWrapperClassName = (opts.containerWrapperClassName === undefined) ? 'tabContainerWrapper' : opts.containerWrapperClassName,
+			contentsWrapperClassName = (opts.contentsWrapperClassName === undefined) ? 'tabContentsWrapper' : opts.contentsWrapperClassName,
+			tabContainerClassName = (opts.tabContainerClassName === undefined) ? 'tabContainer' : opts.tabContainerClassName;
+
+		this._def = {
+			className: paneClassName,
+			children: [
+				{className: containerWrapperClassName, children: [
+					{id: 'tabContainer', className: tabContainerClassName}
+				]},
+				{className: contentsWrapperClassName, children: [
+					{id: 'content', className: 'tabContents'}
+				]}
+			]
+		};
+
 		this._panes = [];
 		supr(this, 'init', arguments);
 	}
@@ -65,7 +71,6 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 	}
 	
 	this.selectPane = this.showPane = function(pane) {
-		logger.log('select', pane);
 		var tab = pane.tab;
 		$.removeClass(this._selectedTab, 'selected');
 		$.addClass(tab, 'selected');
@@ -80,18 +85,18 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 
 exports.Pane = Class(Widget, function(supr) {
 	var sortID = 0;
-	
-	this._def = {
-		className: 'tabPane',
-		style: {
-			display: 'none'
-		}
-	}
-	
+
 	this.getTitle = function() { return this._opts.title; }
 	this.init = function(opts) {
 		this._sortIndex = ++sortID;
-		
+
+		this._def = {
+			className: (opts.tabPaneClassName === undefined) ? 'tabPane' : opts.tabPaneClassName,
+			style: {
+				display: 'none'
+			}
+		}
+
 		this.tab =  $({
 			text: opts.title,
 			tagName: 'a',

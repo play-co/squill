@@ -33,7 +33,8 @@ var Widget = exports = Class([Element, Events], function() {
 			scroller: '.Scroller',
 			canvas: '.Canvas',
 			slider: '.Slider',
-			color: '.Color'
+			color: '.Color',
+			vcenter: '.VerticalCenter'
 		};
 
 		// ===
@@ -117,11 +118,6 @@ var Widget = exports = Class([Element, Events], function() {
 					el = new Constructor(def);
 				} else {
 					switch (def.type) {
-						case 'vcenter':
-							import .VerticalCenter;
-							el = new VerticalCenter(def);
-							break;
-
 						case 'checkbox':
 							import .CheckBox;
 							el = new CheckBox(def);
@@ -136,7 +132,7 @@ var Widget = exports = Class([Element, Events], function() {
 							if (typeof TextButton == 'undefined') {
 								import .TextButton;
 							}
-					
+
 							el = new TextButton(def);
 							el.subscribe('Select', target, 'dispatchButton', def.id);
 							break;
