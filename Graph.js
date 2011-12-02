@@ -109,7 +109,7 @@ var Graph = exports = Class(Widget, function(supr) {
 		}
 	};
 
-	this._renderHorizontal = function(ctx, data) {
+	this._renderVerticalBar = function(ctx, data) {
 		var segmentInfo = this._calculateSegments(data),
 			settings = this._settings,
 			valueSpace = settings.valueSpace,
@@ -138,6 +138,45 @@ var Graph = exports = Class(Widget, function(supr) {
 		}
 
 		ctx.globalAlpha = 1;
+	};
+
+	this._renderVerticalPoints = function(ctx, data) {
+		var segmentInfo = this._calculateSegments(data),
+			settings = this._settings,
+			valueSpace = settings.valueSpace,
+			mainPadding = settings.mainPadding,
+			width = this._currentWidth - mainPadding * 2 - valueSpace,
+			height = this._currentHeight - mainPadding * 2,
+			step = width / data.length,
+			pointWidth = step - settings.barPadding * 2,
+			pointX, pointY,
+			pointXLast, pointYLast,
+			item,
+			i, j;
+
+		this._renderHorizontalAxis(ctx, segmentInfo);
+
+		pointXLast = null;
+
+		ctx.strokeStyle = '#FF0000';
+		for (i = 0, j = data.length; i < j; i++) {
+			item = data[i];
+
+			pointX = valueSpace + mainPadding + i * step + settings.barPadding + (pointWidth / 2);
+			pointY = mainPadding + height - item.points[0] / segmentInfo.max * height;
+
+			ctx.strokeRect(pointX - 4.5, pointY - 4.5, 10, 10);
+			
+			if (pointXLast !== null) {
+				ctx.beginPath();
+				ctx.moveTo(pointXLast, pointYLast);
+				ctx.lineTo(pointX, pointY);
+				ctx.stroke();
+			}
+
+			pointXLast = pointX;
+			pointYLast = pointY;
+		}
 	};
 
 	this._renderVerticalAxis = function(ctx, segmentInfo) {
@@ -182,7 +221,7 @@ var Graph = exports = Class(Widget, function(supr) {
 		}
 	};
 
-	this._renderVertical = function(ctx, data) {
+	this._renderHorizontalBar = function(ctx, data) {
 		var segmentInfo = this._calculateSegments(data),
 			settings = this._settings,
 			valueSpace = settings.valueSpace,
@@ -192,7 +231,7 @@ var Graph = exports = Class(Widget, function(supr) {
 			step = height / data.length,
 			barWidth,
 			barHeight = step - settings.barPadding * 2,
-			barX,
+			barX, barY,
 			item,
 			i, j;
 
@@ -213,22 +252,74 @@ var Graph = exports = Class(Widget, function(supr) {
 		ctx.globalAlpha = 1;
 	};
 
+	this._renderHorizontalPoints = function(ctx, data) {
+		var segmentInfo = this._calculateSegments(data),
+			settings = this._settings,
+			valueSpace = settings.valueSpace,
+			mainPadding = settings.mainPadding,
+			width = this._currentWidth - mainPadding * 2,
+			height = this._currentHeight - mainPadding * 2 - valueSpace,
+			step = height / data.length,
+			pointHeight = step - settings.barPadding * 2,
+			pointX, pointY,
+			item,
+			i, j;
+
+		this._renderVerticalAxis(ctx, segmentInfo);
+
+		pointXLast = null;
+
+		ctx.strokeStyle = '#FF0000';
+		for (i = 0, j = data.length; i < j; i++) {
+			item = data[i];
+
+			pointX = mainPadding + item.points[0] / segmentInfo.max * width;
+			pointY = mainPadding + i * step + settings.barPadding + pointHeight / 2;
+
+			ctx.strokeRect(pointX - 4.5, pointY - 4.5, 10, 10);
+			
+			if (pointXLast !== null) {
+				ctx.beginPath();
+				ctx.moveTo(pointXLast, pointYLast);
+				ctx.lineTo(pointX, pointY);
+				ctx.stroke();
+			}
+
+			pointXLast = pointX;
+			pointYLast = pointY;
+		}
+
+		ctx.globalAlpha = 1;
+	};
+
 	this.setData = function(data) {
 		var el = this._el,
 			ctx = el.getContext('2d'),
 			renderMethod = function() {};
 
 		switch (this._settings.orientation) {
-			case 'horizontal':
+			case 'horizontal-bar':
 				el.width = data.length * 30 + this._settings.valueSpace;
 				el.height = this._height;
-				renderMethod = bind(this, this._renderHorizontal);
+				renderMethod = bind(this, this._renderHorizontalBar);
 				break;
 
-			case 'vertical':
+			case 'vertical-bar':
 				el.width = this._width;
 				el.height = data.length * 30 + this._settings.valueSpace;
-				renderMethod = bind(this, this._renderVertical);
+				renderMethod = bind(this, this._renderVerticalBar);
+				break;
+
+			case 'horizontal-points':
+				el.width = this._width;
+				el.height = data.length * 30 + this._settings.valueSpace;
+				renderMethod = bind(this, this._renderHorizontalPoints);
+				break;
+
+			case 'vertical-points':
+				el.width = this._width;
+				el.height = data.length * 30 + this._settings.valueSpace;
+				renderMethod = bind(this, this._renderVerticalPoints);
 				break;
 		}
 
@@ -241,7 +332,7 @@ var Graph = exports = Class(Widget, function(supr) {
 
 	this.setSettings = function(settings) {
 		settings.fillColor = settings.fillColor || '#FFFFFF';
-		settings.orientation = settings.oriantation || 'vertical';
+		settings.orientation = settings.oriantation || 'horizontal-points';
 		settings.barPadding = settings.barPadding || 2;
 		settings.mainPadding = settings.mainPadding || 10;
 		settings.valueSpace = settings.valueSpace || 40;
