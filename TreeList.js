@@ -15,7 +15,11 @@ var TreeList = exports = Class(Widget, function(supr) {
 		this._wrapperId = opts.wrapperId || 'browser';
 		this._contentId = opts.contentId || 'contentWrapper';
 
-		this._createMenus(opts.menuData || this._exampleTreeData());
+		this._menuData = opts.menuData || this._exampleTreeData();
+
+		this._def = {id: this._wrapperId, className: 'browser', children: [
+						{id: this._contentId, className: 'contentWrapper', children: []}
+					]};
 
 		supr(this, 'init', arguments);
 	};
@@ -71,16 +75,20 @@ var TreeList = exports = Class(Widget, function(supr) {
 		return this._elementIDPrefix + n;
 	};
 
-	this._createMenu = function(list, children, isRoot) {
+	this._createMenu = function(parent, children, isRoot) {
 		var child,
 			node,
 			i, j = children.length;
 
-		node = {
+		node = $({
+					parent: parent,
 					id: this._createMenuId(true),
-					className: isRoot ? this._classNames.nodeWrapper : this._classNames.nodeWrapperHidden,
-					children: [{className: this._classNames.node, children: []}]
-				};
+					className: isRoot ? this._classNames.nodeWrapper : this._classNames.nodeWrapperHidden
+				});
+		node = $({
+					parent: node,
+					className: this._classNames.node
+				});
 
 		this._menuById[this._menuId] = node;
 
@@ -88,41 +96,34 @@ var TreeList = exports = Class(Widget, function(supr) {
 			child = children[i];
 			child.id = this._createMenuId(true);
 			child.isItem = true;
-			this._menuById[this._menuId] = child;
-			node.children[0].children.push({
+			child.node = $({
+				parent: node,
 				id: child.id,
 				tag: 'a',
 				text: children[i].title,
 				className: child.children && child.children.length ? this._classNames.nodeChild : ''
 			});
+			this._menuById[this._menuId] = child;
 		}
-
-		list.children.push(node);
 
 		for (i = 0; i < j; i++) {
 			child = children[i];
 			if (child.children && child.children.length) {
 				child.menuId = this._createMenuId(false);
 				child.hasChildren = true;
-				this._createMenu(list, child.children, false);
+				this._createMenu(parent, child.children, false);
 			}
 		}
 	};
 
-	this._createMenus = function(menuData) {
-		this._def = {id: this._wrapperId, className: 'browser', children: [
-						{id: this._contentId, className: 'contentWrapper', children: []}
-					]};
-
+	this.buildWidget = function() {
 		this._menuId = 0;
 		this._menuById = [];
 		this._menuStack = [];
 		this._menuActiveItem = false;
 
-		this._createMenu(this._def.children[0], menuData, true);
-	};
+		this._createMenu($.id(this._contentId), this._menuData, true);
 
-	this.buildWidget = function() {
 		var menuById = this._menuById,
 			i, j = menuById.length;
 
