@@ -35,7 +35,8 @@ var Widget = exports = Class([Element, Events], function() {
 			slider: '.Slider',
 			color: '.Color',
 			vcenter: '.VerticalCenter',
-			treelist: '.TreeList'
+			treelist: '.TreeList',
+			graph: '.Graph'
 		};
 
 		// ===
