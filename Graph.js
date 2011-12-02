@@ -37,7 +37,8 @@ var Graph = exports = Class(Widget, function(supr) {
 	};
 
 	this._calculateSegments = function(ctx, data) {
-		var max = 0,
+		var settings = this._settings,
+			max = 0,
 			maxLabel = 0,
 			i, j = data.length,
 			k, l;
@@ -45,12 +46,15 @@ var Graph = exports = Class(Widget, function(supr) {
 		for (i = 0; i < j; i++) {
 			item = data[i];
 			maxLabel = Math.max(ctx.measureText(item.title).width, maxLabel);
+			if (maxLabel > settings.maxLabelSize) {
+				maxLabel = settings.maxLabelSize;
+			}
 			for (k = 0, l = item.points.length; k < l; k++) {
 				max = Math.max(item.points[k], max);
 			}
 		}
 
-		var steps = [0.5, 0.25, 0.2, 0.1],
+		var steps = [0.5, 0.25, 0.2, 0.125, 0.1],
 			stepIndex = 0,
 			stepCount,
 			factor = 1;
@@ -73,6 +77,16 @@ var Graph = exports = Class(Widget, function(supr) {
 		}
 	};
 
+	this._trimLabel = function(segmentInfo, ctx, label) {
+		if (ctx.measureText(label).width > segmentInfo.maxLabel) {
+			while (ctx.measureText(label + '...').width > segmentInfo.maxLabel) {
+				label = label.substr(0, label.length - 1);
+			}
+			label += '...';
+		}
+		return label;
+	};
+
 	this._renderHorizontalAxis = function(segmentInfo, ctx, data) {
 		var settings = this._settings,
 			valueSpace = settings.valueSpace,
@@ -83,9 +97,9 @@ var Graph = exports = Class(Widget, function(supr) {
 			label,
 			hasDecimal,
 			x, y,
-			i, j;
+			i, j, k;
 
-		ctx.strokeStyle = '#F8F8F8';
+		ctx.strokeStyle = settings.barBackground;
 		for (i = 0; i < 2; i++) {
 			x = valueSpace + mainPadding + 0.5 + i * width;
 			ctx.beginPath();
@@ -102,10 +116,10 @@ var Graph = exports = Class(Widget, function(supr) {
 			ctx.fillStyle = '#000000';
 			ctx.save();
 			ctx.rotate(Math.PI * -0.5);
-			ctx.fillText(data[i].title, -(mainPadding + height + 4), x);
+			ctx.fillText(this._trimLabel(segmentInfo, ctx, data[i].title), -(mainPadding + height + 4), x);
 			ctx.restore();
 			if ((i & 1) === 0) {
-				ctx.fillStyle = '#F8F8F8';
+				ctx.fillStyle = settings.barBackground;
 				ctx.fillRect(x, mainPadding, step, height);
 			}
 		}
@@ -113,14 +127,17 @@ var Graph = exports = Class(Widget, function(supr) {
 		ctx.strokeStyle = '#000000';
 		ctx.fillStyle = '#000000';
 
-		hasDecimal = false;
+		hasDecimal = 0;
 		i = height;
 		j = 0;
 		while (i >= 0) {
 			label = (j * segmentInfo.step).toString(10);
-			if (label.indexOf('.') !== -1) {
-				hasDecimal = true;
-				break;
+			k = label.indexOf('.');
+			if (k !== -1) {
+				k = label.length - k - 1;
+				if (k > hasDecimal) {
+					hasDecimal = k;
+				}
 			}
 			i = Math.ceil(i - height / segmentInfo.steps);
 			j++;
@@ -138,7 +155,10 @@ var Graph = exports = Class(Widget, function(supr) {
 
 			label = (j * segmentInfo.step).toString(10);
 			if (hasDecimal && (label.indexOf('.') === -1)) {
-				label += '.0';
+				label += '.';
+				for (k = 0; k < hasDecimal; k++) {
+					label += '0';
+				}
 			}
 			ctx.fillText(label, valueSpace + mainPadding - 2, mainPadding + i - 8);
 
@@ -287,9 +307,9 @@ var Graph = exports = Class(Widget, function(supr) {
 			label,
 			hasDecimal,
 			x, y,
-			i, j;
+			i, j, k;
 
-		ctx.strokeStyle = '#F8F8F8';
+		ctx.strokeStyle = settings.barBackground;
 		for (i = 0; i < 2; i++) {
 			y = mainPadding + 0.5 + i * height;
 			ctx.beginPath();
@@ -304,9 +324,9 @@ var Graph = exports = Class(Widget, function(supr) {
 		for (i = 0, j = data.length; i < j; i++) {
 			y = mainPadding + i * step;
 			ctx.fillStyle = '#000000';
-			ctx.fillText(data[i].title, mainPadding + segmentInfo.maxLabel - 4, y + 4);
+			ctx.fillText(this._trimLabel(segmentInfo, ctx, data[i].title), mainPadding + segmentInfo.maxLabel - 4, y + 4);
 			if ((i & 1) === 0) {
-				ctx.fillStyle = '#F8F8F8';
+				ctx.fillStyle = settings.barBackground;
 				ctx.fillRect(mainPadding + segmentInfo.maxLabel, y, width, step);
 			}
 		}
@@ -316,14 +336,17 @@ var Graph = exports = Class(Widget, function(supr) {
 		ctx.strokeStyle = '#000000';
 		ctx.fillStyle = '#000000';
 
-		hasDecimal = false;
+		hasDecimal = 0;
 		i = 0;
 		j = 0;
 		while (i <= width) {
 			label = (j * segmentInfo.step).toString(10);
-			if (label.indexOf('.') !== -1) {
-				hasDecimal = true;
-				break;
+			k = label.indexOf('.');
+			if (k !== -1) {
+				k = label.length - k - 1;
+				if (k > hasDecimal) {
+					hasDecimal = k;
+				}
 			}
 
 			i = Math.floor(i + width / segmentInfo.steps);
@@ -342,7 +365,10 @@ var Graph = exports = Class(Widget, function(supr) {
 
 			label = (j * segmentInfo.step).toString(10);
 			if (hasDecimal && (label.indexOf('.') === -1)) {
-				label += '.0';
+				label += '.';
+				for (k = 0; k < hasDecimal; k++) {
+					label += '0';
+				}
 			}
 			ctx.fillText(label, mainPadding + segmentInfo.maxLabel + i, mainPadding + height + 2);
 
@@ -506,7 +532,7 @@ var Graph = exports = Class(Widget, function(supr) {
 				break;
 		}
 
-		ctx.font = '13px Verdana';
+		ctx.font = settings.font;
 
 		this._renderBackground(ctx);
 
@@ -529,11 +555,13 @@ var Graph = exports = Class(Widget, function(supr) {
 		settings.orientation = settings.oriantation || 'horizontal';
 		settings.types = settings.types || 'lines';
 		settings.barPadding = settings.barPadding || 2;
+		settings.barBackground = settings.barBackground || '#F8F8F8';
 		settings.mainPadding = settings.mainPadding || 10;
 		settings.valueSpace = settings.valueSpace || 40;
 		settings.dataColors = settings.dataColors || ['#DD0000', '#00DD00', '#0000DD'];
+		settings.font = settings.font || '13px Verdana';
+		settings.maxLabelSize = settings.maxLabelSize || 200;
 
 		this._settings = settings;
 	};
 });
-
