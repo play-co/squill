@@ -3,9 +3,14 @@
 from util.browser import $;
 import .Widget;
 
+var elementIDPrefix = 0;
+
 var TreeList = exports = Class(Widget, function(supr) {	
 	this.init = function(opts) {
 		this._initClasses(opts);
+
+		elementIDPrefix++;
+		this._elementIDPrefix = 'menuItem' + elementIDPrefix + '_';
 
 		this._wrapperId = opts.wrapperId || 'browser';
 		this._contentId = opts.contentId || 'contentWrapper';
@@ -63,7 +68,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 		if (inc) {
 			this._menuId++;
 		}
-		return 'menuItem' + n;
+		return this._elementIDPrefix + n;
 	};
 
 	this._createMenu = function(list, children, isRoot) {
@@ -105,8 +110,8 @@ var TreeList = exports = Class(Widget, function(supr) {
 	};
 
 	this._createMenus = function(menuData) {
-		this._def = {id: this._wrapperId, children: [
-						{id: this._contentId, children: []}
+		this._def = {id: this._wrapperId, className: 'browser', children: [
+						{id: this._contentId, className: 'contentWrapper', children: []}
 					]};
 
 		this._menuId = 0;
