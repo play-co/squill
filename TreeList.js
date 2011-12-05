@@ -239,6 +239,8 @@ var TreeList = exports = Class(Widget, function(supr) {
 			this._removeFromStack(this._itemByKey[key].depth);
 			this._clearItem(this._itemByKey[key]);
 			this._menuActiveItem = false;
+
+			delete(this._itemByKey[key]);
 			this.publish('UnSelectItem');
 		}
 	};
