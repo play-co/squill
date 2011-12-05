@@ -15,6 +15,8 @@ var TreeDataSource = exports = Class(lib.PubSub, function() {
 		opts = merge(opts, defaults);
 
 		this._key = opts.key;
+		this._channel = opts.channel;
+		this._hasRemote = opts.hasRemote;
 
 		this._hasRemote = opts.hasRemote;
 		this._root = null;
@@ -65,9 +67,14 @@ var TreeDataSource = exports = Class(lib.PubSub, function() {
 	};
 
 	this.remove = function(node) {
+		this.publish('Remove', node, node[this._key]);
+		if (this._hasRemote) {
+			this.publish('Remote', {type: 'REMOVE', channel: this._channel, node: node, key: node[this._key]});
+		}
+
 		if (node.parent) {
 			var children = node.parent.children,
-				found = false;
+				found = false,
 				i, j;
 			
 			for (i = 0, j = children.length; i < j; i++) {
@@ -79,11 +86,6 @@ var TreeDataSource = exports = Class(lib.PubSub, function() {
 				}
 			}
 			children.pop();
-		}
-
-		this.publish('Remove', node);
-		if (this._hasRemote) {
-			this.publish('Remote', {type: 'REMOVE', channel: this._channel, node: node});
 		}
 
 		return this;
