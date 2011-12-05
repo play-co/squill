@@ -7,14 +7,20 @@ import .Widget;
 var elementIDPrefix = 0;
 
 var TreeList = exports = Class(Widget, function(supr) {	
+	var defaults = {
+		key: 'id',
+		wrapperId: 'browser',
+		contentId: 'contentWrapper'
+	};
+
 	this.init = function(opts) {
+		opts = opts || {};
+		opts = merge(opts, defaults);
+
 		this._initClasses(opts);
 
 		elementIDPrefix++;
 		this._elementIDPrefix = 'menuItem' + elementIDPrefix + '_';
-
-		this._wrapperId = opts.wrapperId || 'browser';
-		this._contentId = opts.contentId || 'contentWrapper';
 
 		if (opts.dataSource) {
 			this.setDataSource(opts.dataSource);
@@ -26,7 +32,6 @@ var TreeList = exports = Class(Widget, function(supr) {
 						{id: this._contentId, className: 'contentWrapper', children: []}
 					]};
 
-		this._key = opts.key || 'id';
 		this._root = null;
 		this._itemByKey = {};
 
@@ -75,30 +80,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 		item.node = $({parent: group, id: id, tag: 'a', text: item.title});
 		$.onEvent(id, 'click', this, 'onClick', item);
 	};
-/*
-	// @todo create a duplicate data structure in the TreeList so that
-	//       the TreeList doesn't add or change properties in the 
-	//       TreeDataSource instance...
-	this._createMenu = function(groupNode, node, depth, isRoot) {
-		var children = node.children,
-			child,
-			i, j = children.length;
 
-		groupNode.depth = depth;
-		for (i = 0; i < j; i++) {
-			child = children[i];
-			child.group = groupNode;
-			this.addItem(child);
-		}
-
-		for (i = 0; i < j; i++) {
-			child = children[i];
-			if (child.children && child.children.length) {
-				this._createMenu(this.addGroup(child), child, depth + 1, false);
-			}
-		}
-	};
-*/
 	this.buildWidget = function() {
 		this._menuId = 0;
 		this._menuById = [];
@@ -106,10 +88,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 		this._menuActiveItem = false;
 
 		if (this._dataSource !== null) {
-			this._root = this._dataSource.getRoot();
-			if (this._root) {
-				//this._createMenu(this.addGroup(null), root, 0, true);
-			}
+			this._dataSource.each(bind(this, this.onCreateItem));
 		}
 	};
 
@@ -203,6 +182,10 @@ var TreeList = exports = Class(Widget, function(supr) {
 		}
 
 		this._itemByKey[key] = treeItem;
+	};
+
+	this.onCreateItem = function(item) {
+		this.onUpdateItem(item, item[this._key]);
 	};
 
 	this.onRemoveItem = function(item, key) {

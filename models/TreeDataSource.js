@@ -116,7 +116,7 @@ var TreeDataSource = exports = Class(lib.PubSub, function() {
 
 	this.each = function(cb) {
 		if (this._root !== null) {
-			this._each(node, cb);
+			this._each(this._root, cb);
 		}
 	};
 });
