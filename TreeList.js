@@ -198,8 +198,8 @@ var TreeList = exports = Class(Widget, function(supr) {
 			parentItem,
 			group;
 
-		if (this._itemByKey[item[this._key]]) {
-			// @todo check for changes...
+		if (this._itemByKey[key]) {
+			this._itemByKey[key].node.innerHTML = item[this._label];
 			return;
 		}
 

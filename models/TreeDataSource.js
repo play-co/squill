@@ -36,31 +36,58 @@ var TreeDataSource = exports = Class(lib.PubSub, function() {
 		}
 	};
 
+	this._createSetter = function(field, cb) {
+		return function() {
+			return function(value) {
+				this[field] = value;
+				cb(this);
+			};
+		}
+	};
+
+	this._createGetter = function(field) {
+		return function() {
+			return function() {
+				return this[field];
+			};
+		};
+	};
+
+	this._signalUpdate = function(node) {
+		this.publish('Update', node, node[this._key]);
+		if (this._hasRemote) {
+			this.publish('Remote', {type: 'UPDATE', channel: this._channel, node: node, key: node[this._key]});
+		}
+	};
+
 	this.add = function(node, parentNode) {
+		var i;
+
 		if (JS.isArray(node)) {
-			for (var i = 0, j = node.length; i < j; i++) {
-				node[i] && this.add(node[i]);
+			for (i = 0, j = node.length; i < j; i++) {
+				node[i] && this.add(node[i], parentNode);
 			}
 		} else {
+			for (i in node) {
+				if (node.hasOwnProperty(i) && (i !== this._key) && (i[0] !== '_')) {
+					node['_' + i] = node[i];
+					node.__defineSetter__(i, this._createSetter('_' + i, bind(this, this._signalUpdate))());
+					node.__defineGetter__(i, this._createGetter('_' + i)());
+				}
+			}
+
 			if (parentNode) {
 				if (!parentNode.children) {
 					parentNode.children = [];
 				}
 				parentNode.children.push(node)
-
-				this.publish('Update', parentNode, parentNode[this._key]);
-				if (this._hasRemote) {
-					this.publish('Remote', {type: 'UPDATE', channel: this._channel, node: parentNode, key: parentNode[this._key]});
-				}
+				this._signalUpdate(parentNode);
 			} else {
 				this._root = node;
 			}
 
 			node.parent = parentNode || null;
-			this.publish('Update', node, node[this._key]);
-			if (this._hasRemote) {
-				this.publish('Remote', {type: 'UPDATE', channel: this._channel, node: node, key: node[this._key]});
-			}
+			this._signalUpdate(node);
 		}
 
 		return this;
@@ -79,13 +106,10 @@ var TreeDataSource = exports = Class(lib.PubSub, function() {
 			
 			for (i = 0, j = children.length; i < j; i++) {
 				if (children[i] === node) {
-					found = true;
-				}
-				if (found && (i < j - 1)) {
-					children[i] = children[i + 1];
+					children.splice(i, 1);
+					break;
 				}
 			}
-			children.pop();
 		}
 
 		return this;
