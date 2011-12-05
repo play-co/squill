@@ -13,6 +13,7 @@ var DataSource = exports = Class(lib.PubSub, function() {
 
 	this.init = function(opts) {
 		opts = merge(opts, defaults);
+
 		this.key = opts.key || 'id';
 		this._channel = opts.channel;
 		this._hasRemote = opts.hasRemote;

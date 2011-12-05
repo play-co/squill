@@ -16,11 +16,19 @@ var TreeList = exports = Class(Widget, function(supr) {
 		this._wrapperId = opts.wrapperId || 'browser';
 		this._contentId = opts.contentId || 'contentWrapper';
 
-		this._dataSource = opts.dataSource || null;
+		if (opts.dataSource) {
+			this.setDataSource(opts.dataSource);
+		} else {
+			this._dataSource = null;
+		}
 
 		this._def = {id: this._wrapperId, className: 'browser', children: [
 						{id: this._contentId, className: 'contentWrapper', children: []}
 					]};
+
+		this._key = opts.key || 'id';
+		this._root = null;
+		this._itemByKey = {};
 
 		supr(this, 'init', arguments);
 	};
@@ -43,6 +51,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 		if (inc) {
 			this._menuId++;
 		}
+		console.log('=======', this._elementIDPrefix + menuId);
 		return this._elementIDPrefix + menuId;
 	};
 
@@ -69,21 +78,14 @@ var TreeList = exports = Class(Widget, function(supr) {
 		return node;
 	};
 
-	/**
-	 * item fields:
-	 *   parent
-	 *   title
-	 *   children (optional)
-	**/
 	this.addItem = function(item) {
 		if (!item.children) {
 			item.children = [];
 		}
 		item.id = this._createMenuId(true);
-		item.depth = item.parent.depth;
-		item.isItem = true;
+		item.depth = item.group.depth;
 		item.node = $({
-			parent: item.parent,
+			parent: item.group,
 			id: item.id,
 			tag: 'a',
 			text: item.title,
@@ -95,7 +97,10 @@ var TreeList = exports = Class(Widget, function(supr) {
 
 		return item;
 	};
-
+/*
+	// @todo create a duplicate data structure in the TreeList so that
+	//       the TreeList doesn't add or change properties in the 
+	//       TreeDataSource instance...
 	this._createMenu = function(groupNode, node, depth, isRoot) {
 		var children = node.children,
 			child,
@@ -104,7 +109,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 		groupNode.depth = depth;
 		for (i = 0; i < j; i++) {
 			child = children[i];
-			child.parent = groupNode;
+			child.group = groupNode;
 			this.addItem(child);
 		}
 
@@ -115,7 +120,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 			}
 		}
 	};
-
+*/
 	this.buildWidget = function() {
 		this._menuId = 0;
 		this._menuById = [];
@@ -123,11 +128,10 @@ var TreeList = exports = Class(Widget, function(supr) {
 		this._menuActiveItem = false;
 
 		if (this._dataSource !== null) {
-			var root = this._dataSource.getRoot();
-			if (root) {
-				this._createMenu(this.addGroup(null), root, 0, true);
+			this._root = this._dataSource.getRoot();
+			if (this._root) {
+				//this._createMenu(this.addGroup(null), root, 0, true);
 			}
-			console.log(this._menuById);
 		}
 	};
 
@@ -167,6 +171,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 			$.removeClass(this._menuActiveItem, this._classNames.nodeSelectedChild);
 		}
 
+		console.log('here', item);
 		if (item.children && item.children.length) {
 			id = item.menuId;
 			if (menuStack.length) {
@@ -190,7 +195,49 @@ var TreeList = exports = Class(Widget, function(supr) {
 		this.publish('SelectItem', item);
 	};
 
+	this.onUpdateItem = function(item, key) {
+		var treeItem = {title: item.title},
+			parentItem,
+			group;
+
+		if (this._itemByKey[item[this._key]]) {
+			// @todo check for changes...
+			return;
+		}
+
+		if (item.parent === null) {
+			group = this.addGroup(null);
+			group.depth = 0;
+
+			this._root = treeItem;
+			treeItem.group = group;
+			this.addItem(treeItem);
+		} else {
+			parentItem = this._itemByKey[item.parent[this._key]];
+			if (parentItem) {
+				// @todo check if the group already exists...
+				//if (parentItem.group) {
+				//	group = parentItem.group;
+				//} else {
+					group = this.addGroup(parentItem);
+					parentItem.group = group;
+				//}
+				parentItem.children.push(treeItem);
+				treeItem.group = group;
+				this.addItem(treeItem);
+				console.log('start:', parentItem);
+			}
+		}
+
+		this._itemByKey[key] = treeItem;
+	};
+
+	this.onRemoveItem = function(item, key) {
+	};
+
 	this.setDataSource = function(dataSource) {
 		this._dataSource = dataSource;
+		this._dataSource.subscribe('Update', this, this.onUpdateItem);
+		this._dataSource.subscribe('Remove', this, this.onRemoveItem);
 	};
 });
