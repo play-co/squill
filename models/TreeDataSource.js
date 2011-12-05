@@ -173,8 +173,13 @@ var TreeDataSource = exports = Class(lib.PubSub, function() {
 	this.remove = function(node) {
 		this._signalUpdate('REMOVE', node);
 
-		var internalNode = this._nodeByKey[node[this._key]];
-		internalNode && internalNode.remove(internalNode);
+		var key = node[this._key],
+			internalNode = this._nodeByKey[key];
+
+		if (internalNode) {
+			internalNode.remove(internalNode);
+			delete(this._nodeByKey[key]);
+		}
 
 		return this;
 	};
