@@ -1,6 +1,7 @@
 "use import";
 
 from util.browser import $;
+
 import .Widget;
 
 var elementIDPrefix = 0;
@@ -15,40 +16,13 @@ var TreeList = exports = Class(Widget, function(supr) {
 		this._wrapperId = opts.wrapperId || 'browser';
 		this._contentId = opts.contentId || 'contentWrapper';
 
-		this._menuData = opts.menuData || this._exampleTreeData();
+		this._dataSource = opts.dataSource || null;
 
 		this._def = {id: this._wrapperId, className: 'browser', children: [
 						{id: this._contentId, className: 'contentWrapper', children: []}
 					]};
 
 		supr(this, 'init', arguments);
-	};
-
-	this._exampleTreeData = function() {
-		return [
-			{
-				title: 'Example item 0',
-				children: [
-					{
-						title: 'Example item 1',
-						children: [
-							{title: 'Example item 2'},
-							{title: 'Example item 3'},
-							{title: 'Example item 4'},
-							{
-								title: 'Example item 5',
-								children: [
-									{ title: 'Example item 6' },
-									{ title: 'Example item 7' },
-									{ title: 'Example item 8' },
-									{ title: 'Example item 9' }
-								]
-							}
-						]
-					}
-				]
-			}
-		];
 	};
 
 	this._initClasses = function(opts) {
@@ -65,53 +39,79 @@ var TreeList = exports = Class(Widget, function(supr) {
 	};
 
 	this._createMenuId = function(inc) {
-		var n = this._menuId + '';
-		while (n.length < 6) {
-			n = '0' + n;
-		}
+		var menuId = this._menuId;
 		if (inc) {
 			this._menuId++;
 		}
-		return this._elementIDPrefix + n;
+		return this._elementIDPrefix + menuId;
 	};
 
-	this._createMenu = function(parent, children, isRoot) {
-		var child,
-			node,
-			i, j = children.length;
-
-		node = $({
-					parent: parent,
-					id: this._createMenuId(true),
-					className: isRoot ? this._classNames.nodeWrapper : this._classNames.nodeWrapperHidden
-				});
-		node = $({
-					parent: node,
+	this.addGroup = function(item) {
+		var menuId = this._createMenuId(true),
+			node = $({
+					parent: $({
+								parent: $.id(this._contentId),
+								id: menuId,
+								className: (item === null) ? this._classNames.nodeWrapper : this._classNames.nodeWrapperHidden
+							}),
 					className: this._classNames.node
 				});
 
 		this._menuById[this._menuId] = node;
 
+		if (item) {
+			item.menuId = menuId;
+			node.depth = item.depth + 1;
+		} else {
+			node.depth = 0;
+		}
+
+		return node;
+	};
+
+	/**
+	 * item fields:
+	 *   parent
+	 *   title
+	 *   children (optional)
+	**/
+	this.addItem = function(item) {
+		if (!item.children) {
+			item.children = [];
+		}
+		item.id = this._createMenuId(true);
+		item.depth = item.parent.depth;
+		item.isItem = true;
+		item.node = $({
+			parent: item.parent,
+			id: item.id,
+			tag: 'a',
+			text: item.title,
+			className: item.children.length ? this._classNames.nodeChild : ''
+		});
+		this._menuById[this._menuId] = item.node;
+
+		$.onEvent(item.id, 'click', this, 'onClick', item);
+
+		return item;
+	};
+
+	this._createMenu = function(groupNode, node, depth, isRoot) {
+		var children = node.children,
+			child,
+			i, j = children.length;
+
+		groupNode.depth = depth;
 		for (i = 0; i < j; i++) {
 			child = children[i];
-			child.id = this._createMenuId(true);
-			child.isItem = true;
-			child.node = $({
-				parent: node,
-				id: child.id,
-				tag: 'a',
-				text: children[i].title,
-				className: child.children && child.children.length ? this._classNames.nodeChild : ''
-			});
-			this._menuById[this._menuId] = child;
+			child.parent = groupNode;
+			this.addItem(child);
 		}
 
 		for (i = 0; i < j; i++) {
 			child = children[i];
 			if (child.children && child.children.length) {
-				child.menuId = this._createMenuId(false);
-				child.hasChildren = true;
-				this._createMenu(parent, child.children, false);
+				this._createMenu(this.addGroup(child), child, depth + 1, false);
 			}
 		}
 	};
@@ -122,49 +122,44 @@ var TreeList = exports = Class(Widget, function(supr) {
 		this._menuStack = [];
 		this._menuActiveItem = false;
 
-		this._createMenu($.id(this._contentId), this._menuData, true);
-
-		var menuById = this._menuById,
-			i, j = menuById.length;
-
-		for (i = 1; i < j; i++) {
-			if (menuById[i].isItem) {
-				$.onEvent(menuById[i].id, 'click', this, 'onClick', i);
+		if (this._dataSource !== null) {
+			var root = this._dataSource.getRoot();
+			if (root) {
+				this._createMenu(this.addGroup(null), root, 0, true);
 			}
+			console.log(this._menuById);
 		}
 	};
 
-	this._removeFromStack = function(greaterThanId) {
+	this._removeFromStack = function(depth) {
 		var menuStack = this._menuStack,
 			info;
 
-		while (menuStack.length && (menuStack[menuStack.length - 1].menuId > greaterThanId)) {
+		while (menuStack.length && (menuStack[menuStack.length - 1].depth >= depth)) {
 			info = menuStack.pop();
 
-			$.removeClass(info.itemId, this._classNames.nodeActive);
-			$.removeClass(info.itemId, this._classNames.nodeActiveChild);
+			$.removeClass(info.id, this._classNames.nodeActive);
+			$.removeClass(info.id, this._classNames.nodeActiveChild);
 
 			$.addClass(info.menuId, this._classNames.nodeWrapperHidden);
 			$.removeClass(info.menuId, this._classNames.nodeWrapper);
 		}
 	};
 
-	this._addToStack = function(itemId, itemChildren, menuId) {
-		this._menuStack.push({itemId: itemId, menuId: menuId});
+	this._addToStack = function(item) {
+		this._menuStack.push(item);
 
-		$.removeClass(itemId, this._classNames.nodeActive);
-		$.removeClass(itemId, this._classNames.nodeActiveChild);
+		$.removeClass(item.id, this._classNames.nodeActive);
+		$.removeClass(item.id, this._classNames.nodeActiveChild);
 
-		$.addClass(itemId, itemChildren ? this._classNames.nodeActiveChild : this._classNames.nodeActive);
+		$.addClass(item.id, (item.children && item.children.length) ? this._classNames.nodeActiveChild : this._classNames.nodeActive);
 
-		$.addClass(menuId, this._classNames.nodeWrapper);
-		$.removeClass(menuId, this._classNames.nodeWrapperHidden);
+		$.addClass(item.menuId, this._classNames.nodeWrapper);
+		$.removeClass(item.menuId, this._classNames.nodeWrapperHidden);
 	};
 
-	this.onClick = function(index) {
+	this.onClick = function(item) {
 		var menuStack = this._menuStack,
-			menuById = this._menuById,
-			item = menuById[index],
 			id;
 
 		if (this._menuActiveItem) {
@@ -172,19 +167,18 @@ var TreeList = exports = Class(Widget, function(supr) {
 			$.removeClass(this._menuActiveItem, this._classNames.nodeSelectedChild);
 		}
 
-		if (item.hasChildren) {
+		if (item.children && item.children.length) {
 			id = item.menuId;
 			if (menuStack.length) {
-				if (item.id > menuStack[menuStack.length - 1].menuId) {
-					this._addToStack(item.id, item.children && item.children.length, id);
+				if (item.depth > menuStack[menuStack.length - 1].depth) {
+					this._addToStack(item);
 				} else {
-					this._removeFromStack(item.id);
+					this._removeFromStack(item.depth);
 				}
-			} else {
-				this._addToStack(item.id, item.children && item.children.length, id);
 			}
+			this._addToStack(item);
 		} else {
-			this._removeFromStack(item.id);
+			this._removeFromStack(item.depth);
 		}
 
 		this._menuActiveItem = item.id;
@@ -194,5 +188,9 @@ var TreeList = exports = Class(Widget, function(supr) {
 		}
 
 		this.publish('SelectItem', item);
+	};
+
+	this.setDataSource = function(dataSource) {
+		this._dataSource = dataSource;
 	};
 });
