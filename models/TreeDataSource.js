@@ -142,30 +142,44 @@ var TreeDataSource = exports = Class(PubSub, function() {
 		this._maxKey = 0;
 		this._key = opts.key;
 		this._parentKey = opts.parentKey;
+
 		this._channel = opts.channel;
 		this._hasRemote = opts.hasRemote;
 
 		this._nodeByKey = {};
 		this._root = null;
+
+		this._recordChanges = false;
+	};
+
+	this._saveChanges = function(type, key) {
+		if (this._recordChanges && !this._recordData[type + 'Hash'][key]) {
+			this._recordData[type + 'Hash'][key] = true;
+			this._recordData[type].push(key);
+		}
 	};
 
 	this._signalUpdate = function(type, node) {
 		var key = this._key,
+			keyValue = node[key],
 			channel = this._channel;
 
 		switch (type) {
 			case 'UPDATE':
-				this.publish('Update', node, node[key]);
+				this._saveChanges('updated', keyValue);
+				this.publish('Update', node, keyValue);
 				if (this._hasRemote) {
-					this.publish('Remote', {type: 'UPDATE', channel: channel, node: node, key: node[key]});
+					this.publish('Remote', {type: 'UPDATE', channel: channel, node: node, key: keyValue});
 				}
 				break;
 
 			case 'REMOVE':
-				this.publish('Remove', node, node[key]);
+				this._saveChanges('removed', keyValue);
+				this.publish('Remove', node, keyValue);
 				if (this._hasRemote) {
-					this.publish('Remote', {type: 'REMOVE', channel: channel, node: node, key: node[key]});
+					this.publish('Remote', {type: 'REMOVE', channel: channel, node: node, key: keyValue});
 				}
+				delete(this._nodeByKey[keyValue]);
 				break;
 		}
 	};
@@ -226,7 +240,6 @@ var TreeDataSource = exports = Class(PubSub, function() {
 
 		if (internalNode) {
 			internalNode.remove(internalNode);
-			delete(this._nodeByKey[key]);
 		}
 
 		return this;
@@ -293,5 +306,19 @@ var TreeDataSource = exports = Class(PubSub, function() {
 	this.genKey = function() {
 		this._maxKey + 1;
 		return this._maxKey;
+	};
+
+	this.beginRecording = function() {
+		this._recordChanges = true;
+		this._recordData = {
+			updated: [], 
+			updatedHash: {},
+			removed: [],
+			removedHash: {}
+		};
+	};
+
+	this.saveChanges = function() {
+		this._recordChanges = false;
 	};
 });
