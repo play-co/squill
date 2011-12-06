@@ -147,6 +147,7 @@ var TreeDataSource = exports = Class(PubSub, function() {
 		this._hasRemote = opts.hasRemote;
 
 		this._nodeByKey = {};
+		this._persistanceHandler = opts.persistanceHandler || null;
 		this._root = null;
 
 		this._recordChanges = false;
@@ -320,5 +321,23 @@ var TreeDataSource = exports = Class(PubSub, function() {
 
 	this.saveChanges = function() {
 		this._recordChanges = false;
+		if (this._persistanceHandler) {
+			var recordChanges = this._recordChanges,
+				i, j;
+
+			if (recordChanges.updated.length) {
+				var updateList = [];
+				for (i = 0, j = recordChanges.updated.length; i < j; i++) {
+					updateList.push(this._nodeByKey[recordChanges.updated[i]]);
+				}
+				this._persistanceHandler.save(updateList);
+			}
+
+			if (recordChanges.removed.length) {
+				this._persistanceHandler.remove(recordChanges.removed);
+			}
+
+			this._persistanceHandler.commit();
+		}
 	};
 });

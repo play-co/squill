@@ -1,8 +1,9 @@
 "use import";
 
-import lib.PubSub as PubSub;
+import .BasicPersistanceHandler as BasicPersistanceHandler;
 
-var RemotePersistanceHandler = exports = Class(PubSub, function(supr) {	
+var RemotePersistanceHandler = exports = Class(BasicPersistanceHandler, function(supr) {	
 	this.init = function(opts) {
+		supr(this, 'init', arguments);
 	};
 });
