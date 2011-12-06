@@ -165,30 +165,27 @@ var TreeList = exports = Class(Widget, function(supr) {
 
 	this.onClick = function(item) {
 		var menuStack = this._menuStack,
-			id;
+			id,
+			i;
 
 		if (this._menuActiveItem) {
 			$.removeClass(this._menuActiveItem.node, this._classNames.nodeSelected);
 			$.removeClass(this._menuActiveItem.node, this._classNames.nodeSelectedChild);
 		}
 
-		if (item.children && item.children.length) {
-			if (menuStack.length) {
-				if (item.depth > menuStack[menuStack.length - 1].depth) {
-					this._addToStack(item);
-				} else {
-					this._removeFromStack(item.depth);
-				}
-			}
-			this._addToStack(item);
-		} else {
+		if (menuStack.length && (item.depth <= menuStack[menuStack.length - 1].depth)) {
 			this._removeFromStack(item.depth);
 		}
+		this._addToStack(item);
 
 		this._menuActiveItem = item;
 		$.addClass(this._menuActiveItem.node, this._classNames.nodeSelected);
 		if (menuStack.length) {
-			$.id(this._contentId).style.width = ((menuStack.length + 1) * 200) + 'px';
+			i = menuStack.length;
+			if (menuStack[menuStack.length - 1].children && menuStack[menuStack.length - 1].children.length) {
+				i++;
+			}
+			$.id(this._contentId).style.width = (i * 200) + 'px';
 		}
 
 		this.publish('SelectItem', item.data);
@@ -263,5 +260,21 @@ var TreeList = exports = Class(Widget, function(supr) {
 		this._dataSource = dataSource;
 		this._dataSource.subscribe('Update', this, this.onUpdateItem);
 		this._dataSource.subscribe('Remove', this, this.onRemoveItem);
+	};
+
+	this.getPathString = function(separator) {
+		var result = '',
+			menuStack = this._menuStack,
+			i, j;
+
+		separator = separator || ' ';
+		for (i = 0, j = menuStack.length; i < j; i++) {
+			if (result !== '') {
+				result += separator;
+			}
+			result += menuStack[i].data[this._label];
+		}
+
+		return result;
 	};
 });
