@@ -139,6 +139,7 @@ var TreeDataSource = exports = Class(PubSub, function() {
 		opts = opts || {};
 		opts = merge(opts, defaults);
 
+		this._maxKey = 0;
 		this._key = opts.key;
 		this._parentKey = opts.parentKey;
 		this._channel = opts.channel;
@@ -169,20 +170,28 @@ var TreeDataSource = exports = Class(PubSub, function() {
 		}
 	};
 
-	this.add = function(node, parent) {
-		var internalParent,
+	this.add = function(node) {
+		var parent = node[this._parentKey] || null,
+			internalParent,
 			internalNode,
 			key,
 			i;
 
 		if (isArray(node)) {
 			for (i = 0, j = node.length; i < j; i++) {
-				node[i] && this.add(node[i], parent);
+				node[i] && this.add(node[i]);
 			}
 		} else {
 			key = this._key;
-			if (this._nodeByKey[node[key]]) {
+
+			if (!node[key]) {
+				node[key] = this._maxKey + 1;
+			} else if (this._nodeByKey[node[key]]) {
 				// @todo remove?
+			}
+
+			if (!isNaN(parseInt(node[key], 10))) {
+				this._maxKey = Math.max(this._maxKey, parseInt(node[key], 10));
 			}
 
 			internalParent = parent ? this._nodeByKey[parent[key]] : null;
@@ -206,7 +215,7 @@ var TreeDataSource = exports = Class(PubSub, function() {
 			this._signalUpdate('UPDATE', internalNode.getData());
 		}
 
-		return this;
+		return node;
 	};
 
 	this.remove = function(node) {
@@ -224,6 +233,7 @@ var TreeDataSource = exports = Class(PubSub, function() {
 	};
 
 	this.clear = function() {
+		this._maxKey = -1;
 		if (this._root !== null) {
 			this._root.clear();
 			this._root = null;
@@ -272,11 +282,16 @@ var TreeDataSource = exports = Class(PubSub, function() {
 		for (i = 0, j = items.length; i < j; i++) {
 			item = items[i];
 			item[parentKey] = item[parentKey] ? this._nodeByKey[item[parentKey]].getData() : null;
-			this.add(item, item[parentKey]);
+			this.add(item);
 		}
 	};
 
 	this.each = function(cb) {
 		this._root && this._root.callback(cb);
+	};
+
+	this.genKey = function() {
+		this._maxKey + 1;
+		return this._maxKey;
 	};
 });

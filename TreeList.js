@@ -167,8 +167,8 @@ var TreeList = exports = Class(Widget, function(supr) {
 			id;
 
 		if (this._menuActiveItem) {
-			$.removeClass(this._menuActiveItem, this._classNames.nodeSelected);
-			$.removeClass(this._menuActiveItem, this._classNames.nodeSelectedChild);
+			$.removeClass(this._menuActiveItem.node, this._classNames.nodeSelected);
+			$.removeClass(this._menuActiveItem.node, this._classNames.nodeSelectedChild);
 		}
 
 		if (item.children && item.children.length) {
@@ -184,8 +184,8 @@ var TreeList = exports = Class(Widget, function(supr) {
 			this._removeFromStack(item.depth);
 		}
 
-		this._menuActiveItem = item.node.id;
-		$.addClass(this._menuActiveItem, this._classNames.nodeSelected);
+		this._menuActiveItem = item;
+		$.addClass(this._menuActiveItem.node, this._classNames.nodeSelected);
 		if (menuStack.length) {
 			$.id(this._contentId).style.width = ((menuStack.length + 1) * 200) + 'px';
 		}
@@ -210,6 +210,13 @@ var TreeList = exports = Class(Widget, function(supr) {
 			treeItem.depth = 0;
 			treeItem.parent = null;
 		} else {
+			if (this._menuActiveItem) {
+				$.removeClass(this._menuActiveItem.node, this._classNames.nodeSelected);
+				$.removeClass(this._menuActiveItem.node, this._classNames.nodeSelectedChild);
+				this._removeFromStack(this._menuActiveItem.depth);
+				this._menuActiveItem = false;
+			}
+
 			parentItem = this._itemByKey[item.parent[this._key]];
 			if (parentItem) {
 				if (!parentItem.group) {
