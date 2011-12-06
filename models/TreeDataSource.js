@@ -1,7 +1,6 @@
 "use import";
 
-import lib.PubSub;
-import std.js as JS;
+import lib.PubSub as PubSub;
 
 var TreeDataSourceNode = Class(function() {
 	this.init = function(opts) {
@@ -128,7 +127,7 @@ var TreeDataSourceNode = Class(function() {
 	};
 });
 
-var TreeDataSource = exports = Class(lib.PubSub, function() {
+var TreeDataSource = exports = Class(PubSub, function() {
 	var defaults = {
 		key: 'id',
 		parentKey: 'parent',
@@ -176,7 +175,7 @@ var TreeDataSource = exports = Class(lib.PubSub, function() {
 			key,
 			i;
 
-		if (JS.isArray(node)) {
+		if (isArray(node)) {
 			for (i = 0, j = node.length; i < j; i++) {
 				node[i] && this.add(node[i], parent);
 			}
