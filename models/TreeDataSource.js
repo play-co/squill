@@ -5,37 +5,41 @@ import std.js as JS;
 
 var TreeDataSourceNode = Class(function() {
 	this.init = function(opts) {
+		this._key = opts.key;
+		this._parentKey = opts.parentKey,
 		this._data = opts.data;
+		this._dataContainer = {};
 		this._children = [];
 		this._parent = opts.parent;
 		this._signalUpdate = opts.signalUpdate;
 
-		var signalUpdate = opts.signalUpdate,
+		var dataContainer = this._dataContainer,
+			signalUpdate = opts.signalUpdate,
 			data = opts.data,
 			key = opts.key;
 
 		for (field in data) {
 			if (data.hasOwnProperty(field) && (field !== key) && (field[0] !== '_')) {
-				data['_' + field] = data[field];
-				data.__defineSetter__(field, this._createSetter('_' + field, signalUpdate)());
-				data.__defineGetter__(field, this._createGetter('_' + field)());
+				this._dataContainer['_' + field] = data[field];
+				data.__defineSetter__(field, this._createSetter(dataContainer, field, signalUpdate)());
+				data.__defineGetter__(field, this._createGetter(dataContainer, field)());
 			}
 		}
 	};
 
-	this._createSetter = function(field, signalUpdate) {
+	this._createSetter = function(dataContainer, field, signalUpdate) {
 		return function() {
 			return function(value) {
-				this[field] = value;
+				dataContainer['_' + field] = value;
 				signalUpdate('UPDATE', this);
 			};
-		}
+		};
 	};
 
-	this._createGetter = function(field) {
+	this._createGetter = function(dataContainer, field) {
 		return function() {
 			return function() {
-				return this[field];
+				return dataContainer['_' + field];
 			};
 		};
 	};
@@ -90,11 +94,44 @@ var TreeDataSourceNode = Class(function() {
 	this.getData = function() {
 		return this._data;
 	};
+
+	this.toJSONData = function(list) {
+		list = list || [];
+
+		var children = this._children,
+			node = {},
+			data = this._data,
+			i, j;
+
+		for (i in data) {
+			if (i === this._parentKey) {
+				if (data[i] === null) {
+					node[i] = null;
+				} else {
+					node[i] = this._parent.getData()[this._key];
+				}
+			} else {
+				node[i] = data[i];
+			}
+		}
+		list.push(node);
+
+		for (i = 0, j = children.length; i < j; i++) {
+			children[i].toJSONData(list);
+		}
+
+		return list;
+	};
+
+	this.toJSON = function() {
+		return this.toJSONData();
+	};
 });
 
 var TreeDataSource = exports = Class(lib.PubSub, function() {
 	var defaults = {
 		key: 'id',
+		parentKey: 'parent',
 		channel: null,
 		hasRemote: false
 	};
@@ -104,6 +141,7 @@ var TreeDataSource = exports = Class(lib.PubSub, function() {
 		opts = merge(opts, defaults);
 
 		this._key = opts.key;
+		this._parentKey = opts.parentKey;
 		this._channel = opts.channel;
 		this._hasRemote = opts.hasRemote;
 
@@ -150,6 +188,8 @@ var TreeDataSource = exports = Class(lib.PubSub, function() {
 
 			internalParent = parent ? this._nodeByKey[parent[key]] : null;
 			internalNode = new TreeDataSourceNode({
+				key: this._key,
+				parentKey: this._parentKey,
 				parent: internalParent,
 				data: node,
 				signalUpdate: bind(this, this._signalUpdate)
@@ -193,6 +233,48 @@ var TreeDataSource = exports = Class(lib.PubSub, function() {
 
 	this.getRoot = function() {
 		return this._root;
+	};
+
+	this.toJSON = function() {
+		var result = {
+			key: this._key,
+			parentKey: this._parentKey,
+			items: this._root ? this._root.toJSON() : []
+		};
+
+		return result;
+	};
+
+	/**
+	var demoData = {
+			key: 'id',
+			parentKey: 'parent',
+			items: [
+				{id: 1, parent: null, title: 'Example item 0', test: 'A'},
+		
+				{id: 2, parent: 1, title: 'Example item 1', test: 'B'},
+				{id: 3, parent: 1, title: 'Example item 2', test: 'C'},
+
+				{id: 4, parent: 3, title: 'Example item 3', test: 'D'},
+				{id: 5, parent: 3, title: 'Example item 4', test: 'E'}
+			]
+		};
+
+	**/
+	this.fromJSON = function(data) {
+		this._key = data.key;
+		this._parentKey = data.parentKey;
+
+		var parentKey = this._parentKey,
+			items = data.items,
+			item,
+			i, j;
+
+		for (i = 0, j = items.length; i < j; i++) {
+			item = items[i];
+			item[parentKey] = item[parentKey] ? this._nodeByKey[item[parentKey]].getData() : null;
+			this.add(item, item[parentKey]);
+		}
 	};
 
 	this.each = function(cb) {
