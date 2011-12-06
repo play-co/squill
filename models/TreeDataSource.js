@@ -94,7 +94,7 @@ var TreeDataSourceNode = Class(function() {
 		return this._data;
 	};
 
-	this.toJSONData = function(list) {
+	this.toJSONData = function(list, singleItem) {
 		list = list || [];
 
 		var children = this._children,
@@ -113,17 +113,22 @@ var TreeDataSourceNode = Class(function() {
 				node[i] = data[i];
 			}
 		}
-		list.push(node);
 
-		for (i = 0, j = children.length; i < j; i++) {
-			children[i].toJSONData(list);
+		if (singleItem) {
+			return node;
+		} else {
+			list.push(node);
+
+			for (i = 0, j = children.length; i < j; i++) {
+				children[i].toJSONData(list, false);
+			}
 		}
 
 		return list;
 	};
 
 	this.toJSON = function() {
-		return this.toJSONData();
+		return this.toJSONData([], false);
 	};
 });
 
@@ -147,16 +152,31 @@ var TreeDataSource = exports = Class(PubSub, function() {
 		this._hasRemote = opts.hasRemote;
 
 		this._nodeByKey = {};
-		this._persistanceHandler = opts.persistanceHandler || null;
+		this._persistenceHandler = opts.persistenceHandler || null;
 		this._root = null;
 
-		this._recordChanges = false;
+		this._changeDataSave = false;
+
+		if (this._persistenceHandler) {
+			this.fromJSON({
+				key: this._key,
+				parentKey: this._parentKey,
+				items: this._persistenceHandler.load()
+			});
+		}
+
+		this._changeData = {
+			updated: [], 
+			updatedHash: {},
+			removed: [],
+			removedHash: {}
+		};
 	};
 
 	this._saveChanges = function(type, key) {
-		if (this._recordChanges && !this._recordData[type + 'Hash'][key]) {
-			this._recordData[type + 'Hash'][key] = true;
-			this._recordData[type].push(key);
+		if (this._changeDataSave && !this._changeData[type + 'Hash'][key]) {
+			this._changeData[type + 'Hash'][key] = true;
+			this._changeData[type].push(key);
 		}
 	};
 
@@ -295,8 +315,10 @@ var TreeDataSource = exports = Class(PubSub, function() {
 
 		for (i = 0, j = items.length; i < j; i++) {
 			item = items[i];
-			item[parentKey] = item[parentKey] ? this._nodeByKey[item[parentKey]].getData() : null;
-			this.add(item);
+			if (item) {
+				item[parentKey] = item[parentKey] ? this._nodeByKey[item[parentKey]].getData() : null;
+				this.add(item);
+			}
 		}
 	};
 
@@ -309,9 +331,9 @@ var TreeDataSource = exports = Class(PubSub, function() {
 		return this._maxKey;
 	};
 
-	this.beginRecording = function() {
-		this._recordChanges = true;
-		this._recordData = {
+	this.beginChanges = function() {
+		this._changeDataSave = true;
+		this._changeData = {
 			updated: [], 
 			updatedHash: {},
 			removed: [],
@@ -320,24 +342,24 @@ var TreeDataSource = exports = Class(PubSub, function() {
 	};
 
 	this.saveChanges = function() {
-		this._recordChanges = false;
-		if (this._persistanceHandler) {
-			var recordChanges = this._recordChanges,
+		this._changeDataSave = false;
+		if (this._persistenceHandler) {
+			var changeData = this._changeData,
 				i, j;
 
-			if (recordChanges.updated.length) {
+			if (changeData.updated.length) {
 				var updateList = [];
-				for (i = 0, j = recordChanges.updated.length; i < j; i++) {
-					updateList.push(this._nodeByKey[recordChanges.updated[i]]);
+				for (i = 0, j = changeData.updated.length; i < j; i++) {
+					updateList.push(this._nodeByKey[changeData.updated[i]].toJSONData(false, true));
 				}
-				this._persistanceHandler.save(updateList);
+				this._persistenceHandler.update(updateList);
 			}
 
-			if (recordChanges.removed.length) {
-				this._persistanceHandler.remove(recordChanges.removed);
+			if (changeData.removed.length) {
+				this._persistenceHandler.remove(changeData.removed);
 			}
 
-			this._persistanceHandler.commit();
+			this._persistenceHandler.commit();
 		}
 	};
 });

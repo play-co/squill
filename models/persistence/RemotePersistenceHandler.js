@@ -1,8 +1,8 @@
 "use import";
 
-import .BasicPersistanceHandler as BasicPersistanceHandler;
+import .BasicPersistenceHandler as BasicPersistenceHandler;
 
-var RemotePersistanceHandler = exports = Class(BasicPersistanceHandler, function(supr) {	
+var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function(supr) {	
 	this.init = function(opts) {
 		supr(this, 'init', arguments);
 	};

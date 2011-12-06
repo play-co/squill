@@ -60,7 +60,6 @@ var TreeList = exports = Class(Widget, function(supr) {
 	this._clearItem = function(item) {
 		var parent,
 			children,
-			found,
 			i, j;
 
 		if (item.children) {
@@ -73,23 +72,21 @@ var TreeList = exports = Class(Widget, function(supr) {
 		if (item.parent) {
 			parent = item.parent;
 			children = parent.children;
-			found = false;
 			for (i = 0, j = children.length; i < j; i++) {
 				if (children[i] === item) {
-					found = true;
-				}
-				if (found && (i < j - 1)) {
-					children[i] = children[i + 1];
+					children.splice(i, 1);
+					break;
 				}
 			}
-			found && children.pop();
 			if (!children.length && parent.group) {
+				$.remove(parent.group.parentNode);
 				$.remove(parent.group);
 				$.removeClass(parent.node, this._classNames.nodeChild);
 				$.removeClass(parent.node, this._classNames.nodeActiveChild);
+				delete(parent.group);
 			}
 		}
-		
+
 		$.remove(item.node);
 		item.group && $.remove(item.group);
 	};
@@ -145,8 +142,10 @@ var TreeList = exports = Class(Widget, function(supr) {
 			$.removeClass(info.node.id, this._classNames.nodeActive);
 			$.removeClass(info.node.id, this._classNames.nodeActiveChild);
 
-			$.addClass(info.group.menuId, this._classNames.nodeWrapperHidden);
-			$.removeClass(info.group.menuId, this._classNames.nodeWrapper);
+			if (info.group) {
+				$.addClass(info.group.menuId, this._classNames.nodeWrapperHidden);
+				$.removeClass(info.group.menuId, this._classNames.nodeWrapper);
+			}
 		}
 	};
 
@@ -158,8 +157,10 @@ var TreeList = exports = Class(Widget, function(supr) {
 
 		$.addClass(item.node.id, (item.children && item.children.length) ? this._classNames.nodeActiveChild : this._classNames.nodeActive);
 
-		$.addClass(item.group.menuId, this._classNames.nodeWrapper);
-		$.removeClass(item.group.menuId, this._classNames.nodeWrapperHidden);
+		if (item.group) {
+			$.addClass(item.group.menuId, this._classNames.nodeWrapper);
+			$.removeClass(item.group.menuId, this._classNames.nodeWrapperHidden);
+		}
 	};
 
 	this.onClick = function(item) {
@@ -249,6 +250,12 @@ var TreeList = exports = Class(Widget, function(supr) {
 
 			delete(this._itemByKey[key]);
 			this.publish('UnSelectItem');
+		}
+	};
+
+	this.showItem = function(item) {
+		if (this._itemsByKey[item[this._key]]) {
+			console.log('show item:', this._itemsByKey[item[this._key]]);
 		}
 	};
 

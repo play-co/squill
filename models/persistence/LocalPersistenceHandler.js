@@ -1,8 +1,8 @@
 "use import";
 
-import .BasicPersistanceHandler as BasicPersistanceHandler;
+import .BasicPersistenceHandler as BasicPersistenceHandler;
 
-var LocalPersistanceHandler = exports = Class(BasicPersistanceHandler, function(supr) {	
+var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(supr) {	
 	this.init = function(opts) {
 		supr(this, 'init', arguments);
 
@@ -11,7 +11,11 @@ var LocalPersistanceHandler = exports = Class(BasicPersistanceHandler, function(
 	};
 
 	this.load = function() {
-		this._data = JSON.parse(localStorage.get(this._storageKey));
+		var data = localStorage.getItem(this._storageKey) || '[]';
+		console.log(localStorage);
+		this._data = JSON.parse(data);
+
+		return this._data;
 	};
 
 	this.clear = function() {
@@ -23,7 +27,7 @@ var LocalPersistanceHandler = exports = Class(BasicPersistanceHandler, function(
 
 		if (isArray(data)) {
 			for (i = 0, j = data.length; i < j; i++) {
-				this._data[data[this._key]] = data[i];
+				this._data[data[i][this._key]] = data[i];
 			}
 		} else {
 			this._data[data[this._key]] = data;
@@ -41,6 +45,6 @@ var LocalPersistanceHandler = exports = Class(BasicPersistanceHandler, function(
 	};
 
 	this.commit = function() {
-		localStorage.set(this._storageKey, JSON.stringify(this._data));
+		localStorage.setItem(this._storageKey, JSON.stringify(this._data));
 	};
 });
