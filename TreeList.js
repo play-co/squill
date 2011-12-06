@@ -254,8 +254,8 @@ var TreeList = exports = Class(Widget, function(supr) {
 	};
 
 	this.showItem = function(item) {
-		if (this._itemsByKey[item[this._key]]) {
-			console.log('show item:', this._itemsByKey[item[this._key]]);
+		if (this._itemByKey[item[this._key]]) {
+			console.log('show item:', this._itemByKey[item[this._key]]);
 		}
 	};
 

@@ -11,11 +11,17 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(
 	};
 
 	this.load = function() {
-		var data = localStorage.getItem(this._storageKey) || '[]';
-		console.log(localStorage);
-		this._data = JSON.parse(data);
+		var data = localStorage.getItem(this._storageKey) || '{}',
+			key = this._key,
+			i;
 
-		return this._data;
+		this._data = JSON.parse(data);
+		data = [];
+		for (i in this._data) {
+			data[this._data[i][key]] = this._data[i];
+		}
+
+		return data;
 	};
 
 	this.clear = function() {
@@ -27,7 +33,7 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(
 
 		if (isArray(data)) {
 			for (i = 0, j = data.length; i < j; i++) {
-				this._data[data[i][this._key]] = data[i];
+				this.update(data[i]);
 			}
 		} else {
 			this._data[data[this._key]] = data;
@@ -35,12 +41,14 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(
 	};
 
 	this.remove = function(data) {
+		var i, j;
+
 		if (isArray(data)) {
 			for (i = 0, j = data.length; i < j; i++) {
-				this._data.splice(data[i], 1);
+				delete(this._data[data[i]]);
 			}
 		} else {
-			this._data.splice(data, 1);
+			delete(this._data[data]);
 		}
 	};
 

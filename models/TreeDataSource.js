@@ -63,7 +63,9 @@ var TreeDataSourceNode = Class(function() {
 			i, j
 
 		for (i = 0, j = children.length; i < j; i++) {
-			if (children[i] === node) {
+			child = children[i];
+			if (child === node) {
+				child.clear();
 				children.splice(i, 1);
 				return true;
 			}
@@ -254,13 +256,11 @@ var TreeDataSource = exports = Class(PubSub, function() {
 	};
 
 	this.remove = function(node) {
-		this._signalUpdate('REMOVE', node);
-
 		var key = node[this._key],
 			internalNode = this._nodeByKey[key];
 
 		if (internalNode) {
-			internalNode.remove(internalNode);
+			internalNode.remove();
 		}
 
 		return this;
@@ -348,14 +348,17 @@ var TreeDataSource = exports = Class(PubSub, function() {
 				i, j;
 
 			if (changeData.updated.length) {
-				var updateList = [];
+				var updateList = [],
+					data;
 				for (i = 0, j = changeData.updated.length; i < j; i++) {
-					updateList.push(this._nodeByKey[changeData.updated[i]].toJSONData(false, true));
+					data = this._nodeByKey[changeData.updated[i]].toJSONData(false, true);
+					updateList.push(data);
 				}
 				this._persistenceHandler.update(updateList);
 			}
 
 			if (changeData.removed.length) {
+				console.log('remove items:', changeData.removed);
 				this._persistenceHandler.remove(changeData.removed);
 			}
 
