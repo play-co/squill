@@ -1,9 +1,8 @@
 "use import";
 
-import lib.PubSub;
-import std.js as JS;
+import .BasicDataSource as BasicDataSource;
 
-var DataSource = exports = Class(lib.PubSub, function() {
+var DataSource = exports = Class(BasicDataSource, function() {
 
 	var defaults = {
 		key: 'id',
@@ -14,13 +13,12 @@ var DataSource = exports = Class(lib.PubSub, function() {
 	this.init = function(opts) {
 		opts = merge(opts, defaults);
 
-		this.key = opts.key || 'id';
-		this._channel = opts.channel;
-		this._hasRemote = opts.hasRemote;
 		this._byIndex = [];
 		this._byID = {};
+
 		this.length = 0;
-		
+		this._persistenceHandler = opts.persistenceHandler || null;
+
 		if (opts.sorter) {
 			this.setSorter(opts.sorter);
 		}
@@ -37,7 +35,6 @@ var DataSource = exports = Class(lib.PubSub, function() {
 		}
 	};
 
-	// signals an item has changed -- see replace
 	this.signalUpdate = function(item) {
 		this.publish('Update', item[this.key], item);
 		if (this._hasRemote) {
@@ -48,7 +45,7 @@ var DataSource = exports = Class(lib.PubSub, function() {
 	var toStringSort = function() { return this._sortKey; };
 
 	this.add = function(item) {
-		if (JS.isArray(item)) {
+		if (isArray(item)) {
 			for (var i = 0, len = item.length; i < len; ++i) {
 				item[i] && this.add(item[i]);
 			}

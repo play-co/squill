@@ -1,6 +1,6 @@
 "use import";
 
-import lib.PubSub as PubSub;
+import .BasicDataSource as BasicDataSource;
 
 var TreeDataSourceNode = Class(function() {
 	this.init = function(opts) {
@@ -134,7 +134,7 @@ var TreeDataSourceNode = Class(function() {
 	};
 });
 
-var TreeDataSource = exports = Class(PubSub, function() {
+var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 	var defaults = {
 		key: 'id',
 		parentKey: 'parent',
@@ -146,12 +146,10 @@ var TreeDataSource = exports = Class(PubSub, function() {
 		opts = opts || {};
 		opts = merge(opts, defaults);
 
-		this._maxKey = 0;
-		this._key = opts.key;
-		this._parentKey = opts.parentKey;
+		supr(this, 'init', arguments);
 
-		this._channel = opts.channel;
-		this._hasRemote = opts.hasRemote;
+		this._maxKey = 0;
+		this._parentKey = opts.parentKey;
 
 		this._nodeByKey = {};
 		this._persistenceHandler = opts.persistenceHandler || null;
