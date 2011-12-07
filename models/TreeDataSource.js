@@ -96,6 +96,10 @@ var TreeDataSourceNode = Class(function() {
 		return this._data;
 	};
 
+	this.getChildren = function() {
+		return this._children;
+	};
+
 	this.toJSONData = function(list, singleItem) {
 		list = list || [];
 
