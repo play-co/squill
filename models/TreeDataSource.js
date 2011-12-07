@@ -146,7 +146,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		opts = opts || {};
 		opts = merge(opts, defaults);
 
-		supr(this, 'init', arguments);
+		supr(this, 'init', [opts]);
 
 		this._maxKey = 0;
 		this._parentKey = opts.parentKey;
@@ -154,8 +154,6 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		this._nodeByKey = {};
 		this._persistenceHandler = opts.persistenceHandler || null;
 		this._root = null;
-
-		this._changeDataSave = false;
 
 		if (this._persistenceHandler) {
 			this.fromJSON({
@@ -165,6 +163,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 			});
 		}
 
+		this._changeDataSave = false;
 		this._changeData = {
 			updated: [], 
 			updatedHash: {},
@@ -180,7 +179,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		}
 	};
 
-	this._signalUpdate = function(type, node) {
+	this.signalUpdate = function(type, node) {
 		var key = this._key,
 			keyValue = node[key],
 			channel = this._channel;
@@ -235,19 +234,19 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 				parentKey: this._parentKey,
 				parent: internalParent,
 				data: node,
-				signalUpdate: bind(this, this._signalUpdate)
+				signalUpdate: bind(this, this.signalUpdate)
 			});
 
 			this._nodeByKey[node[key]] = internalNode;
 
 			if (internalParent) {
 				internalParent.addChild(internalNode);
-				this._signalUpdate('UPDATE', internalParent.getData());
+				this.signalUpdate('UPDATE', internalParent.getData());
 			} else {
 				this._root = internalNode;
 			}
 
-			this._signalUpdate('UPDATE', internalNode.getData());
+			this.signalUpdate('UPDATE', internalNode.getData());
 		}
 
 		return node;
@@ -345,19 +344,14 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 			var changeData = this._changeData,
 				i, j;
 
+			this._persistenceHandler.remove(changeData.removed);
+
 			if (changeData.updated.length) {
-				var updateList = [],
-					data;
+				var updateList = [];
 				for (i = 0, j = changeData.updated.length; i < j; i++) {
-					data = this._nodeByKey[changeData.updated[i]].toJSONData(false, true);
-					updateList.push(data);
+					updateList.push(this._nodeByKey[changeData.updated[i]].toJSONData(false, true));
 				}
 				this._persistenceHandler.update(updateList);
-			}
-
-			if (changeData.removed.length) {
-				console.log('remove items:', changeData.removed);
-				this._persistenceHandler.remove(changeData.removed);
 			}
 
 			this._persistenceHandler.commit();

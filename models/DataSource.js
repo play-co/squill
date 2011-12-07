@@ -2,7 +2,7 @@
 
 import .BasicDataSource as BasicDataSource;
 
-var DataSource = exports = Class(BasicDataSource, function() {
+var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 	var defaults = {
 		key: 'id',
@@ -11,7 +11,10 @@ var DataSource = exports = Class(BasicDataSource, function() {
 	};
 
 	this.init = function(opts) {
+		opts = opts || {};
 		opts = merge(opts, defaults);
+
+		supr(this, 'init', [opts]);
 
 		this._byIndex = [];
 		this._byID = {};
@@ -19,9 +22,24 @@ var DataSource = exports = Class(BasicDataSource, function() {
 		this.length = 0;
 		this._persistenceHandler = opts.persistenceHandler || null;
 
+		if (this._persistenceHandler) {
+			this.fromJSON({
+				key: this._key,
+				items: this._persistenceHandler.load()
+			});
+		}
+
 		if (opts.sorter) {
 			this.setSorter(opts.sorter);
 		}
+
+		this._changeDataSave = false;
+		this._changeData = {
+			updated: [], 
+			updatedHash: {},
+			removed: [],
+			removedHash: {}
+		};
 	};
 
 	this.onMessage = function(data) {
@@ -30,19 +48,41 @@ var DataSource = exports = Class(BasicDataSource, function() {
 				this.add(data.item);
 				break;
 			case 'REMOVE':
-				this.remove(data[this.key]);
+				this.remove(data[this._key]);
 				break;
 		}
 	};
 
-	this.signalUpdate = function(item) {
-		this.publish('Update', item[this.key], item);
-		if (this._hasRemote) {
-			this.publish('Remote', {type: 'UPDATE', channel: this._channel, item: item});
+	this._saveChanges = function(type, key) {
+		if (this._changeDataSave && !this._changeData[type + 'Hash'][key]) {
+			this._changeData[type + 'Hash'][key] = true;
+			this._changeData[type].push(key);
 		}
 	};
 
-	var toStringSort = function() { return this._sortKey; };
+	this.signalUpdate = function(type, item, id) {
+		switch (type) {
+			case 'UPDATE':
+				this._saveChanges('updated', item[this._key]);
+				this.publish('Update', item[this._key], item);
+				if (this._hasRemote) {
+					this.publish('Remote', {type: 'UPDATE', channel: this._channel, item: item});
+				}
+				break;
+
+			case 'REMOVE':
+				this._saveChanges('removed', item[this._key]);
+				this.publish('Remove', id, item);
+				if (this._hasRemote) {
+					this.publish('Remote', {type: 'REMOVE', channel: this._channel, id: id});
+				}
+				break;
+		}
+	};
+
+	var toStringSort = function() {
+		return this._sortKey;
+	};
 
 	this.add = function(item) {
 		if (isArray(item)) {
@@ -50,10 +90,10 @@ var DataSource = exports = Class(BasicDataSource, function() {
 				item[i] && this.add(item[i]);
 			}
 		} else {
-			if (this._byID[item[this.key]]) { this.remove(item); }
+			if (this._byID[item[this._key]]) { this.remove(item); }
 			var index = this.length++;
-			this._byIndex[index] = this._byID[item[this.key]] = item;
-			this.signalUpdate(item);
+			this._byIndex[index] = this._byID[item[this._key]] = item;
+			this.signalUpdate('UPDATE', item);
 			
 			if (this._sorter) {
 				item._sortKey = this._sorter(item);
@@ -65,19 +105,17 @@ var DataSource = exports = Class(BasicDataSource, function() {
 	};
 	
 	this.remove = function(id) {
-		if (typeof id == 'object') { id = id[this.key]; }
+		if (typeof id == 'object') { id = id[this._key]; }
+		if (!id) { return; }
+
 		if (this._byID[id]) {
+			this.signalUpdate('REMOVE', this._byID[id], id);
 			delete this._byID[id];
 			for (var i = 0, item; item = this._byIndex[i]; ++i) {
 				if (item[this.key] == id) {
 					this._byIndex.splice(i, 1);
 					break;
 				}
-			}
-			
-			this.publish('Remove', id, item);
-			if (this._hasRemote) {
-				this.publish('Remote', {type: 'REMOVE', channel: this._channel, id: id});
 			}
 		}
 
@@ -107,15 +145,19 @@ var DataSource = exports = Class(BasicDataSource, function() {
 
 	this.clear = function() {
 		var index = this._byIndex;
+
 		this._byIndex = [];
 		this._byID = {};
 		this.length = 0;
+
 		for (var i = 0, item; item = index[i]; ++i) {
-			this.publish('Remove', item[this.key]);
+			this.signalUpdate('REMOVE', item, item[this.key]);
 		}
 	};
 
-	this.getCount = function() { return this.length; };
+	this.getCount = function() {
+		return this.length;
+	};
 
 	this.setSorter = function(sorter) {
 		this._sorter = sorter;
@@ -126,10 +168,21 @@ var DataSource = exports = Class(BasicDataSource, function() {
 		return this;
 	};
 
-	this.contains = function(id) { return !!this._byID[id]; };
-	this.get = this.getItemForID = function(id) { return this._byID[id] || null; };
-	this.getItemForIndex = function(index) { return this._byIndex[index]; };
-	this.sort = function() { this._byIndex.sort(); };
+	this.contains = function(id) {
+		return !!this._byID[id];
+	};
+
+	this.get = this.getItemForID = function(id) {
+		return this._byID[id] || null;
+	};
+
+	this.getItemForIndex = function(index) {
+		return this._byIndex[index];
+	};
+
+	this.sort = function() {
+		this._byIndex.sort();
+	};
 
 	this.each = function(cb) {
 		for (var i = 0; i < this.length; ++i) {
@@ -148,5 +201,35 @@ var DataSource = exports = Class(BasicDataSource, function() {
 		this.clear();
 		var key = this.key = data.key;
 		this.add(data.items);
+	};
+
+	this.beginChanges = function() {
+		this._changeDataSave = true;
+		this._changeData = {
+			updated: [], 
+			updatedHash: {},
+			removed: [],
+			removedHash: {}
+		};
+	};
+
+	this.saveChanges = function() {
+		this._changeDataSave = false;
+		if (this._persistenceHandler) {
+			var changeData = this._changeData,
+				i, j;
+
+			this._persistenceHandler.remove(changeData.removed);
+
+			if (changeData.updated.length) {
+				var updateList = [];
+				for (i = 0, j = changeData.updated.length; i < j; i++) {
+					updateList.push(this._byID[changeData.updated[i]]);
+				}
+				this._persistenceHandler.update(updateList);
+			}
+
+			this._persistenceHandler.commit();
+		}
 	};
 });
