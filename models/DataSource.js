@@ -108,7 +108,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 			this.signalUpdate('REMOVE', this._byID[id], id);
 			delete this._byID[id];
 			for (var i = 0, item; item = this._byIndex[i]; ++i) {
-				if (item[this.key] == id) {
+				if (item[this._key] == id) {
 					this._byIndex.splice(i, 1);
 					break;
 				}
@@ -120,7 +120,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.keepOnly = function(list) {
-		var key = this.key;
+		var key = this._key;
 		
 		if (isArray(list)) {
 			var ids = {};
@@ -147,7 +147,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		this.length = 0;
 
 		for (var i = 0, item; item = index[i]; ++i) {
-			this.signalUpdate('REMOVE', item, item[this.key]);
+			this.signalUpdate('REMOVE', item, item[this._key]);
 		}
 	};
 
@@ -188,14 +188,14 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 	this.toJSON = function() {
 		return {
-			key: this.key,
+			key: this._key,
 			items: this._byIndex
 		};
 	};
 
 	this.fromJSON = function(data) {
 		this.clear();
-		var key = this.key = data.key;
+		var key = this._key = data.key;
 		this.add(data.items);
 	};
 
