@@ -160,10 +160,12 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		this._root = null;
 
 		if (this._persistenceHandler) {
+			var data = this._persistenceHandler.load();
+
 			this.fromJSON({
-				key: this._key,
+				key: data.key,
 				parentKey: this._parentKey,
-				items: this._persistenceHandler.load()
+				items: data.items
 			});
 		}
 

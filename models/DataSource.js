@@ -11,7 +11,6 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.init = function(opts) {
-		opts = opts || {};
 		opts = merge(opts, defaults);
 
 		supr(this, 'init', [opts]);
@@ -23,10 +22,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		this._persistenceHandler = opts.persistenceHandler || null;
 
 		if (this._persistenceHandler) {
-			this.fromJSON({
-				key: this._key,
-				items: this._persistenceHandler.load()
-			});
+			this.fromJSON(this._persistenceHandler.load());
 		}
 
 		if (opts.sorter) {

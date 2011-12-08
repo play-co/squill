@@ -25,7 +25,10 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(
 			}
 		}
 
-		return data;
+		return {
+			key: this._key,
+			items: data
+		};
 	};
 
 	this.clear = function() {

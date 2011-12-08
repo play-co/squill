@@ -552,8 +552,8 @@ var Graph = exports = Class(Widget, function(supr) {
 
 	this.setSettings = function(settings) {
 		settings.fillColor = settings.fillColor || '#FFFFFF';
-		settings.orientation = settings.oriantation || 'horizontal';
-		settings.types = settings.types || 'lines';
+		settings.orientation = settings.oriantation || 'vertical';
+		settings.types = settings.types || 'bars,lines,area,points';
 		settings.barPadding = settings.barPadding || 2;
 		settings.barBackground = settings.barBackground || '#F8F8F8';
 		settings.mainPadding = settings.mainPadding || 10;
