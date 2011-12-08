@@ -1,8 +1,9 @@
 jsio('from util.browser import $');
 jsio('import .Widget, .global');
 
-var TextInput = exports= Class(Widget, function(supr) {
+var TextInput = exports = Class(Widget, function(supr) {
 	this._type = 'text';
+	this._tag = 'input';
 	this._css = 'textInput';
 	this._class = global.getWidgetPrefix() + this._css;
 	
@@ -15,7 +16,7 @@ var TextInput = exports= Class(Widget, function(supr) {
 		
 		this._def = {
 			children: [
-				{tag: 'input', id: '_input', attrs: {
+				{tag: this._tag, id: '_input', attrs: {
 					type: opts.type,
 					value: opts.value,
 					name: opts.name

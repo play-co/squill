@@ -23,7 +23,9 @@ exports.get = function(opts, cb) {
 		parent.appendChild(el);
 		setTimeout(cb, 500);
 	} else {
-		util.ajax.get(opts.url, function(err, content) {
+		util.ajax.get({
+			url: opts.url
+		}, function(err, content) {
 			if (err) { logger.error('could not fetch css at', url); return; }
 			var el = $({tag: 'style', text: content, parent: parent});
 
@@ -44,7 +46,7 @@ if (window.DEV_MODE) {
 	window.addEventListener('message', function(evt) {
 		if (evt.data == 'squill.cssLoad.reload()') {
 			for (var i = 0, s; s = exports._styleTags[i]; ++i) {
-				util.ajax.get(s.src, bind(this, function(s, err, content) {
+				util.ajax.get({url: s.src}, bind(this, function(s, err, content) {
 					if (!err) { $.setText(s.el, content); }
 				}, s));
 			}

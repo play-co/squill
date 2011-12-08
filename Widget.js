@@ -18,7 +18,6 @@ function shallowCopy(p) {
 }
 
 var Widget = exports = Class([Element, Events], function() {
-	this._tag = 'div';
 	this._css = 'widget';
 	this._name = '';
 
@@ -29,6 +28,7 @@ var Widget = exports = Class([Element, Events], function() {
 			label: '.Label',
 			list: '.List',
 			text: '.TextInput',
+			textarea: '.TextArea',
 			password: '.TextInput',
 			scroller: '.Scroller',
 			canvas: '.Canvas',
@@ -134,7 +134,6 @@ var Widget = exports = Class([Element, Events], function() {
 							if (typeof TextButton == 'undefined') {
 								import .TextButton;
 							}
-
 							el = new TextButton(def);
 							el.subscribe('Select', target, 'dispatchButton', def.id);
 							break;
