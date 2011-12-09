@@ -96,6 +96,10 @@ var TreeDataSourceNode = Class(function() {
 		return this._data;
 	};
 
+	this.getParent = function() {
+		return this._parent;
+	};
+
 	this.getChildren = function() {
 		return this._children;
 	};
@@ -108,15 +112,18 @@ var TreeDataSourceNode = Class(function() {
 			data = this._data,
 			i, j;
 
+		console.log('save, parentKey:', this._parentKey);
 		for (i in data) {
-			if (i === this._parentKey) {
-				if (data[i] === null) {
-					node[i] = null;
+			if (data.hasOwnProperty(i)) {
+				if (i === this._parentKey) {
+					if (data[i] === null) {
+						node[i] = null;
+					} else {
+						node[i] = this._parent.getData()[this._key];
+					}
 				} else {
-					node[i] = this._parent.getData()[this._key];
+					node[i] = data[i];
 				}
-			} else {
-				node[i] = data[i];
 			}
 		}
 
@@ -263,6 +270,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 			internalNode = this._nodeByKey[key];
 
 		if (internalNode) {
+			console.log('remove(1)');
 			internalNode.remove();
 		}
 
@@ -349,7 +357,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		if (this._persistenceHandler) {
 			var changeData = this._changeData,
 				i, j;
-
+console.log('save:', changeData);
 			this._persistenceHandler.remove(changeData.removed);
 
 			if (changeData.updated.length) {
@@ -357,6 +365,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 				for (i = 0, j = changeData.updated.length; i < j; i++) {
 					updateList.push(this._nodeByKey[changeData.updated[i]].toJSONData(false, true));
 				}
+				console.log('updateList:', JSON.stringify(updateList));
 				this._persistenceHandler.update(updateList);
 			}
 

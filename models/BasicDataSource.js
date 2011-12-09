@@ -10,7 +10,7 @@ var BasicDataSource = exports = Class(PubSub, function(supr) {
 		this._channel = opts.channel;
 		this._hasRemote = opts.hasRemote;
 
-this.key = opts.key;
+this.key = opts.key; // This property should NOT be public!
 	};
 
 	this.getKey = function() {

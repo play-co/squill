@@ -13,17 +13,18 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(
 	};
 
 	this.load = function() {
-		var data = localStorage.getItem(this._storageKey) || '{}',
+		var dataString = localStorage.getItem(this._storageKey) || '{}',
+			data,
 			key = this._key,
 			i;
 
-		this._data = JSON.parse(data);
+		this._data = JSON.parse(dataString);
 		data = [];
 		for (i in this._data) {
-			if (this._data[i]) {
-				data.push(this._data[i]);
-			}
+			data.push(this._data[i]);
 		}
+		// Keep the original...
+		this._data = JSON.parse(dataString);
 
 		return {
 			key: this._key,
@@ -60,6 +61,15 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(
 	};
 
 	this.commit = function() {
-		localStorage.setItem(this._storageKey, JSON.stringify(this._data));
+		var data = {},
+			i, j;
+
+		for (i in this._data) {
+			if (this._data[i]) {
+				data[this._data[i][this._key]] = this._data[i];
+			}
+		}
+
+		localStorage.setItem(this._storageKey, JSON.stringify(data));
 	};
 });
