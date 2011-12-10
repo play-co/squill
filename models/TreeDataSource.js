@@ -194,6 +194,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 
 		switch (type) {
 			case 'UPDATE_NODE':
+				// This is a hack, this._nodeByKey[node[key]]._data should be equal to node but isn't...
 				this._nodeByKey[node[key]].setData(node);
 
 			case 'UPDATE':
