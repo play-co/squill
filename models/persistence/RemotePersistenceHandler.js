@@ -11,6 +11,8 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 				key: this._key,
 				items: []
 			});
+
+			this._onLoad && this._onLoad();
 			return;
 		}
 
@@ -37,6 +39,8 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 							key: this._key,
 							items: data
 						});
+
+						this._onLoad && this._onLoad();
 					}
 				}
 			)

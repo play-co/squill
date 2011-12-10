@@ -30,6 +30,8 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(
 			key: key,
 			items: data
 		});
+
+		this._onLoad && this._onLoad();
 	};
 
 	this.commit = function() {

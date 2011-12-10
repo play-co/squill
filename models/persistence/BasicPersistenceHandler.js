@@ -6,6 +6,8 @@ var BasicPersistanceHandler = exports = Class(PubSub, function(supr) {
 	this.init = function(opts) {
 		supr(this, 'init', arguments);
 
+		this._onLoad = opts.onLoad || null;
+
 		this._params = opts.params || {}
 		this._key = opts.key;
 
