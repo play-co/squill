@@ -12,7 +12,7 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(
 		this.clear();
 	};
 
-	this.load = function() {
+	this.load = function(callback) {
 		var dataString = localStorage.getItem(this._storageKey) || '{}',
 			data,
 			key = this._key,
@@ -26,38 +26,10 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(
 		// Keep the original...
 		this._data = JSON.parse(dataString);
 
-		return {
-			key: this._key,
+		callback({
+			key: key,
 			items: data
-		};
-	};
-
-	this.clear = function() {
-		this._data = {};
-	};
-
-	this.update = function(data) {
-		var i, j;
-
-		if (isArray(data)) {
-			for (i = 0, j = data.length; i < j; i++) {
-				this.update(data[i]);
-			}
-		} else {
-			this._data[data[this._key]] = data;
-		}
-	};
-
-	this.remove = function(data) {
-		var i, j;
-
-		if (isArray(data)) {
-			for (i = 0, j = data.length; i < j; i++) {
-				delete(this._data[data[i]]);
-			}
-		} else {
-			delete(this._data[data]);
-		}
+		});
 	};
 
 	this.commit = function() {

@@ -22,7 +22,14 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		this._persistenceHandler = opts.persistenceHandler || null;
 
 		if (this._persistenceHandler) {
-			this.fromJSON(this._persistenceHandler.load());
+			this._persistenceHandler.load(
+				bind(
+					this,
+					function(data) {
+						this.fromJSON(data);
+					}
+				)
+			);
 		}
 
 		if (opts.sorter) {

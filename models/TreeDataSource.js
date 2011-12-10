@@ -30,7 +30,7 @@ var TreeDataSourceNode = Class(function() {
 		return function() {
 			return function(value) {
 				dataContainer['_' + field] = value;
-				signalUpdate('UPDATE', this);
+				signalUpdate('UPDATE_NODE', this);
 			};
 		};
 	};
@@ -96,6 +96,10 @@ var TreeDataSourceNode = Class(function() {
 		return this._data;
 	};
 
+	this.setData = function(data) {
+		this._data = data;
+	};
+
 	this.getParent = function() {
 		return this._parent;
 	};
@@ -112,7 +116,6 @@ var TreeDataSourceNode = Class(function() {
 			data = this._data,
 			i, j;
 
-		console.log('save, parentKey:', this._parentKey);
 		for (i in data) {
 			if (data.hasOwnProperty(i)) {
 				if (i === this._parentKey) {
@@ -165,16 +168,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		this._nodeByKey = {};
 		this._persistenceHandler = opts.persistenceHandler || null;
 		this._root = null;
-
-		if (this._persistenceHandler) {
-			var data = this._persistenceHandler.load();
-
-			this.fromJSON({
-				key: data.key,
-				parentKey: this._parentKey,
-				items: data.items
-			});
-		}
+		this.load();
 
 		this._changeDataSave = false;
 		this._changeData = {
@@ -195,9 +189,13 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 	this.signalUpdate = function(type, node) {
 		var key = this._key,
 			keyValue = node[key],
-			channel = this._channel;
+			channel = this._channel,
+			data;
 
 		switch (type) {
+			case 'UPDATE_NODE':
+				this._nodeByKey[node[key]].setData(node);
+
 			case 'UPDATE':
 				this._saveChanges('updated', keyValue);
 				this.publish('Update', node, keyValue);
@@ -270,7 +268,6 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 			internalNode = this._nodeByKey[key];
 
 		if (internalNode) {
-			console.log('remove(1)');
 			internalNode.remove();
 		}
 
@@ -357,7 +354,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		if (this._persistenceHandler) {
 			var changeData = this._changeData,
 				i, j;
-console.log('save:', changeData);
+
 			this._persistenceHandler.remove(changeData.removed);
 
 			if (changeData.updated.length) {
@@ -365,11 +362,29 @@ console.log('save:', changeData);
 				for (i = 0, j = changeData.updated.length; i < j; i++) {
 					updateList.push(this._nodeByKey[changeData.updated[i]].toJSONData(false, true));
 				}
-				console.log('updateList:', JSON.stringify(updateList));
 				this._persistenceHandler.update(updateList);
 			}
 
 			this._persistenceHandler.commit();
+		}
+	};
+
+	this.load = function() {
+		if (this._persistenceHandler) {
+			this.clear();
+
+			this._persistenceHandler.load(
+				bind(
+					this,
+					function(data) {
+						this.fromJSON({
+							key: data.key,
+							parentKey: this._parentKey,
+							items: data.items
+						});
+					}
+				)
+			);
 		}
 	};
 });
