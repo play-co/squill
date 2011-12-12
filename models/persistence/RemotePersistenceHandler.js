@@ -1,5 +1,16 @@
 "use import";
 
+/**
+ * A remark about the implementation of this persistence handler:
+ *
+ * All data which is initially loaded here is kept and updated, which is
+ * actually a duplicate function of the dataSource. This is done to make the 
+ * saving to the server as a single chunk of data easy. The commit sends all
+ * data to the server.
+ *
+ * The final version should only send the updates to the server.
+**/
+
 import util.ajax;
 
 import .BasicPersistenceHandler as BasicPersistenceHandler;
@@ -56,12 +67,13 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 			i, j;
 
 		for (i in this._data) {
-			if (this._data[i]) {
+			if (this._data.hasOwnProperty(i)) {
 				data[this._data[i][this._key]] = this._data[i];
 			}
 		}
 
-		data = merge(this._params, {data: data});
+		data = merge({data: data}, this._params);
+
 		util.ajax.post(
 			{
 				url: this._saveURL,
