@@ -229,7 +229,6 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 				for (i = 0, j = changeData.updated.length; i < j; i++) {
 					updateList.push(this._byID[changeData.updated[i]]);
 				}
-				console.log('~~~~~~~~~~~update:', updateList);
 				this._persistenceHandler.update(updateList);
 			}
 
