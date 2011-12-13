@@ -67,7 +67,7 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 			i, j;
 
 		for (i in this._data) {
-			if (this._data.hasOwnProperty(i)) {
+			if (this._data.hasOwnProperty(i) && (this._data[i][this._key] !== undefined)) {
 				data[this._data[i][this._key]] = this._data[i];
 			}
 		}

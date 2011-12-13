@@ -168,13 +168,13 @@ var Graph = exports = Class(Widget, function(supr) {
 
 		ctx.textAlign = 'left';
 
-		label = 'x' + segmentInfo.factor;
+		label = settings.mainLabel + ' x' + segmentInfo.factor;
 
 		i = mainPadding;
-		j = mainPadding + height / 2 + (ctx.measureText(label).width + 30) / 2;
+		j = mainPadding + height / 2 + (ctx.measureText(label).width + settings.itemSize) / 2;
 		ctx.save();
 		ctx.rotate(Math.PI * -0.5);
-		ctx.fillText(label, -j - 30, i);
+		ctx.fillText(label, -j - settings.itemSize, i);
 		ctx.restore();
 
 		j -= ctx.measureText(label).width;
@@ -378,22 +378,22 @@ var Graph = exports = Class(Widget, function(supr) {
 
 		ctx.textAlign = 'left';
 
-		label = 'x' + segmentInfo.factor;
+		label = settings.mainLabel + ' x' + segmentInfo.factor;
 
-		i = mainPadding + width / 2 - (ctx.measureText(label).width + 30) / 2 + segmentInfo.maxLabel;
+		i = mainPadding + width / 2 - (ctx.measureText(label).width + settings.itemSize) / 2 + segmentInfo.maxLabel;
 		j = mainPadding + height + 18;
 		ctx.fillText(label, i, j);
 
 		i += ctx.measureText(label).width;
 		ctx.beginPath();
 		ctx.moveTo(i + 4, j + 7.5);
-		ctx.lineTo(i + 30, j + 7.5);
+		ctx.lineTo(i + settings.itemSize, j + 7.5);
 		ctx.stroke();
 
 		ctx.beginPath();
-		ctx.moveTo(i + 26, j + 3.5);
-		ctx.lineTo(i + 30, j + 7.5);
-		ctx.lineTo(i + 26, j + 11.5);
+		ctx.moveTo(i + settings.itemSize - 4, j + 3.5);
+		ctx.lineTo(i + settings.itemSize, j + 7.5);
+		ctx.lineTo(i + settings.itemSize - 4, j + 11.5);
 		ctx.stroke();
 	}
 
@@ -517,14 +517,14 @@ var Graph = exports = Class(Widget, function(supr) {
 		switch (settings.orientation) {
 			case 'horizontal':
 				el.width = this._width;
-				el.height = data.length * 30 + this._settings.valueSpace;
+				el.height = data.length * settings.itemSize + this._settings.valueSpace;
 				axisRenderMethod = bind(this, this._renderVerticalAxis);
 				barsRenderMethod = bind(this, this._renderHorizontalBars);
 				pointsRenderMethod = bind(this, this._renderHorizontalPoints);
 				break;
 
 			case 'vertical':
-				el.width = data.length * 30 + this._settings.valueSpace;
+				el.width = data.length * settings.itemSize + this._settings.valueSpace;
 				el.height = this._height;
 				axisRenderMethod = bind(this, this._renderHorizontalAxis);
 				barsRenderMethod = bind(this, this._renderVerticalBars);
@@ -551,8 +551,9 @@ var Graph = exports = Class(Widget, function(supr) {
 	};
 
 	this.setSettings = function(settings) {
+		settings.mainLabel = settings.mainLabel || '';
 		settings.fillColor = settings.fillColor || '#FFFFFF';
-		settings.orientation = settings.oriantation || 'vertical';
+		settings.orientation = settings.oriantation || 'horizontal';
 		settings.types = settings.types || 'bars,lines,area,points';
 		settings.barPadding = settings.barPadding || 2;
 		settings.barBackground = settings.barBackground || '#F8F8F8';
@@ -561,6 +562,7 @@ var Graph = exports = Class(Widget, function(supr) {
 		settings.dataColors = settings.dataColors || ['#DD0000', '#00DD00', '#0000DD'];
 		settings.font = settings.font || '13px Verdana';
 		settings.maxLabelSize = settings.maxLabelSize || 200;
+		settings.itemSize = settings.itemSize || 50;
 
 		this._settings = settings;
 	};

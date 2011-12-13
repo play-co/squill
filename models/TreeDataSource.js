@@ -166,8 +166,9 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		this._parentKey = opts.parentKey;
 
 		this._nodeByKey = {};
-		this._persistenceHandler = opts.persistenceHandler || null;
 		this._root = null;
+
+		this._persistenceHandler = opts.persistenceHandler || null;
 		this.load();
 
 		this._changeDataSave = false;
@@ -321,6 +322,15 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 			items = data.items,
 			item,
 			i, j;
+
+		var toString = function() { 
+			return 10000000 + this[parentKey];
+		}
+
+		for (i = 0, j = items.length; i < j; i++) {
+			items[i].toString = toString;
+		}
+		items.sort();
 
 		for (i = 0, j = items.length; i < j; i++) {
 			item = items[i];

@@ -43,13 +43,16 @@ exports.get = function(opts, cb) {
 
 if (window.DEV_MODE) {
 	exports._styleTags = [];
+	window.reloadCSS = function() {
+		for (var i = 0, s; s = exports._styleTags[i]; ++i) {
+			util.ajax.get({url: s.src}, bind(this, function(s, err, content) {
+				if (!err) { $.setText(s.el, content); }
+			}, s));
+		}
+	}
 	window.addEventListener('message', function(evt) {
 		if (evt.data == 'squill.cssLoad.reload()') {
-			for (var i = 0, s; s = exports._styleTags[i]; ++i) {
-				util.ajax.get({url: s.src}, bind(this, function(s, err, content) {
-					if (!err) { $.setText(s.el, content); }
-				}, s));
-			}
+			reloadCSS();
 		}
 	}, true);
 }

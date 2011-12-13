@@ -105,7 +105,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 					parent: $({
 								parent: $.id(this._contentId),
 								id: menuId,
-								className: this._classNames.nodeWrapper //: this._classNames.nodeWrapperHidden
+								className: visible ? this._classNames.nodeWrapper : this._classNames.nodeWrapperHidden
 							}),
 					className: this._classNames.node
 				});
@@ -185,7 +185,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 			if (menuStack[menuStack.length - 1].children && menuStack[menuStack.length - 1].children.length) {
 				i++;
 			}
-			$.id(this._contentId).style.width = (i * 200) + 'px';
+			$.id(this._contentId).style.width = (i * 200 + 500) + 'px';
 		}
 
 		this.publish('SelectItem', item.data);
@@ -218,7 +218,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 			parentItem = this._itemByKey[item.parent[this._key]];
 			if (parentItem) {
 				if (!parentItem.group) {
-					parentItem.group = this._createGroup(true);
+					parentItem.group = this._createGroup(false);
 				}
 				if (!parentItem.children) {
 					parentItem.children = [];

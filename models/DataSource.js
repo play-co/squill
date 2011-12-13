@@ -19,18 +19,9 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		this._byID = {};
 
 		this.length = 0;
-		this._persistenceHandler = opts.persistenceHandler || null;
 
-		if (this._persistenceHandler) {
-			this._persistenceHandler.load(
-				bind(
-					this,
-					function(data) {
-						this.fromJSON(data);
-					}
-				)
-			);
-		}
+		this._persistenceHandler = opts.persistenceHandler || null;
+		this.load();
 
 		if (opts.sorter) {
 			this.setSorter(opts.sorter);
@@ -64,6 +55,9 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.signalUpdate = function(type, item, id) {
+		if (item[this._key] === undefined) {
+			return;
+		}
 		switch (type) {
 			case 'UPDATE':
 				this._saveChanges('updated', item[this._key]);
@@ -97,7 +91,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 			var index = this.length++;
 			this._byIndex[index] = this._byID[item[this._key]] = item;
 			this.signalUpdate('UPDATE', item);
-			
+
 			if (this._sorter) {
 				item._sortKey = this._sorter(item);
 				item.toString = toStringSort;
@@ -233,6 +227,21 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 			}
 
 			this._persistenceHandler.commit();
+		}
+	};
+
+	this.load = function() {
+		if (this._persistenceHandler) {
+			this.clear();
+
+			this._persistenceHandler.load(
+				bind(
+					this,
+					function(data) {
+						this.fromJSON(data);
+					}
+				)
+			);
 		}
 	};
 });
