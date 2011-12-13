@@ -92,6 +92,16 @@ var TreeDataSourceNode = Class(function() {
 		}
 	};
 
+	this.sort = function() {
+		var children = this._children,
+			i, j
+
+		children.sort();
+		for (i = 0, j = children.length; i < j; i++) {
+			children[i].sort();
+		}
+	};
+
 	this.getData = function() {
 		return this._data;
 	};
@@ -168,8 +178,12 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		this._nodeByKey = {};
 		this._root = null;
 
+		this._sorter = null;
+		if (opts.sorter) {
+			this.setSorter(opts.sorter);
+		}
+
 		this._persistenceHandler = opts.persistenceHandler || null;
-		this.load();
 
 		this._changeDataSave = false;
 		this._changeData = {
@@ -217,6 +231,10 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		}
 	};
 
+	var toStringSort = function() {
+		return this._sortKey;
+	};
+
 	this.add = function(node) {
 		var parent = node[this._parentKey] || null,
 			internalParent,
@@ -260,6 +278,11 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 			}
 
 			this.signalUpdate('UPDATE', internalNode.getData());
+
+			if (this._sorter) {
+				internalNode._sortKey = this._sorter(internalNode.getData());
+				internalNode.toString = toStringSort;
+			}
 		}
 
 		return node;
@@ -380,7 +403,21 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		}
 	};
 
-	this.load = function() {
+	this.setSorter = function(sorter) {
+		this._sorter = sorter;
+	};
+
+	this.setPersistenceHandler = function(persistenceHandler) {
+		this._persistenceHandler = persistenceHandler;
+	};
+
+	this.sort = function() {
+		if (this._root) {
+			this._root.sort();
+		}
+	};
+
+	this.load = function(onLoad) {
 		if (this._persistenceHandler) {
 			this.clear();
 
@@ -393,6 +430,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 							parentKey: this._parentKey,
 							items: data.items
 						});
+						onLoad && onLoad();
 					}
 				)
 			);

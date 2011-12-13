@@ -3,6 +3,8 @@
 from util.browser import $;
 import .Widget;
 
+var hint = null;
+
 var Graph = exports = Class(Widget, function(supr) {
 	this._css = 'cnvs';
 	this._type = 'canvas';
@@ -15,6 +17,45 @@ var Graph = exports = Class(Widget, function(supr) {
 
 		this._width = opts.width || 400;
 		this._height = opts.height || 400;
+
+		this._hint = hint || $({
+			parent: document.body,
+			className: 'graphHint'
+		});
+
+		this._rectangles = [];
+
+		$.onEvent(this._el, 'mousemove', this, this._onMouseMove);
+		$.onEvent(this._el, 'mouseout', this, this._onMouseOut);
+	};
+
+	this._onMouseMove = function(evt) {
+		var rectangles = this._rectangles,
+			rectangle,
+			found = false,
+			i = rectangles.length;
+
+		while (i) {
+			rectangle = rectangles[--i];
+			if ((evt.offsetX >= rectangle.x1) && (evt.offsetY >= rectangle.y1) &&
+				(evt.offsetX <= rectangle.x2) && (evt.offsetY <= rectangle.y2)) {
+				found = true;
+				break;	
+			}
+		}
+
+		if (found) {
+			this._hint.innerHTML = rectangle.label;
+			this._hint.style.left = (evt.pageX + 15) + 'px';
+			this._hint.style.top = (evt.pageY + 15) + 'px';
+			this._hint.style.display = 'block';
+		} else {
+			this._hint.style.display = 'none';
+		}
+	};
+
+	this._onMouseOut = function(evt) {
+		this._hint.style.display = 'none';
 	};
 
 	this.buildWidget = function() {
@@ -116,8 +157,10 @@ var Graph = exports = Class(Widget, function(supr) {
 			ctx.fillStyle = '#000000';
 			ctx.save();
 			ctx.rotate(Math.PI * -0.5);
-			ctx.fillText(this._trimLabel(segmentInfo, ctx, data[i].title), -(mainPadding + height + 4), x);
+			label = this._trimLabel(segmentInfo, ctx, data[i].title);
+			ctx.fillText(label, -(mainPadding + height + 4), x);
 			ctx.restore();
+
 			if ((i & 1) === 0) {
 				ctx.fillStyle = settings.barBackground;
 				ctx.fillRect(x, mainPadding, step, height);
@@ -323,8 +366,16 @@ var Graph = exports = Class(Widget, function(supr) {
 
 		for (i = 0, j = data.length; i < j; i++) {
 			y = mainPadding + i * step;
+			label = this._trimLabel(segmentInfo, ctx, data[i].title);
 			ctx.fillStyle = '#000000';
-			ctx.fillText(this._trimLabel(segmentInfo, ctx, data[i].title), mainPadding + segmentInfo.maxLabel - 4, y + 4);
+			ctx.fillText(label, mainPadding + segmentInfo.maxLabel - 4, y + 4);
+			this._rectangles.push({
+				x1: mainPadding + segmentInfo.maxLabel - 4 - ctx.measureText(label).width,
+				y1: y + 4,
+				x2: mainPadding + segmentInfo.maxLabel - 4,
+				y2: y + 20,
+				label: data[i].title
+			});
 			if ((i & 1) === 0) {
 				ctx.fillStyle = settings.barBackground;
 				ctx.fillRect(mainPadding + segmentInfo.maxLabel, y, width, step);

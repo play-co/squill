@@ -134,7 +134,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 
 	this._removeFromStack = function(depth) {
 		var menuStack = this._menuStack,
-			info;
+			info = null;
 
 		while (menuStack.length && (menuStack[menuStack.length - 1].depth >= depth)) {
 			info = menuStack.pop();
@@ -147,6 +147,8 @@ var TreeList = exports = Class(Widget, function(supr) {
 				$.removeClass(info.group.menuId, this._classNames.nodeWrapper);
 			}
 		}
+
+		return info;
 	};
 
 	this._addToStack = function(item) {
@@ -157,7 +159,22 @@ var TreeList = exports = Class(Widget, function(supr) {
 
 		$.addClass(item.node.id, (item.children && item.children.length) ? this._classNames.nodeActiveChild : this._classNames.nodeActive);
 
-		if (item.group) {
+		if (item.children && item.children.length) {
+			if (!item.group) {
+				var child,
+					i, j;
+
+				item.children.sort();
+
+				item.group = this._createGroup(true);
+				for (i = 0, j = item.children.length; i < j; i++) {
+					child = item.children[i];
+					this._createItem(child, item.group);
+					if (child.children && child.children.length) {
+						$.addClass(child.node.id, this._classNames.nodeChild);
+					}
+				}
+			}
 			$.addClass(item.group.menuId, this._classNames.nodeWrapper);
 			$.removeClass(item.group.menuId, this._classNames.nodeWrapperHidden);
 		}
@@ -165,6 +182,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 
 	this.onClick = function(item) {
 		var menuStack = this._menuStack,
+			lastItem = null,
 			id,
 			i;
 
@@ -174,9 +192,11 @@ var TreeList = exports = Class(Widget, function(supr) {
 		}
 
 		if (menuStack.length && (item.depth <= menuStack[menuStack.length - 1].depth)) {
-			this._removeFromStack(item.depth);
+			lastItem = this._removeFromStack(item.depth);
 		}
-		this._addToStack(item);
+		if (lastItem !== item) {
+			this._addToStack(item);
+		}
 
 		this._menuActiveItem = item;
 		$.addClass(this._menuActiveItem.node, this._classNames.nodeSelected);
@@ -192,12 +212,17 @@ var TreeList = exports = Class(Widget, function(supr) {
 	};
 
 	this.onUpdateItem = function(item, key) {
-		var treeItem = {title: item[this._label]},
+		var treeItem = {
+				title: item[this._label],
+				toString: function() { return this.title; }
+			},
 			parentItem,
 			group;
 
 		if (this._itemByKey[key]) {
-			this._itemByKey[key].node.innerHTML = item[this._label];
+			if (this._itemByKey[key].node) {
+				this._itemByKey[key].node.innerHTML = item[this._label];
+			}
 			return;
 		}
 
@@ -208,27 +233,23 @@ var TreeList = exports = Class(Widget, function(supr) {
 			treeItem.depth = 0;
 			treeItem.parent = null;
 		} else {
+			/*
 			if (this._menuActiveItem) {
 				$.removeClass(this._menuActiveItem.node, this._classNames.nodeSelected);
 				$.removeClass(this._menuActiveItem.node, this._classNames.nodeSelectedChild);
 				this._removeFromStack(this._menuActiveItem.depth);
 				this._menuActiveItem = false;
 			}
-
+			*/
 			parentItem = this._itemByKey[item.parent[this._key]];
 			if (parentItem) {
-				if (!parentItem.group) {
-					parentItem.group = this._createGroup(false);
-				}
 				if (!parentItem.children) {
 					parentItem.children = [];
 				}
 				parentItem.children.push(treeItem);
-				this._createItem(treeItem, parentItem.group);
 			}
 			treeItem.depth = parentItem.depth + 1;
 			treeItem.parent = parentItem;
-			$.addClass(parentItem.node.id, this._classNames.nodeChild);
 		}
 
 		treeItem.data = item;

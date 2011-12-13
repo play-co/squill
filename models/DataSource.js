@@ -20,12 +20,12 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 		this.length = 0;
 
-		this._persistenceHandler = opts.persistenceHandler || null;
-		this.load();
-
 		if (opts.sorter) {
 			this.setSorter(opts.sorter);
 		}
+
+		this._persistenceHandler = opts.persistenceHandler || null;
+		this.load();
 
 		this._changeDataSave = false;
 		this._changeData = {
