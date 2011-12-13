@@ -411,6 +411,10 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		this._persistenceHandler = persistenceHandler;
 	};
 
+	this.getByKey = function(id) {
+		return this._nodeByKey[id] || null;
+	};
+
 	this.sort = function() {
 		if (this._root) {
 			this._root.sort();

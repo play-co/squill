@@ -24,6 +24,7 @@ var Graph = exports = Class(Widget, function(supr) {
 		});
 
 		this._rectangles = [];
+		this._data = false;
 
 		$.onEvent(this._el, 'mousemove', this, this._onMouseMove);
 		$.onEvent(this._el, 'mouseout', this, this._onMouseOut);
@@ -599,6 +600,8 @@ var Graph = exports = Class(Widget, function(supr) {
 				barsRenderMethod(segmentInfo, ctx, data);
 			}
 		}
+
+		this._data = data;
 	};
 
 	this.setSettings = function(settings) {
@@ -616,5 +619,9 @@ var Graph = exports = Class(Widget, function(supr) {
 		settings.itemSize = settings.itemSize || 50;
 
 		this._settings = settings;
+	};
+
+	this.update = function() {
+		this._data && this.setData(this._data);
 	};
 });
