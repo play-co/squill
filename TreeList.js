@@ -217,7 +217,9 @@ var TreeList = exports = Class(Widget, function(supr) {
 				toString: function() { return this.title; }
 			},
 			parentItem,
-			group;
+			children,
+			child,
+			i, j;
 
 		if (this._itemByKey[key]) {
 			if (this._itemByKey[key].node) {
@@ -233,20 +235,31 @@ var TreeList = exports = Class(Widget, function(supr) {
 			treeItem.depth = 0;
 			treeItem.parent = null;
 		} else {
-			/*
-			if (this._menuActiveItem) {
-				$.removeClass(this._menuActiveItem.node, this._classNames.nodeSelected);
-				$.removeClass(this._menuActiveItem.node, this._classNames.nodeSelectedChild);
-				this._removeFromStack(this._menuActiveItem.depth);
-				this._menuActiveItem = false;
-			}
-			*/
 			parentItem = this._itemByKey[item.parent[this._key]];
 			if (parentItem) {
 				if (!parentItem.children) {
 					parentItem.children = [];
 				}
-				parentItem.children.push(treeItem);
+				children = parentItem.children;
+
+				if (this._menuActiveItem && (this._menuActiveItem.parent === parentItem)) {
+					for (i = 0, j = children.length; i < j; i++) {
+						$.remove(children[i].node)
+						children[i].node = null;
+					}
+					children.push(treeItem);
+					children.sort();
+
+					for (i = 0, j = children.length; i < j; i++) {
+						child = children[i];
+						this._createItem(child, parentItem.group);
+						if (child.children && child.children.length) {
+							$.addClass(child.node.id, this._classNames.nodeChild);
+						}
+					}
+				} else {
+					children.push(treeItem);
+				}
 			}
 			treeItem.depth = parentItem.depth + 1;
 			treeItem.parent = parentItem;
