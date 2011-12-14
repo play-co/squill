@@ -16,6 +16,45 @@ import util.ajax;
 import .BasicPersistenceHandler as BasicPersistenceHandler;
 
 var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function(supr) {	
+	this._checkChangeData = function() {
+		if (!this._updateList) {
+			this._updateList = [];
+		}
+		if (!this._removeList) {
+			this._removeList = [];
+		}
+	};
+
+	this.update = function(data) {
+		var i, j;
+
+		if (isArray(data)) {
+			for (i = 0, j = data.length; i < j; i++) {
+				this.update(data[i]);
+			}
+		} else {
+			this._checkChangeData();
+			this._updateList.push(data);
+
+			this._data[data[this._key]] = data;
+		}
+	};
+
+	this.remove = function(data) {
+		var i, j;
+
+		if (isArray(data)) {
+			for (i = 0, j = data.length; i < j; i++) {
+				this.remove(data[i]);
+			}
+		} else {
+			this._checkChangeData();
+			this._removeList.push(data);
+
+			delete(this._data[data]);
+		}
+	};
+
 	this.load = function(callback) {
 		if (this._loadURL === null) {
 			callback({
@@ -35,13 +74,20 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 			bind(
 				this,
 				function(err, response) {
-					this._data = JSON.parse(response);
+					// @todo handle error response...
+					this._data = JSON.parse(response).data;
+
+					delete(this._data.update);
+					delete(this._data.remove);
+
 					var data = [];
 					for (var i in this._data) {
-						data.push(this._data[i]);
+						if (this._data.hasOwnProperty(i)) {
+							data.push(this._data[i]);
+						}
 					}
 					// Keep the original...
-					this._data = JSON.parse(response);
+					this._data = JSON.parse(response).data;
 
 					if (err) { 
 						//return alert(JSON.stringify(err));
@@ -72,15 +118,23 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 			}
 		}
 
+		this._checkChangeData();
+
+		data.remove = this._removeList;
+		data.update = this._updateList;
+
 		data = merge({data: data}, this._params);
 		util.ajax.post(
 			{
 				url: this._saveURL,
-				data: data
+				data: data,
 			},
 			bind(
 				this,
-				function(err, response) {}
+				function(err, response) {
+					this._removeList = [];
+					this._updateList = [];
+				}
 			)
 		);
 	};
