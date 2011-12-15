@@ -439,8 +439,16 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 						});
 						onLoad && onLoad();
 					}
+				),
+				bind(
+					this,
+					this._reportError
 				)
 			);
 		}
+	};
+
+	this._reportError = function(message) {
+		this.publish('Error', message);
 	};
 });

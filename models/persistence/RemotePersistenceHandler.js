@@ -55,12 +55,9 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 		}
 	};
 
-	this.load = function(callback) {
+	this.load = function(successCallback, errorCallback) {
 		if (this._loadURL === null) {
-			callback({
-				key: this._key,
-				items: []
-			});
+			errorCallback && errorCallback('Loading URL is not set.');
 
 			this._onLoad && this._onLoad();
 			return;
@@ -74,25 +71,49 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 			bind(
 				this,
 				function(err, response) {
-					// @todo handle error response...
-					this._data = JSON.parse(response).data;
+					var errorMessage = false,
+						receivedData = {},
+						data = [],
+						i;
 
-					delete(this._data.update);
-					delete(this._data.remove);
-
-					var data = [];
-					for (var i in this._data) {
-						if (this._data.hasOwnProperty(i)) {
-							data.push(this._data[i]);
+					if (err) {
+						errorMessage = err;
+					}
+					
+					if (!errorMessage) {
+						try {
+							receivedData = JSON.parse(response);
+						} catch (e) {
+							errorMessage = 'Something went wrong decoding the JSON data.';
 						}
 					}
-					// Keep the original...
-					this._data = JSON.parse(response).data;
 
-					if (err) { 
-						//return alert(JSON.stringify(err));
+					if (receivedData.error !== false) {
+						errorMessage = 'The server reported a problem fetching the data: ' + receivedData.message;
+					}
+					if (!errorMessage && (receivedData.data === undefined)) {
+						errorMessage = 'Data missing';
+					}
+
+					if (!errorMessage) {
+						receivedData = receivedData.data;
+
+						delete(receivedData.update);
+						delete(receivedData.remove);
+
+						for (i in receivedData) {
+							if (receivedData.hasOwnProperty(i)) {
+								data.push(receivedData[i]);
+							}
+						}
+						// Keep the original...
+						this._data = JSON.parse(response).data;
+					}
+
+					if (errorMessage) {
+						errorCallback && errorCallback('Loading error: ' + errorMessage);
 					} else {
-						callback({
+						successCallback({
 							key: this._key,
 							items: data
 						});
