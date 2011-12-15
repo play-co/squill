@@ -346,19 +346,22 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 			item,
 			i, j;
 
-		var toString = function() { 
-			return 10000000 + this[parentKey];
+		var toString = function() {
+			return !this[parentKey] ? '00000000' : 10000000 + this[parentKey];
 		}
 
 		for (i = 0, j = items.length; i < j; i++) {
-			items[i].toString = toString;
+			item = items[i];
+			item.toString = toString;
+			if ((item[parentKey] === null) || (item[parentKey] === -1)) {
+				item[parentKey] = null;
+			}
 		}
-		items.sort();
 
 		for (i = 0, j = items.length; i < j; i++) {
 			item = items[i];
 			if (item) {
-				item[parentKey] = item[parentKey] ? this._nodeByKey[item[parentKey]].getData() : null;
+				item[parentKey] = this._nodeByKey[item[parentKey]] ? this._nodeByKey[item[parentKey]].getData() : null;
 				this.add(item);
 			}
 		}

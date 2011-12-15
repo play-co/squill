@@ -228,12 +228,14 @@ var TreeList = exports = Class(Widget, function(supr) {
 			return;
 		}
 
-		if (item.parent === null) {
-			this._rootGroup = this._createGroup(true);
-			this._createItem(treeItem, this._rootGroup);
-			this._root = treeItem;
-			treeItem.depth = 0;
-			treeItem.parent = null;
+		if ((item.parent === null) || (item.parent === -1)) {
+			if (this._root === null) {
+				this._rootGroup = this._createGroup(true);
+				this._createItem(treeItem, this._rootGroup);
+				this._root = treeItem;
+				treeItem.depth = 0;
+				treeItem.parent = null;
+			}
 		} else {
 			parentItem = this._itemByKey[item.parent[this._key]];
 			if (parentItem) {
@@ -242,14 +244,20 @@ var TreeList = exports = Class(Widget, function(supr) {
 				}
 				children = parentItem.children;
 
-				if (this._menuActiveItem && (this._menuActiveItem.parent === parentItem)) {
+				if (this._menuActiveItem && ((this._menuActiveItem === parentItem) || (this._menuActiveItem.parent === parentItem))) {
 					for (i = 0, j = children.length; i < j; i++) {
-						$.remove(children[i].node)
-						children[i].node = null;
+						if (children[i].node) {
+							$.remove(children[i].node)
+							children[i].node = null;
+						}
 					}
 					children.push(treeItem);
 					children.sort();
 
+					if (!parentItem.group) {
+						parentItem.group = this._createGroup(true);
+						$.id(this._contentId).style.width = ((this._menuStack.length + 1) * 200 + 500) + 'px';
+					}
 					for (i = 0, j = children.length; i < j; i++) {
 						child = children[i];
 						this._createItem(child, parentItem.group);

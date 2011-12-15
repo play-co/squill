@@ -124,10 +124,11 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 		data.update = this._updateList;
 
 		data = merge({data: data}, this._params);
+
 		util.ajax.post(
 			{
 				url: this._saveURL,
-				data: data,
+				data: data
 			},
 			bind(
 				this,
