@@ -96,6 +96,14 @@ var Widget = exports = Class([Element, Events], function() {
 		}
 	};
 
+	this.getChildren = function() {
+		return this._children;
+	};
+
+	this.getFirstChild = function() {
+		return (this._children && this._children.length) ? this._children[0] : null;
+	};
+
 	this.dispatchButton = function(target, evt) {
 		this.delegate.call(this, target, evt);
 	};
