@@ -131,9 +131,9 @@ var DataSource = exports = Class(lib.PubSub, function() {
 	this.getItemForIndex = function(index) { return this._byIndex[index]; }
 	this.sort = function() { this._byIndex.sort(); }
 	
-	this.each = function(cb) {
+	this.forEach = this.each = function(cb, context) {
 		for (var i = 0; i < this.length; ++i) {
-			cb(this._byIndex[i]);
+			cb.call(context, this._byIndex[i]);
 		}
 	}
 	
