@@ -75,9 +75,19 @@ var Widget = exports = Class([Element, Events], function() {
 		if (opts.controller) { this.controller = opts.controller; }
 		if (opts.parent) {
 			var parent = this._parent = opts.parent;
-			if (parent instanceof Widget) { opts.parent = parent.getContainer(); }
-			else if (!parent.appendChild) { delete opts.parent; }
+			var hasWidgetParent = parent instanceof Widget;
+			if (hasWidgetParent) {
+				var widgetParent = opts.parent;
+				opts.parent = parent.getContainer();
+			} else if (!parent.appendChild) {
+				delete opts.parent;
+			}
+			
 			this.build();
+			
+			if (hasWidgetParent) {
+				widgetParent.addWidget(this);
+			}
 		}
 	};
 
