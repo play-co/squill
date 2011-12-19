@@ -181,9 +181,9 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		this._byIndex.sort();
 	};
 
-	this.each = function(cb) {
+	this.forEach = this.each = function(cb, context) {
 		for (var i = 0; i < this.length; ++i) {
-			cb(this._byIndex[i]);
+			cb.call(context, this._byIndex[i]);
 		}
 	};
 
