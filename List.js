@@ -42,8 +42,6 @@ var List = exports = Class(Widget, function(supr) {
 	// cells go in _container
 	this.getContainer = function() { return this._container; }
 
-	this.onShow = function() { this.needsRender(); }
-
 	this.setDataSource = function(dataSource) {
 		this._dataSource = dataSource;
 		this._dataSource.subscribe('Update', this, 'onUpdateItem');
@@ -126,6 +124,8 @@ var List = exports = Class(Widget, function(supr) {
 			}
 		}
 	};
+
+	this.onShow = function() { supr(this, 'onShow', arguments); this.needsRender(); }
 
 	// just render all cells for now
 	this.render = function() {
