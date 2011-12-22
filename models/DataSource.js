@@ -169,6 +169,10 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		return !!this._byID[id];
 	};
 
+	this.getKey = function() {
+		return this._key;
+	}
+
 	this.get = this.getItemForID = function(id) {
 		return this._byID[id] || null;
 	};
