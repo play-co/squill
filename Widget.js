@@ -35,7 +35,8 @@ var Widget = exports = Class([Element, Events], function() {
 			scroller: '.Scroller',
 			canvas: '.Canvas',
 			slider: '.Slider',
-			color: '.Color'
+			color: '.Color',
+			select: '.SelectBox',
 		};
 
 		// ===
