@@ -45,6 +45,10 @@ var List = exports = Class(Widget, function(supr) {
 	this.onShow = function() { this.needsRender(); }
 	
 	this.setDataSource = function(dataSource) {
+		if (this._dataSource) {
+			this._dataSource.unsubscribe('Update', this);
+			this._dataSource.unsubscribe('Remove', this);
+		}
 		this._dataSource = dataSource;
 		this._dataSource.subscribe('Update', this, 'onUpdateItem');
 		this._dataSource.subscribe('Remove', this, 'onRemoveItem');
