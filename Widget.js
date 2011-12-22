@@ -36,7 +36,8 @@ var Widget = exports = Class([Element, Events], function() {
 			color: '.Color',
 			vcenter: '.VerticalCenter',
 			treelist: '.TreeList',
-			graph: '.Graph'
+			graph: '.Graph',
+			select: '.SelectBox',
 		};
 
 		// ===
