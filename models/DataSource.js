@@ -169,6 +169,10 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		return !!this._byID[id];
 	};
 
+	this.getKey = function() {
+		return this._key;
+	}
+
 	this.get = this.getItemForID = function(id) {
 		return this._byID[id] || null;
 	};
@@ -183,7 +187,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 	this.forEach = this.each = function(cb, context) {
 		for (var i = 0; i < this.length; ++i) {
-			cb.call(context, this._byIndex[i]);
+			cb.call(context, this._byIndex[i], this._byIndex[i][this._key]);
 		}
 	};
 
