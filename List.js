@@ -86,6 +86,7 @@ var List = exports = Class(Widget, function(supr) {
 	this._onSelected = function(isSelected, item, id) {
 		if (this._cellsByID[id]) {
 			this._cellsByID[id].updateSelected();
+			this.publish('Select', item);
 		}
 	};
 
