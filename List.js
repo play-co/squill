@@ -88,7 +88,7 @@ var List = exports = Class(Widget, function(supr) {
 	};
 
 	this._onSelected = function(isSelected, item, id) {
-		if (this._cellsByID[id]) {
+		if (this._cellsByID[id] !== undefined) {
 			this._cellsByID[id].updateSelected();
 			this.publish('Select', item);
 		}
@@ -204,7 +204,7 @@ var List = exports = Class(Widget, function(supr) {
 		function renderOne() {
 			var item = this._dataSource.getItemForIndex(i);
 			if (!item) { return false; }
-			
+
 			var id = item[this._dataSource.getKey()];
 			var cell = this._cellsByID[id];
 			if (!cell) {
@@ -212,7 +212,7 @@ var List = exports = Class(Widget, function(supr) {
 			} else {
 				cell.render();
 			}
-			
+
 			this.positionCell(cell, i);
 			++i;
 			return true;
