@@ -54,23 +54,38 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 		if (title) {
 			this._panes[title] = pane;
 		}
-		
+
 		this._panes.push(pane);
-		lib.sort(this._panes, function(pane) { return pane._sortIndex; });
+		lib.sort(this._panes, function(pane) {return pane._sortIndex; });
 		this.tabContainer.appendChild(pane.tab);
-		$.onEvent(pane.tab, 'mousedown', this, 'showPane', pane);
-		if (!this._selectedTab) { this.showPane(pane); }
+		$.onEvent(pane.tab, 'mousedown', this, this.selectPane, pane);
+		if (!this._selectedTab) {
+			this.showPane(pane);
+		}
+
 		return this;
 	}
 	
-	this.getTabs = function() { return this._tabs; }
-	this.getPanes = function() { return this._panes; }
-	
+	this.getTabs = function() {
+		return this._tabs;
+	};
+
+	this.getPanes = function() {
+		return this._panes;
+	};
+
 	this.write = function(buffer) {
 		this._currentPane.innerHTML = String(buffer);
-	}
-	
-	this.selectPane = this.showPane = function(pane) {
+	};
+
+	this.selectPane = function(pane) {
+		if (this._selectedTab !== pane.tab) {
+			this.publish('SelectPane', pane);
+		}
+		this.showPane(pane);
+	};
+
+	this.showPane = function(pane) {
 		var tab = pane.tab;
 		$.removeClass(this._selectedTab, 'selected');
 		$.addClass(tab, 'selected');
@@ -80,7 +95,7 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 		this._selectedPane = pane;
 		pane.show();
 		this.publish('ShowPane', pane);
-	}
+	};
 });
 
 exports.Pane = Class(Widget, function(supr) {
