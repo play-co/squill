@@ -9,13 +9,15 @@ var Slider = exports = Class(Widget, function(supr) {
 
 	this.init = function(params) {
 		this._width = params.width || 100;
+		this._padding = 12;
+		this._hover = false;
 
 		this._def = {
 			children: [
 				{
 					id: params.id + 'Canvas',
 					tag: 'canvas',
-					attrs: {width: this._width, height: '20'}
+					attrs: {width: this._width, height: this._padding * 2}
 				}
 			]
 		};
@@ -24,47 +26,50 @@ var Slider = exports = Class(Widget, function(supr) {
 	};
 
 	this._render = function() {
-		var ctx = this._ctx,
+		var width = this._width,
+			padding = this._padding,
+			ctx = this._ctx,
 			radialGradient,
 			v;
 
-		ctx.clearRect(0, 0, this._width, 20);
+		ctx.clearRect(0, 0, width, padding * 2);
 
 		ctx.lineCap = 'round';
 
-		ctx.lineWidth = 6;
 		ctx.beginPath();
-		ctx.moveTo(7, 10);
-		ctx.lineTo(this._width - 7, 10);
-		ctx.strokeStyle = '#404040';
-		ctx.stroke();
-
-		ctx.lineWidth = 4;
-		ctx.beginPath();
-		ctx.moveTo(8, 12);
-		ctx.lineTo(this._width - 7, 12);
-		ctx.strokeStyle = '#A0A0A0';
-		ctx.stroke();
-
-		ctx.lineWidth = 3;
-		ctx.beginPath();
-		ctx.moveTo(6, 10);
-		ctx.lineTo(this._width - 6, 10);
-		ctx.strokeStyle = '#808080';
-		ctx.stroke();
-
-		v = ~~((this._width - 10) * (this.value - this.min) / (this.max - this.min)),
-
-		ctx.beginPath();
-		ctx.arc(5 + v, 10, 5, 0, Math.PI * 2, false);
+		ctx.arc(padding + 2, padding, 2, Math.PI * 0.5, Math.PI * 1.5, false);
+		ctx.arc(width - padding - 2, padding, 2, Math.PI * 1.5, Math.PI * 0.5, false);
 		ctx.closePath();
 
-		radialGradient = ctx.createRadialGradient(4 + v, 9, 0, 5 + v, 10, 4);
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = '#000000';
+		ctx.stroke();
+		ctx.fillStyle = '#FFFFFF';
+		ctx.fill();
+
+		ctx.save();
+
+		if (this._hover) {
+			ctx.shadowOffsetX = 0;
+			ctx.shadowOffsetY = 0;
+			ctx.shadowBlur = 10;
+			ctx.shadowColor = '#0099FF';
+		}
+
+		v = ~~((width - padding * 2) * (this.value - this.min) / (this.max - this.min));
+
+		ctx.beginPath();
+		ctx.arc(padding + v, padding, 5, 0, Math.PI * 2, false);
+		ctx.closePath();
+
+		radialGradient = ctx.createRadialGradient(padding - 1 + v, padding - 1, 0, padding + v, padding, 4);
 
 		radialGradient.addColorStop(0, '#FFFFFF');
-		radialGradient.addColorStop(1, '#000000');
+		radialGradient.addColorStop(1, '#707070');
 		ctx.fillStyle = radialGradient;
 		ctx.fill();
+
+		ctx.restore();
 	};
 
 	this.buildWidget = function() {
@@ -108,22 +113,41 @@ var Slider = exports = Class(Widget, function(supr) {
 	};
 
 	this._checkMouse = function(evt) {
-		var value;
+		var mouseX = evt.offsetX,
+			mouseY = evt.offsetY,
+			width = this._width,
+			padding = this._padding,
+			hover = this._hover,
+			value;
 
 		if (this._mouseDown) {
-			if ((evt.offsetX > 5) && (evt.offsetY > 5) && (evt.offsetX < this._width - 5) && (evt.offsetY < 15)) {
-				value = (evt.offsetX - 5) / (this._width - 10) * (this.max - this.min);
+			console.log(mouseX, padding);
+			if ((mouseX > padding) && (mouseY > padding - 5) && (mouseX < width - padding) && (mouseY < padding + 5)) {
+				value = (evt.offsetX - padding) / (width - padding * 2) * (this.max - this.min);
 				value = this.min + Math.round(value / this.step) * this.step;
 				this.value = value;
 				this._checkRange();
 				this._render();
 				this._onChange();
 			}
+		} else {
+			if ((mouseY > padding - 5) && (mouseY < padding + 5)) {
+				v = padding + ~~((width - padding * 2) * (this.value - this.min) / (this.max - this.min));
+				this._hover = (mouseX > v - 5) && (mouseY < v + 5);
+			} else {
+				this._hover = false;
+			}
+
+			if (this._hover !== hover) {
+				this._render();
+			}
 		}
 	};
 
 	this._onMouseOut = function(evt) {
 		this._mouseDown = false;
+		this._hover = false;
+		this._render();
 	};
 
 	this._onMouseDown = function(evt) {
