@@ -87,9 +87,11 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 				item[i] && this.add(item[i]);
 			}
 		} else {
-			if (this._byID[item[this._key]]) { this.remove(item); }
+			if (this._byID[item[this.key]]) {
+				this.remove(item);
+			}
 			var index = this.length++;
-			this._byIndex[index] = this._byID[item[this._key]] = item;
+			this._byIndex[index] = this._byID[item[this.key]] = item;
 			this.signalUpdate('UPDATE', item);
 
 			if (this._sorter) {
