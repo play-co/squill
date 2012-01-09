@@ -20,8 +20,6 @@ var Button = exports = Class(Widget, function(supr) {
 			});
 		
 		supr(this, 'create', arguments);
-		
-		this._el.href = 'javascript:> ' + this._opts.label;
 	};
 	
 	this.buildWidget = function() {
@@ -31,9 +29,9 @@ var Button = exports = Class(Widget, function(supr) {
 		this.initKeyEvents(el);
 		
 		el.style.userSelect = 'none';
-        el.style.MozUserSelect = 'none'; // Mozilla
-        el.style.KhtmlUserSelect = 'none'; // Safari
-        el.unselectable = 'on'; // IE
+		el.style.MozUserSelect = 'none'; // Mozilla
+		el.style.KhtmlUserSelect = 'none'; // Safari
+		el.unselectable = 'on'; // IE
 	};
 	
 	this.onClick = function(e) {

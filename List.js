@@ -42,11 +42,13 @@ var List = exports = Class(Widget, function(supr) {
 	// cells go in _container
 	this.getContainer = function() { return this._container; }
 
+	this.getDataSource = function() { return this._dataSource; }
 	this.setDataSource = function(dataSource) {
 		if (this._dataSource) {
 			this._dataSource.unsubscribe('Update', this);
 			this._dataSource.unsubscribe('Remove', this);
 		}
+
 		this._dataSource = dataSource;
 		this._dataSource.subscribe('Update', this, 'onUpdateItem');
 		this._dataSource.subscribe('Remove', this, 'onRemoveItem');
@@ -78,7 +80,7 @@ var List = exports = Class(Widget, function(supr) {
 
 	this.setSelectable = function(selectable) {
 		this.selection = new Selection({
-			dataSource: this._dataSource,
+			parent: this,
 			type: selectable
 		})
 			.subscribe('Select', this, '_onSelected', true)

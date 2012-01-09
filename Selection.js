@@ -22,7 +22,7 @@ import lib.PubSub;
 exports = Class(lib.PubSub, function() {
 
 	this.init = function(opts) {
-		this._dataSource = opts.dataSource;
+		this._parent = opts.parent;
 		this._type = opts.type || false;
 		this._selection = opts.selectionStore || new exports.LocalStore();
 		this._lastSelected = null;
@@ -32,13 +32,13 @@ exports = Class(lib.PubSub, function() {
 
 	this.isSelected = function(id) {
 		if (typeof id == 'object') {
-			id = id[this._dataSource.key];
+			id = id[this._parent.getDataSource().key];
 		}
 		return this._selection.isSelected(id);
 	};
 
 	this.toggle = function(item) {
-		this._setSelected(item, !this.isSelected(item[this._dataSource.key]));
+		this._setSelected(item, !this.isSelected(item[this._parent.getDataSource().key]));
 	};
 
 	this.select = function(item) {
@@ -57,7 +57,7 @@ exports = Class(lib.PubSub, function() {
 
 	this._setSelected = function(item, isSelected) {
 		if (!item) { return; }
-		var key = this._dataSource.key,
+		var key = this._parent.getDataSource().key,
 			id = item[key];
 
 		if (this._selection.isSelected(id) != isSelected) {

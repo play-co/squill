@@ -17,6 +17,31 @@ function shallowCopy(p) {
 	return o;
 }
 
+var WidgetSet = Class(function() {
+	this.init = function() {
+		this.events = [];
+		this.widgets = {};
+	}
+
+	this.addSubscription  = function(widget, signal /* ... args */) {
+		this.events.push({
+			widget: widget,
+			signal: signal,
+			args: Array.prototype.slice.call(arguments, 2)
+		});
+	}
+
+	this.apply = function(target) {
+		merge(target, this.widgets);
+
+		if (target.dispatchEvent) {
+			for (var i = 0, evt; evt = this.events[i]; ++i) {
+				evt.widget.subscribe.apply(evt.widget, [evt.signal, target, 'dispatchEvent'].concat(evt.args));
+			}
+		}
+	}
+});
+
 var Widget = exports = Class([Element, Events], function() {
 	this._css = 'widget';
 	this._name = '';
@@ -49,24 +74,16 @@ var Widget = exports = Class([Element, Events], function() {
 		if (def.className) {
 			opts.className = opts.className ? opts.className + " " + def.className : def.className;
 		}
-
-		// children from opts gets added to def
-		if (opts.children) {
-			// must make a local copy first, or else all instances of the class will share the same _def!
-			if (!this.hasOwnProperty('_def')) {
-				def = this._def = merge({}, this._def);
-			}
-			
-			if (!def.children) {
-				def.children = opts.children;
-			} else {
-				def.children = def.children.concat(opts.children);
+		
+		// opts take precedence over def
+		this._opts = opts;
+		for (var name in def) {
+			if (name != 'children' && !opts.hasOwnProperty(name) && def.hasOwnProperty(name)) {
+				opts[name] = def[name];
 			}
 		}
 
-		// opts take precedence over def
-		this._opts = opts = merge(opts, def);
-		delete opts.children;
+		// delete opts.children;
 
 		// end merge
 		// ===
@@ -92,6 +109,21 @@ var Widget = exports = Class([Element, Events], function() {
 		}
 	};
 
+	this.build = function() {
+		if (!this._el) {
+			var opts = this._opts;
+			var children = opts.children;
+			
+			if (children) { delete opts.children; }
+			this._el = $.create(this._opts);
+			if (children) { opts.children = children; }
+
+			this.buildContent();
+		}
+		
+		return this;
+	}
+
 	this.getParent = function() { return this._parent; };
 
 	this.setParent = function(parent) {
@@ -115,82 +147,88 @@ var Widget = exports = Class([Element, Events], function() {
 		return (this._children && this._children.length) ? this._children[0] : null;
 	};
 
-	this.dispatchButton = function(target, evt) {
+	this.dispatchEvent = function(target, evt) {
 		this.delegate.call(this, target, evt);
 	};
 
-	this.addWidget = function(def, target) {
-		if (!target) { target = this; }
+	this.addWidget = function(def, result) {
+		if (!result) {
+			var applyResult = true;
+			result = new WidgetSet();
+		}
+
 		if (!this._el) { this.build(); }
 
 		// def is either a Widget or a definition for a Widget
 		if (!(def instanceof Widget)) {
 			// if it is not yet a widget, make it (or make a DOM node)
-			var def = merge({}, def, {parent: this.getContainer()});
+			var opts = merge({}, def, {parent: this.getContainer(), __result: result});
 
-			if (def.children) {
-				var children = def.children;
-				delete def.children;
+			if (opts.children) {
+				var children = opts.children;
+				delete opts.children;
 			}
+
 			var el;
-			if (!def.type || typeof def.type == 'string') {
-				if (this._classes[def.type]) {
-					var Constructor = jsio('import ' + this._classes[def.type]);
-					el = new Constructor(def);
+			if (!opts.type || typeof opts.type == 'string') {
+				if (this._classes[opts.type]) {
+					var Constructor = jsio('import ' + this._classes[opts.type]);
+					el = new Constructor(opts);
 				} else {
-					switch (def.type) {
+					switch (opts.type) {
 						case 'checkbox':
 							import .CheckBox;
-							el = new CheckBox(def);
-							el.subscribe('Select', target, 'dispatchButton', def.id);
+							el = new CheckBox(opts);
 							break;
 
 						case 'image':
-							el = $(merge({tag: 'img'}, def));
+							el = $(merge({tag: 'img'}, opts));
 							break;
 
 						case 'button':
 							if (typeof TextButton == 'undefined') {
 								import .TextButton;
 							}
-							el = new TextButton(def);
-							el.subscribe('Select', target, 'dispatchButton', def.id);
+							el = new TextButton(opts);
+							result.addSubscription(el, 'Select', opts.id);
 							break;
 
 						case 'select':
 							break;
 
 						default:
-							el = $(def);
+							el = $(opts);
 							break;
 					}
 				}
 			} else {
-				el = new def.type(def);
+				el = new opts.type(opts);
 			}
-
-			if (def.id) { target[def.id] = el; }
+			
+			if (opts.id && !result.widgets[opts.id]) {
+				result.widgets[opts.id] = el;
+			}
 		} else {
 			el = def;
 		}
-
+		
 		if (el instanceof Widget) {
 			if (!el.getParent()) { el.setParent(this); }
 			this._children.push(el);
-//			this.getContainer().appendChild(el.getElement());
-		} else {
-//			this.getContainer().appendChild(el);
 		}
 
 		if (children) {
-			var parent = el;
-			for (var i = 0, c; c = children[i]; ++i) {
-				if (parent.addWidget) {
-					parent.addWidget(c, target);
-				} else {
-					this.addWidget(merge({parent: parent}, c), target);
+			if (el.buildChildren) {
+				el.buildChildren(children, result);
+			} else {
+				for (var i = 0, c; c = children[i]; ++i) {
+					this.addWidget(merge({parent: el}, c), result);
 				}
 			}
+		}
+
+		if (applyResult) {
+			result.apply(this);
 		}
 
 		return el;
@@ -201,23 +239,43 @@ var Widget = exports = Class([Element, Events], function() {
 	this.setName = function(name) { this._name = name; };
 
 	this.buildContent = function() {
+		var opts = this._opts;
+
 		$.addClass(this._el, global.getWidgetPrefix() + this._css);
 
 		if (!this.delegate) { this.delegate = new Delegate(); }
 
 		// TODO: what's this doing here?
-		if (this._opts.errorLabel) {
-			this._errorLabel = $.create({html: this._opts.errorLabel, className: global.getWidgetPrefix() + 'textInputErrorLabel', parent: this._el});
+		if (opts.errorLabel) {
+			this._errorLabel = $.create({html: opts.errorLabel, className: global.getWidgetPrefix() + 'textInputErrorLabel', parent: this._el});
 		}
 
-		if (this._def) { this.buildChildren(this); }
+		var def = this._def;
+
+		// def items always go on the widget
+		if (def && def.children) {
+			var result = new WidgetSet();
+			this.buildChildren(def.children, result);
+			result.apply(this);
+		}
+
+		// opts items sometimes go on the widget
+		if (opts.children) {
+			var shouldMerge = !opts.__result;
+			var result = opts.__result || new WidgetSet();
+			this.buildChildren(opts.children, result);
+
+			if (shouldMerge) {
+				result.apply(this);
+			}
+		}
+
 		this.buildWidget(this._el);
 	};
 
-	this.buildChildren = function(target) {
-		var children = (this._def.children || []).concat(this._opts.children || []);
+	this.buildChildren = function(children, result) {
 		for (var i = 0, n = children.length; i < n; ++i) {
-			this.addWidget(children[i], target);
+			this.addWidget(children[i], result);
 		}
 	};
 
@@ -267,6 +325,7 @@ var Widget = exports = Class([Element, Events], function() {
 	};
 
 	this.onShow = function() {
+		this._isShowing = true;
 		for (var i = 0, child; child = this._children[i]; ++i) {
 			child.onShow.apply(child, arguments);
 		}
@@ -279,10 +338,13 @@ var Widget = exports = Class([Element, Events], function() {
 	};
 
 	this.onHide = function() {
+		this._isShowing = false;
 		for (var i = 0, child; child = this._children[i]; ++i) {
 			child.onHide.apply(child, arguments);
 		}
 	};
+
+	this.isShowing = function() { return this._isShowing; }
 
 	this.show = function() {
 		this.onBeforeShow();
