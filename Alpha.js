@@ -105,12 +105,13 @@ var Alpha = exports = Class(Widget, function(supr) {
 
 	this._showMouseAlpha = function(evt) {
 		alphaSelect.target.value = 100 - this._showIndicator(evt.offsetY);
-		this.publish('Change', alphaSelect.target.value);
+		this.publish('Change', parseInt(alphaSelect.target.value, 10));
 	};
 
 	this._onChange = function(evt) {
 		var value = this._el.value;
 		if (!isNaN(value)) {
+			value = parseInt(value, 10);
 			if ((value >= 0) && (value <= 100)) {
 				this.publish('Change', value);
 			}
