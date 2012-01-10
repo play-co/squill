@@ -105,7 +105,7 @@ var Alpha = exports = Class(Widget, function(supr) {
 
 	this._showMouseAlpha = function(evt) {
 		alphaSelect.target.value = 100 - this._showIndicator(evt.offsetY);
-		this.publish('Change', parseInt(alphaSelect.target.value, 10));
+		alphaSelect.widget.publish('Change', parseInt(alphaSelect.target.value, 10));
 	};
 
 	this._onChange = function(evt) {
@@ -113,7 +113,7 @@ var Alpha = exports = Class(Widget, function(supr) {
 		if (!isNaN(value)) {
 			value = parseInt(value, 10);
 			if ((value >= 0) && (value <= 100)) {
-				this.publish('Change', value);
+				alphaSelect.widget.publish('Change', value);
 			}
 		}
 	};
@@ -148,6 +148,7 @@ var Alpha = exports = Class(Widget, function(supr) {
 			}
 		);
 
+		alphaSelect.widget = evt.target.widget;
 		alphaSelect.target = evt.target;
 
 		if (isNaN(alphaSelect.target.value)) {
