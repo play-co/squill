@@ -121,7 +121,6 @@ var Slider = exports = Class(Widget, function(supr) {
 			value;
 
 		if (this._mouseDown) {
-			console.log(mouseX, padding);
 			if ((mouseX > padding) && (mouseY > padding - 5) && (mouseX < width - padding) && (mouseY < padding + 5)) {
 				value = (evt.offsetX - padding) / (width - padding * 2) * (this.max - this.min);
 				value = this.min + Math.round(value / this.step) * this.step;
