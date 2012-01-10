@@ -50,6 +50,7 @@ var Widget = exports = Class([Element, Events], function() {
 		this._children = [];
 
 		this._classes = {
+			alpha: '.Alpha',
 			label: '.Label',
 			list: '.List',
 			text: '.TextInput',
