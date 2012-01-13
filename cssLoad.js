@@ -26,7 +26,7 @@ exports.get = function(opts, cb) {
 		util.ajax.get({
 			url: opts.url
 		}, function(err, content) {
-			if (err) { logger.error('could not fetch css at', url); return; }
+			if (err) { logger.error('could not fetch css at', opts.url); return; }
 			var el = $({tag: 'style', text: content, parent: parent});
 
 			if (window.DEV_MODE) {
