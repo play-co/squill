@@ -33,6 +33,7 @@ var Alpha = exports = Class(Widget, function(supr) {
 
 		if (!alphaSelect) {
 			alphaSelect = document.createElement('div');
+			alphaSelect.style.display = 'none';
 			document.body.appendChild(alphaSelect);
 
 			$.onEvent(alphaSelect, 'mousedown', this, '_onSelect');
