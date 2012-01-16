@@ -6,9 +6,9 @@ import lib.PubSub;
 
 exports = Class(lib.PubSub, function() {
 	var SLICE = Array.prototype.slice;
-	
+
 	var isMobile = /(iPod|iPhone|iPad|Android)/i.test(navigator.userAgent);
-	
+
 	this.event = function(el, name, handler) {
 		if (!this._eventEnabled) { this._eventEnabled = {}; }
 		var args = [this, handler].concat(SLICE.call(arguments, 3)),
@@ -17,14 +17,16 @@ exports = Class(lib.PubSub, function() {
 		
 		events[name] = true;
 		$.onEvent(el, name, function() {
-			if(events[name]) {
-				handler.apply(this, arguments);
+			if (events[name]) {
+				return handler.apply(this, arguments);
 			}
 		});
-	}
-	
-	this.isDragging = function() { return this._isDragging || false; }
-	
+	};
+
+	this.isDragging = function() {
+		return this._isDragging || false;
+	};
+
 	this.initDragEvents = function(el) {
 		if (!this.__drag) {
 			var d = this.__drag = new Drag();
@@ -37,8 +39,8 @@ exports = Class(lib.PubSub, function() {
 		if (!el) { el = this._el; }
 		if (el.addEventListener) { el.addEventListener('touchstart', startDrag, true); }
 		$.onEvent(el, 'mousedown', startDrag);
-	}
-	
+	};
+
 	this.initMouseEvents = function(el) {
 		el = el || this._el;
 		
@@ -54,15 +56,15 @@ exports = Class(lib.PubSub, function() {
 		}
 		
 		return this;
-	}
-	
+	};
+
 	this.initFocusEvents = function(el) {
 		el = el || this._el;
 		this.event(el, 'focus', 'onFocus');
 		this.event(el, 'blur', 'onBlur');
 		return this;
-	}
-	
+	};
+
 	this.initKeyEvents = function(el) {
 		el = el || this._el;
 		this.event(el, 'keydown', 'onKeyDown');
@@ -74,63 +76,66 @@ exports = Class(lib.PubSub, function() {
 	this._onTouchStart = function(e) {
 		this.onMouseOver(e);
 		this.onMouseDown(e);
-	}
-	
+	};
+
 	this._onTouchEnd = function(e) {
 		this.onMouseUp(e);
 		this.onClick(e);
 		this.onMouseOut(e);
-	}
-	
+	};
+
 	this.onMouseOver = function(e) {
 		if (!this._enableMouseEvents) 
 		this._isOver = true;
 		this.publish('Over', e);
-	}
-	
+	};
+
 	this.onMouseOut = function(e) {
 		this._isOver = false;
 		this.onMouseUp();
 		this.publish('Out', e);
-	}
+	};
 
 	this.onMouseDown = function(e) {
 		this._isDown = true;
 		this.publish('Down', e);
-	}
-	
+		return false;
+	};
+
 	this.onMouseUp = function(e) {
 		this._isDown = false;
 		this.publish('Up', e);
-	}
-	
+		return false;
+	};
+
 	this.onClick = function(e) {
 		this.publish('Select', e);
-	}
-	
+		return false;
+	};
+
 	this.onFocus = function(e) {
 		this._isFocused = true;
 		this.publish('Focus', e);
-	}
-	
+	};
+
 	this.onBlur = function(e) {
 		this._isFocused = false;
 		this.publish('Blur', e);
-	}
-	
+	};
+
 	this.onKeyUp = function(e) {
 		this.publish('KeyUp', e);
-	}
-	
+	};
+
 	this.onKeyPress = function(e) {
 		this.publish('KeyPress', e);
-	}
-	
+	};
+
 	this.onKeyDown = function(e) {
 		this.publish('KeyDown', e);
-	}
-	
-	this.onDragStart = function(dragEvt) {}
-	this.onDrag = function(dragEvt, moveEvt) {}
-	this.onDragStop = function(dragEvt, upEvt) {}
+	};
+
+	this.onDragStart = function(dragEvt) {};
+	this.onDrag = function(dragEvt, moveEvt) {};
+	this.onDragStop = function(dragEvt, upEvt) {};
 });
