@@ -108,8 +108,8 @@ function showMenu(menu, x, y) {
 				className: className
 			});
 			element.onclick = clickOption;
+			element.optionIndex = i;
 		}
-		element.optionIndex = i;
 		contextMenu.elements.push(element);
 	}
 
