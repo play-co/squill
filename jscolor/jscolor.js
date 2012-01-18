@@ -642,9 +642,10 @@ var jscolor = {
 			p.boxB.style.left = x+'px';
 			p.boxB.style.top = y+'px';
 			p.boxB.style.zIndex = THIS.pickerZIndex;
-			p.boxB.style.border = THIS.pickerBorder+'px solid';
-			p.boxB.style.borderColor = THIS.pickerBorderColor;
-			p.boxB.style.background = THIS.pickerFaceColor;
+			//p.boxB.style.border = THIS.pickerBorder+'px solid';
+			//p.boxB.style.borderColor = THIS.pickerBorderColor;
+			//p.boxB.style.background = THIS.pickerFaceColor;
+			p.boxB.className = 'colorMenu';
 
 			// pad image
 			p.pad.style.width = jscolor.images.pad[0]+'px';

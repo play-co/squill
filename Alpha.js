@@ -34,6 +34,7 @@ var Alpha = exports = Class(Widget, function(supr) {
 		if (!alphaSelect) {
 			alphaSelect = document.createElement('div');
 			alphaSelect.style.display = 'none';
+			alphaSelect.className = 'colorMenu';
 			document.body.appendChild(alphaSelect);
 
 			$.onEvent(alphaSelect, 'mousedown', this, '_onSelect');
@@ -139,9 +140,6 @@ var Alpha = exports = Class(Widget, function(supr) {
 				position: 'absolute',
 				width: '44px',
 				height: '122px',
-				border: '1px solid #000',
-				borderColor: 'ThreeDHighlight ThreeDShadow ThreeDShadow ThreeDHighlight',
-				backgroundColor: 'ThreeDFace',
 				zIndex: '1000000',
 				left: x + 'px',
 				top: y + 'px',
