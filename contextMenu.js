@@ -11,12 +11,12 @@ document.oncontextmenu = function(evt) {
 	while (element) {
 		if (element.contextMenu) {
 			showMenu(element.contextMenu, evt.x, evt.y);
-			break;
+			return false;
 		} else {
 			element = element.parentNode;
 		}
 	}
-	return false;
+	return true;
 };
 
 function clearMenu() {
