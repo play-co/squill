@@ -26,7 +26,7 @@ exports.get = function(opts, cb) {
 		util.ajax.get({
 			url: opts.url
 		}, function(err, content) {
-			if (err) { logger.error('could not fetch css at', url); return; }
+			if (err) { logger.error('could not fetch css at', opts.url); return; }
 			var el = $({tag: 'style', text: content, parent: parent});
 
 			if (window.DEV_MODE) {
@@ -43,13 +43,16 @@ exports.get = function(opts, cb) {
 
 if (window.DEV_MODE) {
 	exports._styleTags = [];
+	window.reloadCSS = function() {
+		for (var i = 0, s; s = exports._styleTags[i]; ++i) {
+			util.ajax.get({url: s.src}, bind(this, function(s, err, content) {
+				if (!err) { $.setText(s.el, content); }
+			}, s));
+		}
+	}
 	window.addEventListener('message', function(evt) {
 		if (evt.data == 'squill.cssLoad.reload()') {
-			for (var i = 0, s; s = exports._styleTags[i]; ++i) {
-				util.ajax.get({url: s.src}, bind(this, function(s, err, content) {
-					if (!err) { $.setText(s.el, content); }
-				}, s));
-			}
+			reloadCSS();
 		}
 	}, true);
 }

@@ -20,38 +20,46 @@ import lib.PubSub;
  * instance of a Selection instance.
  */
 exports = Class(lib.PubSub, function() {
-	
+
 	this.init = function(opts) {
-		this._dataSource = opts.dataSource;
+		this._parent = opts.parent;
 		this._type = opts.type || false;
 		this._selection = opts.selectionStore || new exports.LocalStore();
 		this._lastSelected = null;
-	}
-	
-	this.getType = function() { return this._type; }
-	
+	};
+
+	this.getType = function() { return this._type; };
+
 	this.isSelected = function(id) {
 		if (typeof id == 'object') {
-			id = id[this._dataSource.key];
+			id = id[this._parent.getDataSource().key];
 		}
-		
 		return this._selection.isSelected(id);
-	}
-	
-	this.toggle = function(item) { this._setSelected(item, !this.isSelected(item[this._dataSource.key])); }
-	
-	this.select = function(item) { this._setSelected(item, true); }
-	this.deselect = function(item) { this._setSelected(item, false); }
+	};
+
+	this.toggle = function(item) {
+		this._setSelected(item, !this.isSelected(item[this._parent.getDataSource().key]));
+	};
+
+	this.select = function(item) {
+		this._setSelected(item, true);
+	};
+
+	this.deselect = function(item) {
+		this._setSelected(item, false);
+	};
+
 	this.deselectAll = function() {
 		this._selection.deselectAll();
-	}
+	};
 
-	this.get = function() { return this._selection.get(); }
-	
+	this.get = function() { return this._selection.get(); };
+
 	this._setSelected = function(item, isSelected) {
 		if (!item) { return; }
-		var key = this._dataSource.key;
-		var id = item[key];
+		var key = this._parent.getDataSource().key,
+			id = item[key];
+
 		if (this._selection.isSelected(id) != isSelected) {
 			if (isSelected) {
 				if (this._lastSelected && this._type == 'single') {
@@ -59,16 +67,16 @@ exports = Class(lib.PubSub, function() {
 					this._selection.deselect(lastID);
 					this.publish('Deselect', this._lastSelected, lastID);
 				}
-				
+
 				this._lastSelected = item;
 				this._selection.select(id);
 			} else {
 				this._selection.deselect(id);
 			}
-			
+
 			this.publish(isSelected ? 'Select' : 'Deselect', item, id);
 		}
-	}
+	};
 });
 
 exports.LocalStore = Class(function() {
@@ -93,7 +101,7 @@ exports.LocalStore = Class(function() {
 	}
 	
 	this.isSelected = function(id) {
-		if (id) {
+		if (id !== undefined) {
 			return !!this._store[id];
 		} else {
 			for (var key in this._store) {

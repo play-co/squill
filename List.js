@@ -16,104 +16,105 @@ var List = exports = Class(Widget, function(supr) {
 			isFixedHeight: true,
 			absolutePosition: true
 		});
-		
+
 		if (opts.cellCtor) { this.setCellCtor(opts.cellCtor); }
 		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
 		if (opts.sorter) { this.setSorter(opts.sorter); }
-		
+
 		this._lastFilter = -1;
 		this._cellsByID = {};
 		this._removed = {};
 		this._containSelf = opts.containSelf;
-		
+
 		this._renderOpts = {
 			margin: opts.margin || 0
 		};
-		
+
 		this.needsRender = delay(this.render);
 		this.updateFilter = delay(function() {
 			this._lastFilter = -1;
 			this.needsRender();
 		}, 100);
-		
+
 		supr(this, 'init', [opts]);
-	}
-	
+	};
+
 	// cells go in _container
 	this.getContainer = function() { return this._container; }
-	
-	this.onShow = function() { this.needsRender(); }
-	
+
+	this.getDataSource = function() { return this._dataSource; }
 	this.setDataSource = function(dataSource) {
 		if (this._dataSource) {
 			this._dataSource.unsubscribe('Update', this);
 			this._dataSource.unsubscribe('Remove', this);
 		}
+
 		this._dataSource = dataSource;
 		this._dataSource.subscribe('Update', this, 'onUpdateItem');
 		this._dataSource.subscribe('Remove', this, 'onRemoveItem');
-	}
-	
+	};
+
 	this.onUpdateItem = function(id, item) {
 		var cell = this._cellsByID[id];
 		if (cell && cell.getData() != item) { cell.setData(item); }
 		this.updateFilter();
-	}
-	
+	};
+
 	this.onRemoveItem = function(id) {
 		this._removed[id] = true;
 		this.updateFilter();
-	}
-	
+	};
+
 	this.buildWidget = function() {
 		this._container = $({parent: this._el, className: this._opts.containerClassName});
 		if (this._containSelf) {
 			this._container.style.position = 'relative';
 		}
-		
+
 		if (this._opts.selectable) {
 			this.setSelectable(this._opts.selectable);
 		}
-		
+
 		this.render();
-	}
-	
+	};
+
 	this.setSelectable = function(selectable) {
 		this.selection = new Selection({
-			dataSource: this._dataSource,
+			parent: this,
 			type: selectable
 		})
 			.subscribe('Select', this, '_onSelected', true)
 			.subscribe('Deselect', this, '_onSelected', false)
-		
+
 		this.selection;
-	}
-	
+	};
+
 	this._onSelected = function(isSelected, item, id) {
-		if (this._cellsByID[id]) {
+		if (this._cellsByID[id] !== undefined) {
 			this._cellsByID[id].updateSelected();
+			//this.publish('Select', item);
 		}
-	}
-	
+	};
+
 	this.setCellCtor = function(cellCtor) { this._cellCtor = cellCtor; }
 	this.getCellById = function(id) { return this._cellsByID[id]; }
 	this.getCells = function() { return this._cellsByID; }
-	
+
 	this.setSorter = function(sorter) { this._sorter = sorter; }
-	
+
 	this.setFilter = function(filter) {
 		this._filter = filter;
 		this.needsRender();
-	}
-	
+	};
+
 	this.setFixedHeight = function(isFixedHeight) {
 		this._opts.isFixedHeight = isFixedHeight;
-	}
-	
+	};
+
 	this._applyFilter = function() {
 		var filter = this._filter;
 		var ds = this._renderedDataSource = new DataSource();
-		ds.key = this._dataSource.key;
+		ds.key = this._dataSource.getKey();
 		var src = this._dataSource;
 		for (var i = 0, n = src.length; i < n; ++i) {
 			var item = src.getItemForIndex(i);
@@ -129,18 +130,20 @@ var List = exports = Class(Widget, function(supr) {
 				ds.add(item);
 			}
 		}
-	}
-	
+	};
+
+	this.onShow = function() { supr(this, 'onShow', arguments); this.needsRender(); }
+
 	// just render all cells for now
 	this.render = function() {
 		if (!this._dataSource) { return; }
 		this._dataSource.sort();
-		
+
 		if (this._filter != this._lastFilter || !this._renderedDataSource) {
 			this._lastFilter = this._filter;
 			this._applyFilter();
 		}
-		
+
 		if (this._opts.renderAll) {
 			this.renderAllDelayed();
 		} else if (this._opts.isFixedHeight) {
@@ -148,19 +151,23 @@ var List = exports = Class(Widget, function(supr) {
 		} else {
 			this.renderDynamicHeight();
 		}
-		
+
 		this._removed = {};
-	}
-	
+	};
+
+	this.setCellDim = function(cellDim) {
+		this._cellDim = cellDim;
+	};
+
 	this.getCellDim = function() {
 		if (this._cellDim) { return this._cellDim; }
 		
 		if (this._opts.isFixedHeight) {
 			var item = this._dataSource.getItemForIndex(0);
 			if (!item) { return false; }
-			var key = item[this._dataSource.key];
-			var cell = this._cellsByID[key] || (this._cellsByID[key] = this._createCell(item));
-			var dim = $.size(cell.getElement());
+			var key = item[this._dataSource.getKey()],
+				cell = this._cellsByID[key] || (this._cellsByID[key] = this._createCell(item)),
+				dim = $.size(cell.getElement());
 			if (dim.width == 0 || dim.height == 0) { return null; }
 			
 			var margin = this._opts.margin;
@@ -174,11 +181,11 @@ var List = exports = Class(Widget, function(supr) {
 		} else {
 			throw 'unimplemented'
 		}
-	}
-	
+	};
+
 	this._createCell = function(item) {
-		var key = this._dataSource.key;
-		var cell = new this._cellCtor({
+		var key = this._dataSource.getKey(),
+			cell = new this._cellCtor({
 				parent: this,
 				controller: this,
 				key: key,
@@ -188,31 +195,31 @@ var List = exports = Class(Widget, function(supr) {
 		cell.getElement().setAttribute('squill-data-id', item[key]);
 		cell.render();
 		return cell;
-	}
-	
+	};
+
 	this.renderAllDelayed = function() {
 		if (!this._dataSource) { return; }
-		
+
 		this.updateRenderOpts();
-		
+
 		var i = 0;
 		function renderOne() {
 			var item = this._dataSource.getItemForIndex(i);
 			if (!item) { return false; }
-			
-			var id = item[this._dataSource.key];
+
+			var id = item[this._dataSource.getKey()];
 			var cell = this._cellsByID[id];
 			if (!cell) {
 				cell = this._cellsByID[id] = this._createCell(item);
 			} else {
 				cell.render();
 			}
-			
+
 			this.positionCell(cell, i);
 			++i;
 			return true;
 		}
-		
+
 		function renderMany() {
 			var THRESHOLD = 50; // ms to render
 			var n = 0, t = +new Date();
@@ -222,7 +229,7 @@ var List = exports = Class(Widget, function(supr) {
 			
 			setTimeout(bind(this, renderMany), 100);
 		}
-		
+
 		var removed = this._removed;
 		for (var id in removed) {
 			if (!this._dataSource.getItemForID(id)) {
@@ -232,34 +239,33 @@ var List = exports = Class(Widget, function(supr) {
 					delete this._cellsByID[id];
 				}
 			}
-		}
-		
+		};
+
 		renderMany.call(this);
 	}
-	
+
 	this.setOffsetParent = function(offsetParent) {
 		this._opts.offsetParent = offsetParent;
-	}
-	
+	};
+
 	this.updateRenderOpts = function() {
 		var r = this._renderOpts;
-		
+
 		r.offsetTop = this._containSelf ? 0 : this._container.offsetTop;
 		r.offsetLeft = this._containSelf ? 0 : this._container.offsetLeft;
-		
+
 		var parent = this._offsetParent || this.getOffsetParent();
 		r.top = (parent.getAttribute('squill-scroller-top') || parent.scrollTop) - r.offsetTop;
 		r.height = parent.offsetHeight;
 		r.bottom = r.top + r.height;
-		
+
 		if (this._opts.isFixedHeight) {
 			var cellDim = this.getCellDim();
 			if (!cellDim) { return false; }
-			
 			r.cellWidth = cellDim.width;
 			r.cellHeight = cellDim.height;
 		}
-		
+
 		var n = r.numRows = this._dataSource.length;
 		if (this._opts.isFixedHeight) {
 			if (this._opts.isTiled) {
@@ -273,19 +279,19 @@ var List = exports = Class(Widget, function(supr) {
 				r.end = (r.bottom / r.cellHeight + 1) | 0;
 			}
 		}
-		
+
 		if (this._opts.absolutePosition) {
 			this._container.style.height = r.numRows * r.cellHeight + 'px';
 		}
-		
+
 		return true;
-	}
-	
+	};
+
 	this.positionCell = function(cell, i) {
 		if (!this._opts.absolutePosition) { return; }
-		
+
 		var r = this._renderOpts;
-		
+
 		if (this._opts.isTiled) {
 			var el = cell.getElement();
 			var x = i % r.numPerRow;
@@ -295,13 +301,13 @@ var List = exports = Class(Widget, function(supr) {
 		} else {
 			cell.getElement().style.top = (i * r.cellHeight || 0) + r.offsetTop + 'px';
 		}
-	}
-	
+	};
+
 	this.getOffsetParent = function() {
 		// the list might be contained in some other scrolling div
 		return this._opts.offsetParent || this._container.offsetParent || document.body;
-	}
-	
+	};
+
 	this.renderFixedHeight = function() {
 		var parent = this.getOffsetParent();
 		if (!parent) { return; }
@@ -310,21 +316,21 @@ var List = exports = Class(Widget, function(supr) {
 			this._offsetParent = parent;
 			this._removeScrollEvt = $.onEvent(parent, 'scroll', this, 'needsRender');
 		}
-		
+
 		// render data
-		var src = this._renderedDataSource;
-		var key = src.key;
-		var n = src.length;
-		
+		var src = this._renderedDataSource,
+			key = src.getKey(),
+			n = src.length;
+
 		// swap lists
 		var oldCellsByID = this._cellsByID;
 		this._cellsByID = {};
-		
+
 		// render new items
 		if (n) {
 			var isTiled = this._isTiled;
 			if (!this.updateRenderOpts()) { return; }
-			
+
 			for (var i = start; i < end; ++i) {
 				var item = src.getItemForIndex(i);
 				if (!item) { break; }
@@ -337,12 +343,12 @@ var List = exports = Class(Widget, function(supr) {
 					delete oldCellsByID[id];
 					cell.render();
 				}
-				
+
 				this.positionCell(cell, i);
 				this._cellsByID[id] = cell;
 			}
-		}
-		
+		};
+
 		// remove old items
 		if (!this._opts.preserveCells) {
 			for (var id in oldCellsByID) {
@@ -359,5 +365,5 @@ var List = exports = Class(Widget, function(supr) {
 			}
 			
 		}
-	}
+	};
 });

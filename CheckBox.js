@@ -24,6 +24,10 @@ var CheckBox = exports = Class(Widget, function(supr) {
 		
 		this.initMouseEvents(this.checkbox);
 		$.onEvent(this.checkbox, 'change', this, '_onCheck');
+
+		if (this._opts.__result) {
+			this._opts.__result.addSubscription(this, 'Select', this._opts.id);
+		}
 	}
 	
 	this._onCheck = function() {

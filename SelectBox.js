@@ -10,6 +10,10 @@ var SelectBox = exports = Class(Widget, function(supr) {
 	};
 
 	this.init = function(opts) {
+		opts = merge(opts, {
+			renderer: bind(this, 'defaultRenderer')
+		});
+
 		this._items = {};
 		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
 		supr(this, 'init', arguments);
@@ -50,11 +54,19 @@ var SelectBox = exports = Class(Widget, function(supr) {
 		}, this);
 	}
 	
+	this.defaultRenderer = function(item) {
+		var key = this._dataSource.getKey();
+		return item.displayName || item.label || item.text || item[key];
+	}
+	
 	this.onUpdateItem = function(id, item) {
 		var el = this._items[id];
+		var keyField = this._dataSource.getKey();
 
 		if (typeof(item) === 'string') {
-			item = {value: item};
+			var o = {};
+			o[keyField] = item;
+			item = o;
 		}
 
 		if (!el) {
@@ -62,8 +74,9 @@ var SelectBox = exports = Class(Widget, function(supr) {
 			$.insertBefore(this._el, el);
 		}
 
-		el.setAttribute('value', item.value);
-		el.innerText = item.text || item.label || item.value || '';
+		el.setAttribute('value', item[keyField]);
+		var renderer = this._opts.renderer;
+		el.innerText = (typeof renderer === 'string' ? item[renderer] : renderer(item))
 	}
 	
 	this.onRemoveItem = function(id) {

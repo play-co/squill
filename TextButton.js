@@ -8,7 +8,7 @@ var TextButton = exports = Class(Button, function(supr) {
 	
 	this.buildWidget = function() {
 		var el = this._el;
-		$.setText(el, this.getI18n('label'));
+		$.setText(el, this.getI18n('label') || this.getI18n('text'));
 		
 		this.initMouseEvents(el);
 		this.initKeyEvents(el);
