@@ -126,3 +126,8 @@ function hideMenu() {
 	$.style(contextMenu.overlay, {display: 'none'});
 	$.style(contextMenu.element, {display: 'none'});
 };
+
+exports.show = function(contextMenu, target) {
+	var rect = target.getBoundingClientRect();
+	showMenu(contextMenu, rect.left + ~~(rect.width / 2), rect.top + ~~(rect.height / 2));
+};
