@@ -28,16 +28,16 @@ function clearMenu() {
 function clickOption(evt) {
 	var option = contextMenu.options[evt.target.optionIndex];
 	if (option) {
-		if ((option.selected === true) || (option.selected === false)) {
-			option.selected = !option.selected;
-			if (option.selected) {
-				$.removeClass(evt.target, 'deselectedOption');
-				$.addClass(evt.target, 'selectedOption');
+		if ((option.checked === true) || (option.checked === false)) {
+			option.checked = !option.checked;
+			if (option.checked) {
+				$.removeClass(evt.target, 'uncheckedOption');
+				$.addClass(evt.target, 'checkedOption');
 			} else {
-				$.removeClass(evt.target, 'selectedOption');
-				$.addClass(evt.target, 'deselectedOption');
+				$.removeClass(evt.target, 'checkedOption');
+				$.addClass(evt.target, 'uncheckedOption');
 			}
-			option.onchange && option.onchange(option.selected);
+			option.onchange && option.onchange(option.checked);
 		} else {
 			hideMenu();
 			option.onclick && option.onclick();
@@ -96,10 +96,12 @@ function showMenu(menu, x, y) {
 			contextMenu.elements.push($({parent: contextMenu.element, className: 'optionSeparator2'}));
 		} else {
 			className = 'option';
-			if (option.selected === true) {
+			if (option.checked === true) {
+				className = 'checkedOption';
+			} else if (option.checked === false) {
+				className = 'uncheckedOption';
+			} else if (option.selected === true) {
 				className = 'selectedOption';
-			} else if (option.selected === false) {
-				className = 'deselectedOption';
 			}
 			element = $({
 				parent: contextMenu.element,
@@ -115,6 +117,11 @@ function showMenu(menu, x, y) {
 
 	$.style(contextMenu.overlay, {display: 'block'});
 
+	if (menu.width) {
+		if (x + menu.width > document.width) {
+			x -= menu.width;
+		}
+	}
 	style = {left: x + 'px', top: y + 'px', display: 'block'};
 	if (menu.width) {
 		style.width = menu.width + 'px';
