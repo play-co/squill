@@ -250,4 +250,30 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 			);
 		}
 	};
+
+	this.filter = function(filter) {
+		var result = new DataSource({key: this.key});
+		var key;
+		var item;
+		var match;
+		var i;
+		var j = this.length;
+
+		result.key = this.key;
+		for (i = 0; i < j; ++i) {
+			item = this._byIndex[i];
+			match = true;
+			for (key in filter) {
+				if ((typeof item[key] == 'string') && (item[key].toLowerCase().indexOf(filter[key]) == -1)) {
+					match = false;
+				}
+			}
+
+			if (match) {
+				result.add(item);
+			}
+		}
+
+		return result;
+	};
 });

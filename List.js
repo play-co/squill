@@ -40,13 +40,33 @@ var List = exports = Class(Widget, function(supr) {
 	};
 
 	// cells go in _container
-	this.getContainer = function() { return this._container; }
+	this.getContainer = function() {
+		return this._container;
+	};
 
-	this.getDataSource = function() { return this._dataSource; }
+	this.getDataSource = function() {
+		return this._dataSource;
+	};
+
 	this.setDataSource = function(dataSource) {
 		if (this._dataSource) {
 			this._dataSource.unsubscribe('Update', this);
 			this._dataSource.unsubscribe('Remove', this);
+
+			var oldCellsByID = this._cellsByID,
+				newCellsByID = {};
+
+			for (var id in oldCellsByID) {
+				if (oldCellsByID.hasOwnProperty(id)) {
+					var item = dataSource.getItemForID(id);
+					if (!item) {
+						oldCellsByID[id].remove();
+					} else {
+						newCellsByID[id] = oldCellsByID[id];
+					}
+				}
+			}
+			this._cellsByID = newCellsByID;
 		}
 
 		this._dataSource = dataSource;
@@ -92,16 +112,26 @@ var List = exports = Class(Widget, function(supr) {
 	this._onSelected = function(isSelected, item, id) {
 		if (this._cellsByID[id] !== undefined) {
 			this._cellsByID[id].updateSelected();
-			//this.publish('Select', item);
 		}
 	};
 
-	this.setCellCtor = function(cellCtor) { this._cellCtor = cellCtor; }
-	this.getCellById = function(id) { return this._cellsByID[id]; }
-	this.getCells = function() { return this._cellsByID; }
+	this.setCellCtor = function(cellCtor) {
+		this._cellCtor = cellCtor;
+	};
 
-	this.setSorter = function(sorter) { this._sorter = sorter; }
+	this.getCellById = function(id) {
+		return this._cellsByID[id];
+	};
 
+	this.getCells = function() {
+		return this._cellsByID;
+	};
+
+	this.setSorter = function(sorter) {
+		this._sorter = sorter;
+	};
+
+	// Filter moved to DataSource...
 	this.setFilter = function(filter) {
 		this._filter = filter;
 		this.needsRender();
@@ -111,6 +141,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._opts.isFixedHeight = isFixedHeight;
 	};
 
+	// Filter moved to DataSource...
 	this._applyFilter = function() {
 		var filter = this._filter;
 		var ds = this._renderedDataSource = new DataSource();
@@ -201,7 +232,6 @@ var List = exports = Class(Widget, function(supr) {
 		if (!this._dataSource) { return; }
 
 		this.updateRenderOpts();
-
 		var i = 0;
 		function renderOne() {
 			var item = this._dataSource.getItemForIndex(i);
@@ -214,7 +244,6 @@ var List = exports = Class(Widget, function(supr) {
 			} else {
 				cell.render();
 			}
-
 			this.positionCell(cell, i);
 			++i;
 			return true;
@@ -291,15 +320,16 @@ var List = exports = Class(Widget, function(supr) {
 		if (!this._opts.absolutePosition) { return; }
 
 		var r = this._renderOpts;
+		var el = cell.getElement();
+		var x, y;
 
 		if (this._opts.isTiled) {
-			var el = cell.getElement();
-			var x = i % r.numPerRow;
-			var y = (i / r.numPerRow) | 0;
+			x = i % r.numPerRow;
+			y = (i / r.numPerRow) | 0;
 			el.style.left = x * r.cellWidth + r.offsetLeft + 'px';
 			el.style.top = y * r.cellHeight + r.offsetTop + 'px';
 		} else {
-			cell.getElement().style.top = (i * r.cellHeight || 0) + r.offsetTop + 'px';
+			el.style.top = (i * r.cellHeight || 0) + r.offsetTop + 'px';
 		}
 	};
 
@@ -363,7 +393,6 @@ var List = exports = Class(Widget, function(supr) {
 					this._cellsByID[id] = cell;
 				}
 			}
-			
 		}
 	};
 });
