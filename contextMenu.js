@@ -102,6 +102,8 @@ function showMenu(menu, x, y) {
 				className = 'uncheckedOption';
 			} else if (option.selected === true) {
 				className = 'selectedOption';
+			} else if (option.className) {
+				className = option.className;
 			}
 			element = $({
 				parent: contextMenu.element,
