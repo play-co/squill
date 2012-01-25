@@ -47,6 +47,8 @@ var Widget = exports = Class([Element, Events], function() {
 	this._name = '';
 
 	this.init = function(opts) {
+		opts = opts || {};
+
 		this._children = [];
 
 		this._classes = {

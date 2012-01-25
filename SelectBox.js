@@ -13,6 +13,7 @@ var SelectBox = exports = Class(Widget, function(supr) {
 		opts = merge(opts, {
 			renderer: bind(this, 'defaultRenderer')
 		});
+
 		this._items = {};
 		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
 		supr(this, 'init', arguments);
@@ -52,7 +53,7 @@ var SelectBox = exports = Class(Widget, function(supr) {
 			this.onUpdateItem(key, item);
 		}, this);
 	}
-
+	
 	this.defaultRenderer = function(item) {
 		var key = this._dataSource.getKey();
 		return item.displayName || item.label || item.text || item[key];
