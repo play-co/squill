@@ -253,7 +253,9 @@ var List = exports = Class(Widget, function(supr) {
 			var THRESHOLD = 50; // ms to render
 			var n = 0, t = +new Date();
 			while (n++ < 10 || +new Date() - t < THRESHOLD) {
-				if (!renderOne.call(this)) { return; }
+				if (!renderOne.call(this)) {
+					return;
+				}
 			}
 			
 			setTimeout(bind(this, renderMany), 100);
@@ -275,6 +277,11 @@ var List = exports = Class(Widget, function(supr) {
 
 	this.setOffsetParent = function(offsetParent) {
 		this._opts.offsetParent = offsetParent;
+	};
+
+	this.setTiled = function(tiled) {
+		this._opts.isTiled = tiled;
+		this._isTiled = tiled;
 	};
 
 	this.updateRenderOpts = function() {
@@ -370,7 +377,7 @@ var List = exports = Class(Widget, function(supr) {
 				if (!cell) {
 					cell = this._createCell(item);
 				} else {
-					delete oldCellsByID[id];
+					delete(oldCellsByID[id]);
 					cell.render();
 				}
 
