@@ -241,7 +241,6 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	this.load = function() {
 		if (this._persistenceHandler) {
 			this.clear();
-
 			this._persistenceHandler.load(
 				bind(
 					this,

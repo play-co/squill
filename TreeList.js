@@ -50,13 +50,9 @@ var TreeList = exports = Class(Widget, function(supr) {
 			nodeWrapper: opts.nodeWrapper || 'browserNodeWrapper',
 			nodeWrapperHidden: opts.nodeWrapperHidden || 'browserNodeWrapperHidden',
 			node: opts.node || 'browserNode',
-
 			nodeChildren: opts.nodeChildren || 'children', // Node has children...
 			nodeActive: opts.nodeActive || 'active', // Selected node...
-
-			nodeActiveChild: opts.nodeActiveChild || 'browserNodeActiveChild',
-			nodeSelected: opts.nodeSelected || 'browserNodeSelected',
-			nodeSelectedChild: opts.nodeSelectedChild || 'browserNodeSelectedChild'
+			nodeActiveChild: opts.nodeActiveChild || 'browserNodeActiveChild'
 		};
 	};
 
@@ -84,8 +80,6 @@ var TreeList = exports = Class(Widget, function(supr) {
 			if (!children.length && parent.group) {
 				$.remove(parent.group.parentNode);
 				$.remove(parent.group);
-				//$.removeClass(parent.node, this._classNames.nodeChildren);
-				//$.removeClass(parent.node, this._classNames.nodeActiveChild);
 				delete(parent.group);
 			}
 		}
@@ -154,7 +148,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 		return info;
 	};
 
-	this._applyNodeStyle = function(item) {
+	this.applyNodeStyle = function(item) {
 		if (item.children && item.children.length) {
 			$.addClass(item.node, this._classNames.nodeChildren);
 		} else {
@@ -165,7 +159,11 @@ var TreeList = exports = Class(Widget, function(supr) {
 		} else {
 			$.removeClass(item.node, this._classNames.nodeActive);
 		}
-		if (item.customClass !== undefined) {
+
+		if ((item.removeCustomClass !== undefined) && item.removeCustomClass) {
+			$.removeClass(item.node, item.removeCustomClass);
+		}
+		if ((item.customClass !== undefined) && item.customClass) {
 			$.removeClass(item.node, item.customClass);
 			$.addClass(item.node, item.customClass);
 		}
@@ -173,7 +171,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 
 	this._addToStack = function(item) {
 		this._menuStack.push(item);
-		this._applyNodeStyle(item);
+		this.applyNodeStyle(item);
 
 		if (item.children && item.children.length) {
 			if (!item.group) {
@@ -189,7 +187,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 
 					// DisplayItem might change the styling of the element!
 					this.publish('DisplayItem', child.data, child);
-					this._applyNodeStyle(child);
+					this.applyNodeStyle(child);
 				}
 			}
 			$.addClass(item.group.menuId, this._classNames.nodeWrapper);
@@ -208,7 +206,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 		if (this._menuActiveItem) {
 			lastItem = this._menuActiveItem;
 			this._menuActiveItem = null;
-			this._applyNodeStyle(lastItem);
+			this.applyNodeStyle(lastItem);
 			lastItem = null;
 		}
 
@@ -220,7 +218,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 		}
 
 		this._menuActiveItem = item;
-		this._applyNodeStyle(item);
+		this.applyNodeStyle(item);
 
 		if (menuStack.length) {
 			i = menuStack.length;
@@ -260,7 +258,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 
 				// DisplayItem might change the styling of the element!
 				this.publish('DisplayItem', treeItem.data, treeItem);
-				this._applyNodeStyle(treeItem);
+				this.applyNodeStyle(treeItem);
 			}
 		} else {
 			parentItem = this._itemByKey[item.parent[this._key]];
@@ -290,7 +288,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 
 						// DisplayItem might change the styling of the element!
 						this.publish('DisplayItem', child.data, child);
-						this._applyNodeStyle(child);
+						this.applyNodeStyle(child);
 					}
 				} else {
 					children.push(treeItem);
@@ -309,14 +307,33 @@ var TreeList = exports = Class(Widget, function(supr) {
 	};
 
 	this.onRemoveItem = function(item, key) {
-		if (this._itemByKey[key]) {
-			this._removeFromStack(this._itemByKey[key].depth);
+		var treeItem = this._itemByKey[key];
+		var lastChild;
+		var treeParent;
+		
+		if (treeItem) {
+			lastChild = (treeItem.parent.children.length <= 1);
+			treeParent = item[this._dataSource.parentKey];
+
+			this._removeFromStack(this._itemByKey[key].depth - 1);
 			this._clearItem(this._itemByKey[key]);
 			this._menuActiveItem = false;
 
 			delete(this._itemByKey[key]);
 			this.publish('UnSelectItem');
+
+			if (lastChild && treeParent) {
+				treeItem = this._itemByKey[treeParent[this._dataSource.key]];
+				this.publish('DisplayItem', treeItem.data, treeItem);
+				this.applyNodeStyle(treeItem);
+			}
 		}
+	};
+
+	this.showItem = function(item) {
+		var treeItem = this.getTreeNode(item);
+		this.publish('DisplayItem', item, treeItem);
+		this.applyNodeStyle(treeItem);
 	};
 
 	this.setDataSource = function(dataSource) {
@@ -339,5 +356,9 @@ var TreeList = exports = Class(Widget, function(supr) {
 		}
 
 		return result;
+	};
+
+	this.getTreeNode = function(item) {
+		return this._itemByKey[item[this._dataSource.key]];
 	};
 });

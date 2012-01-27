@@ -156,6 +156,7 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 				function(err, response) {
 					this._removeList = [];
 					this._updateList = [];
+					this.publish('CommitFinished');
 				}
 			)
 		);

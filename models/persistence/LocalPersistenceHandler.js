@@ -45,5 +45,7 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(
 		}
 
 		localStorage.setItem(this._storageKey, JSON.stringify(data));
+
+		this.publish('CommitFinished');
 	};
 });
