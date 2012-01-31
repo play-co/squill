@@ -11,6 +11,8 @@ var Slider = exports = Class(Widget, function(supr) {
 		this._width = params.width || 100;
 		this._padding = 12;
 		this._hover = false;
+		this._fillColor = params.fillColor || '#000000';
+		this._lineColor = params.lineColor || '#FFFFFF';
 
 		this._def = {
 			children: [
@@ -42,9 +44,9 @@ var Slider = exports = Class(Widget, function(supr) {
 		ctx.closePath();
 
 		ctx.lineWidth = 1;
-		ctx.strokeStyle = '#000000';
+		ctx.strokeStyle = this._lineColor;
 		ctx.stroke();
-		ctx.fillStyle = '#FFFFFF';
+		ctx.fillStyle = this._fillColor;
 		ctx.fill();
 
 		ctx.save();
