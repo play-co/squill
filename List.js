@@ -14,7 +14,8 @@ var List = exports = Class(Widget, function(supr) {
 			preserveCells: false,
 			renderAll: true,
 			isFixedHeight: true,
-			absolutePosition: true
+			absolutePosition: true,
+			filter: null
 		});
 
 		if (opts.cellCtor) { this.setCellCtor(opts.cellCtor); }
@@ -22,6 +23,7 @@ var List = exports = Class(Widget, function(supr) {
 		if (opts.sorter) { this.setSorter(opts.sorter); }
 
 		this._lastFilter = -1;
+		this._filter = opts.filter;
 		this._cellsByID = {};
 		this._removed = {};
 		this._containSelf = opts.containSelf;
@@ -144,14 +146,17 @@ var List = exports = Class(Widget, function(supr) {
 	// Filter moved to DataSource...
 	this._applyFilter = function() {
 		var filter = this._filter;
-		var ds = this._renderedDataSource = new DataSource();
-		ds.key = this._dataSource.getKey();
+		var ds = this._renderedDataSource = new DataSource({key: this._dataSource.getKey()});
 		var src = this._dataSource;
 		for (var i = 0, n = src.length; i < n; ++i) {
 			var item = src.getItemForIndex(i);
 			var match = true;
 			for (var key in filter) {
-				if (typeof item[key] == 'string'
+				if (filter[key] instanceof RegExp) {
+					if (!item[key].match(filter[key])) {
+						match = false;
+					}
+				} else if (typeof item[key] == 'string'
 						&& item[key].toLowerCase().indexOf(filter[key]) == -1) {
 					match = false;
 				}
@@ -159,6 +164,8 @@ var List = exports = Class(Widget, function(supr) {
 			
 			if (match) {
 				ds.add(item);
+			} else {
+				this._removed[item[ds.key]] = true;
 			}
 		}
 	};
@@ -229,15 +236,16 @@ var List = exports = Class(Widget, function(supr) {
 	};
 
 	this.renderAllDelayed = function() {
-		if (!this._dataSource) { return; }
+		var src = this._renderedDataSource;
+		if (!src) { return; }
 
 		this.updateRenderOpts();
 		var i = 0;
 		function renderOne() {
-			var item = this._dataSource.getItemForIndex(i);
+			var item = src.getItemForIndex(i);
 			if (!item) { return false; }
 
-			var id = item[this._dataSource.getKey()];
+			var id = item[src.getKey()];
 			var cell = this._cellsByID[id];
 			if (!cell) {
 				cell = this._cellsByID[id] = this._createCell(item);
@@ -263,7 +271,7 @@ var List = exports = Class(Widget, function(supr) {
 
 		var removed = this._removed;
 		for (var id in removed) {
-			if (!this._dataSource.getItemForID(id)) {
+			if (!src.getItemForID(id)) {
 				var cell = this._cellsByID[id];
 				if (cell) {
 					cell.remove();
@@ -302,11 +310,11 @@ var List = exports = Class(Widget, function(supr) {
 			r.cellHeight = cellDim.height;
 		}
 
-		var n = r.numRows = this._dataSource.length;
+		var n = r.numRows = this._renderedDataSource.length;
 		if (this._opts.isFixedHeight) {
 			if (this._opts.isTiled) {
 				r.maxWidth = parent.offsetWidth - r.offsetLeft;
-				r.numPerRow = r.maxWidth / r.cellWidth | 0;
+				r.numPerRow = Math.max(1, r.maxWidth / r.cellWidth | 0);
 				r.numRows = Math.ceil(n / r.numPerRow);
 				r.start = Math.max(0, (r.top / r.cellHeight | 0) * r.numPerRow);
 				r.end = Math.ceil(r.bottom / r.cellHeight) * r.numPerRow;
@@ -358,6 +366,8 @@ var List = exports = Class(Widget, function(supr) {
 		var src = this._renderedDataSource,
 			key = src.getKey(),
 			n = src.length;
+		
+		if (n && !this.updateRenderOpts()) { return; }
 
 		// swap lists
 		var oldCellsByID = this._cellsByID;
@@ -366,9 +376,8 @@ var List = exports = Class(Widget, function(supr) {
 		// render new items
 		if (n) {
 			var isTiled = this._isTiled;
-			if (!this.updateRenderOpts()) { return; }
-
-			for (var i = start; i < end; ++i) {
+			var r = this._renderOpts;
+			for (var i = r.start; i < r.end; ++i) {
 				var item = src.getItemForIndex(i);
 				if (!item) { break; }
 
@@ -394,7 +403,7 @@ var List = exports = Class(Widget, function(supr) {
 		} else {
 			for (var id in oldCellsByID) {
 				var cell = oldCellsByID[id];
-				if (!this._dataSource.getItemForID(id)) {
+				if (!src.getItemForID(id)) {
 					cell.remove();
 				} else {
 					this._cellsByID[id] = cell;
