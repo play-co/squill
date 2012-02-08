@@ -3,7 +3,7 @@
 from util.browser import $;
 import .Widget;
 
-var hint = null;
+import .hint as hint;
 
 var Graph = exports = Class(Widget, function(supr) {
 	this._css = 'cnvs';
@@ -17,11 +17,6 @@ var Graph = exports = Class(Widget, function(supr) {
 
 		this._width = opts.width || 400;
 		this._height = opts.height || 400;
-
-		this._hint = hint || $({
-			parent: document.body,
-			className: 'graphHint'
-		});
 
 		this._rectangles = [];
 		this._data = false;
@@ -46,17 +41,14 @@ var Graph = exports = Class(Widget, function(supr) {
 		}
 
 		if (found) {
-			this._hint.innerHTML = rectangle.label;
-			this._hint.style.left = (evt.pageX + 15) + 'px';
-			this._hint.style.top = (evt.pageY + 15) + 'px';
-			this._hint.style.display = 'block';
+			hint.show(evt.pageX + 15, evt.pageY + 15, rectangle.label);
 		} else {
-			this._hint.style.display = 'none';
+			hint.hide();
 		}
 	};
 
 	this._onMouseOut = function(evt) {
-		this._hint.style.display = 'none';
+		hint.hide();
 	};
 
 	this.buildWidget = function() {
