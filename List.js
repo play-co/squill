@@ -118,7 +118,17 @@ var List = exports = Class(Widget, function(supr) {
 	};
 
 	this.setCellCtor = function(cellCtor) {
+		if (cellCtor == this._cellCtor) { return; }
+
 		this._cellCtor = cellCtor;
+
+		for (var id in this._cellsByID) {
+			var cell = this._cellsByID[id];
+			cell.remove();
+		}
+
+		this._cellsByID = {};
+		this._cellDim = null;
 	};
 
 	this.getCellById = function(id) {
@@ -326,6 +336,8 @@ var List = exports = Class(Widget, function(supr) {
 
 		if (this._opts.absolutePosition) {
 			this._container.style.height = r.numRows * r.cellHeight + 'px';
+		} else {
+			this._container.style.height = 'auto';
 		}
 
 		return true;
