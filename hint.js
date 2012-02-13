@@ -2,14 +2,9 @@
 
 from util.browser import $;
 
-var hint = null;
+var hint = $({parent: document.body, className: 'hint'});
 
 exports.show = function(x, y, text) {
-	hint = hint || $({
-		parent: document.body,
-		className: 'hint'
-	});
-
 	hint.innerHTML = text;
 	hint.style.left = x + 'px';
 	hint.style.top = y + 'px';
