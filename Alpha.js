@@ -47,7 +47,7 @@ var Alpha = exports = Class(Widget, function(supr) {
 			$.style(
 				alphaGradient,
 				{
-					float: 'left',
+					'float': 'left',
 					width: '20px',
 					height: '100px',
 					margin: '8px 0 0 12px',
