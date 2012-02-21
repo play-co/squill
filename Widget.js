@@ -4,6 +4,7 @@ from util.browser import $;
 import .Element, .Events, .global;
 import .i18n;
 import .Delegate;
+from .__imports__ import classes as WIDGET_CLASSES;
 
 var uid = 0;
 
@@ -50,23 +51,6 @@ var Widget = exports = Class([Element, Events], function() {
 		opts = opts || {};
 
 		this._children = [];
-
-		this._classes = {
-			alpha: '.Alpha',
-			label: '.Label',
-			list: '.List',
-			text: '.TextInput',
-			textarea: '.TextArea',
-			password: '.TextInput',
-			scroller: '.Scroller',
-			canvas: '.Canvas',
-			slider: '.Slider',
-			color: '.Color',
-			vcenter: '.VerticalCenter',
-			treelist: '.TreeList',
-			graph: '.Graph',
-			select: '.SelectBox',
-		};
 
 		// ===
 		// merge this._def and opts
@@ -174,8 +158,8 @@ var Widget = exports = Class([Element, Events], function() {
 
 			var el;
 			if (!opts.type || typeof opts.type == 'string') {
-				if (this._classes[opts.type]) {
-					var Constructor = jsio('import ' + this._classes[opts.type]);
+				if (WIDGET_CLASSES[opts.type]) {
+					var Constructor = jsio('import ' + WIDGET_CLASSES[opts.type]);
 					el = new Constructor(opts);
 				} else {
 					switch (opts.type) {
