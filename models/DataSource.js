@@ -17,6 +17,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 		this._byIndex = [];
 		this._byID = {};
+		this._reverse = opts.reverse;
 
 		this.length = 0;
 
@@ -185,6 +186,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 	this.sort = function() {
 		this._byIndex.sort();
+		this._reverse && this._byIndex.reverse();
 	};
 
 	this.forEach = this.each = function(cb, context) {
