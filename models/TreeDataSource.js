@@ -163,16 +163,12 @@ var TreeDataSourceNode = Class(function() {
 var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 	var defaults = {
 		key: 'id',
-		parentKey: 'parent',
-		channel: null,
-		hasRemote: false
+		parentKey: 'parent'
 	};
 
 	this.init = function(opts) {
 		opts = opts || {};
 		opts = merge(opts, defaults);
-
-		supr(this, 'init', [opts]);
 
 		this._maxKey = 0;
 		this.parentKey = opts.parentKey;
@@ -180,20 +176,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		this._nodeByKey = {};
 		this._root = null;
 
-		this._sorter = null;
-		if (opts.sorter) {
-			this.setSorter(opts.sorter);
-		}
-
-		this.setPersistenceHandler(opts.persistenceHandler || null);
-
-		this._changeDataSave = false;
-		this._changeData = {
-			updated: [], 
-			updatedHash: {},
-			removed: [],
-			removedHash: {}
-		};
+		supr(this, 'init', [opts]);
 	};
 
 	this._saveChanges = function(type, key) {
@@ -217,17 +200,11 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 			case 'UPDATE':
 				this._saveChanges('updated', keyValue);
 				this.publish('Update', node, keyValue);
-				if (this._hasRemote) {
-					this.publish('Remote', {type: 'UPDATE', channel: channel, node: node, key: keyValue});
-				}
 				break;
 
 			case 'REMOVE':
 				this._saveChanges('removed', keyValue);
 				this.publish('Remove', node, keyValue);
-				if (this._hasRemote) {
-					this.publish('Remote', {type: 'REMOVE', channel: channel, node: node, key: keyValue});
-				}
 				delete(this._nodeByKey[keyValue]);
 				break;
 		}
@@ -390,21 +367,21 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 
 	this.saveChanges = function() {
 		this._changeDataSave = false;
-		if (this._persistenceHandler) {
+		if (this._persistence) {
 			var changeData = this._changeData,
 				i, j;
 
-			this._persistenceHandler.remove(changeData.removed);
+			this._persistence.remove(changeData.removed);
 
 			if (changeData.updated.length) {
 				var updateList = [];
 				for (i = 0, j = changeData.updated.length; i < j; i++) {
 					updateList.push(this._nodeByKey[changeData.updated[i]].toJSONData(false, true));
 				}
-				this._persistenceHandler.update(updateList);
+				this._persistence.update(updateList);
 			}
 
-			this._persistenceHandler.commit();
+			this._persistence.commit();
 		}
 	};
 
@@ -412,13 +389,8 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		this._sorter = sorter;
 	};
 
-	this.setPersistenceHandler = function(persistenceHandler) {
-		this._persistenceHandler = persistenceHandler;
-	};
-
-	this.onCommitFinished = function() {
-		console.log('finished commit!');
-	};
+	// this.onCommitFinished = function() {
+	// };
 
 	this.getByKey = function(id) {
 		return this._nodeByKey[id] || null;
@@ -431,10 +403,10 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.load = function(onLoad) {
-		if (this._persistenceHandler) {
+		if (this._persistence) {
 			this.clear();
 
-			this._persistenceHandler.load(
+			this._persistence.load(
 				bind(
 					this,
 					function(data) {

@@ -6,13 +6,8 @@ var BasicPersistanceHandler = exports = Class(PubSub, function(supr) {
 	this.init = function(opts) {
 		supr(this, 'init', arguments);
 
-		this._onLoad = opts.onLoad || null;
-
 		this._params = opts.params || {}
 		this._key = opts.key;
-
-		this._loadURL = opts.loadURL || null;
-		this._saveURL = opts.saveURL || null;
 	};
 
 	this.clear = function() {
@@ -34,6 +29,10 @@ var BasicPersistanceHandler = exports = Class(PubSub, function(supr) {
 		}
 	};
 
+	this.setSource = function(dataSource) {
+		this._dataSource = dataSource;
+	}
+
 	this.remove = function(data) {
 		var i, j;
 
@@ -50,11 +49,4 @@ var BasicPersistanceHandler = exports = Class(PubSub, function(supr) {
 		this._params = params;
 	};
 
-	this.setLoadURL = function(loadURL) {
-		this._loadURL = loadURL;
-	};
-
-	this.setSaveURL = function(saveURL) {
-		this._saveURL = saveURL;
-	};
 });
