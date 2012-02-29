@@ -27,6 +27,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._cellsByID = {};
 		this._removed = {};
 		this._containSelf = opts.containSelf;
+		this._applyNodeOrder = opts.applyNodeOrder;
 
 		this._renderOpts = {
 			margin: opts.margin || 0
@@ -52,30 +53,12 @@ var List = exports = Class(Widget, function(supr) {
 
 	this.setDataSource = function(dataSource) {
 		if (this._dataSource == dataSource) { return; }
-			
+
 		if (this._dataSource) {
 			this._dataSource.unsubscribe('Update', this);
 			this._dataSource.unsubscribe('Remove', this);
 			this.clear();
 		}
-		
-			// 		
-			// 
-			// var oldCellsByID = this._cellsByID,
-			// 	newCellsByID = {};
-			// 
-			// for (var id in oldCellsByID) {
-			// 	if (oldCellsByID.hasOwnProperty(id)) {
-			// 		var item = dataSource.getItemForID(id);
-			// 		if (!item) {
-			// 			oldCellsByID[id].remove();
-			// 		} else {
-			// 			newCellsByID[id] = oldCellsByID[id];
-			// 		}
-			// 	}
-			// }
-			// this._cellsByID = newCellsByID;
-			// }
 
 		this._dataSource = dataSource;
 		this._dataSource.subscribe('Update', this, 'onUpdateItem');
@@ -255,6 +238,35 @@ var List = exports = Class(Widget, function(supr) {
 		return cell;
 	};
 
+	this._nodeOrder = function() {
+		var container = this._container;
+		var src = this._renderedDataSource;
+		var key = src.key;
+		var dummy;
+		var cell;
+		var element;
+		var item;
+		var i;
+
+		if (!container.childNodes.length) {
+			return;
+		}
+
+		dummy = document.createElement('div');
+
+		container.insertBefore(dummy, container.childNodes[0]);
+		for (i = 0; i < src.length; i++) {
+			item = src.getItemForIndex(i);
+			cell = this._cellsByID[item[key]];
+			element = cell.getElement();
+			if (cell && element.parentNode) {
+				container.insertBefore(container.removeChild(element), dummy);
+			}
+		}
+
+		container.removeChild(dummy);
+	};
+
 	this.renderAllDelayed = function() {
 		var src = this._renderedDataSource;
 		if (!src) { return; }
@@ -282,6 +294,7 @@ var List = exports = Class(Widget, function(supr) {
 			var n = 0, t = +new Date();
 			while (n++ < 10 || +new Date() - t < THRESHOLD) {
 				if (!renderOne.call(this)) {
+					this._applyNodeOrder && this._nodeOrder();
 					return;
 				}
 			}
