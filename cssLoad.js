@@ -13,7 +13,7 @@ exports.get = function(opts, cb) {
 	
 	var parent = opts.el || document.getElementsByTagName('head')[0];
 	
-	var uri = new std.uri(opts.url);
+	var uri = std.uri.relativeTo(opts.url, window.location);
 	var host = uri.getHost();
 	if (host && (host != window.location.hostname)) {
 		var el = $({tag: 'link'});
