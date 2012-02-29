@@ -31,11 +31,9 @@ function clickOption(evt) {
 		if ((option.checked === true) || (option.checked === false)) {
 			option.checked = !option.checked;
 			if (option.checked) {
-				$.removeClass(evt.target, 'uncheckedOption');
 				$.addClass(evt.target, 'checkedOption');
 			} else {
 				$.removeClass(evt.target, 'checkedOption');
-				$.addClass(evt.target, 'uncheckedOption');
 			}
 			option.onchange && option.onchange(option.checked);
 		} else {
@@ -97,20 +95,24 @@ function showMenu(menu, x, y) {
 		} else {
 			className = 'option';
 			if (option.checked === true) {
-				className = 'checkedOption';
-			} else if (option.checked === false) {
-				className = 'uncheckedOption';
-			} else if (option.selected === true) {
-				className = 'selectedOption';
-			} else if (option.className) {
-				className = option.className;
+				className += ' checkedOption';
 			}
+
+			if (option.selected === true) {
+				className += ' selectedOption';
+			}
+
+			if (option.className) {
+				className += ' ' + option.className;
+			}
+
 			element = $({
 				parent: contextMenu.element,
 				tag: 'a',
 				text: option.title,
 				className: className
 			});
+			
 			element.onclick = clickOption;
 			element.optionIndex = i;
 		}
