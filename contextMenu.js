@@ -121,10 +121,8 @@ function showMenu(menu, x, y) {
 
 	$.style(contextMenu.overlay, {display: 'block'});
 
-	if (menu.width) {
-		if (x + menu.width > document.width) {
-			x -= menu.width;
-		}
+	if (menu.width && (x + menu.width > document.body.offsetWidth)) {
+		x -= menu.width;
 	}
 	style = {left: x + 'px', top: y + 'px', display: 'block'};
 	if (menu.width) {
