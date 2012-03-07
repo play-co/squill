@@ -27,6 +27,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._cellsByID = {};
 		this._removed = {};
 		this._containSelf = opts.containSelf;
+		this._containerTag = opts.containerTag;
 		this._applyNodeOrder = opts.applyNodeOrder;
 
 		this._renderOpts = {
@@ -77,8 +78,9 @@ var List = exports = Class(Widget, function(supr) {
 	};
 
 	this.buildWidget = function() {
-		this._container = $({parent: this._el, className: this._opts.containerClassName});
-		if (this._containSelf) {
+		
+		this._container = $({parent: this._el, className: this._opts.containerClassName, tag: this._containerTag || 'div'});
+		if (this._containSelf && !this._applyNodeOrder) {
 			this._container.style.position = 'relative';
 		}
 
@@ -284,7 +286,7 @@ var List = exports = Class(Widget, function(supr) {
 			} else {
 				cell.render();
 			}
-			this.positionCell(cell, i);
+			!this._applyNodeOrder && this.positionCell(cell, i);
 			++i;
 			return true;
 		}
@@ -357,10 +359,12 @@ var List = exports = Class(Widget, function(supr) {
 			}
 		}
 
-		if (this._opts.absolutePosition) {
-			this._container.style.height = r.numRows * r.cellHeight + 'px';
-		} else {
-			this._container.style.height = 'auto';
+		if (!this._applyNodeOrder) {
+			if (this._opts.absolutePosition) {
+				this._container.style.height = r.numRows * r.cellHeight + 'px';
+			} else {
+				this._container.style.height = 'auto';
+			}
 		}
 
 		return true;
