@@ -96,6 +96,11 @@ var TextInput = exports = Class(Widget, function(supr) {
 		this.checkLabel();
 		this.checkValue();
 	}
+
+	this.onMouseDown = function(evt) {
+		evt.stopPropagation();
+//		$.stopEvent(evt);
+	}
 	
 	this.onKeyPress = function(e) {
 		supr(this, 'onKeyPress', arguments);

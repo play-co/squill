@@ -98,7 +98,6 @@ exports = Class(lib.PubSub, function() {
 
 	this.onMouseOut = function(e) {
 		this._isOver = false;
-		this.onMouseUp();
 		this.publish('Out', e);
 	};
 

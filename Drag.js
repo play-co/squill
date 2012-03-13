@@ -1,6 +1,8 @@
-jsio('import lib.PubSub');
-jsio('import math2D.Point as Point');
-jsio('from util.browser import $');
+"use import";
+
+import lib.PubSub;
+import math2D.Point as Point;
+from util.browser import $;
 
 var gCurrentDrag = [],
 	gCurrentMouse = {x: 0, y: 0};
@@ -46,6 +48,7 @@ function onMove(e) {
 	for (var i = 0, len = gCurrentDrag.length; i < len; ++i) {
 		gCurrentDrag[i].onMouseMove(e);
 	}
+	
 }
 
 function onUp(e) {
@@ -61,14 +64,9 @@ if ('ontouchstart' in window && document.addEventListener) {
 	document.addEventListener('touchmove', onMove, true);
 	document.addEventListener('touchend', onUp, true);
 } else {
-	if (document.addEventListener) {
-		document.addEventListener('mousedown', resolveMouse, true);
-	} else {
-		$.onEvent(document, 'mousedown', resolveMouse);
-	}
-	
-	$.onEvent(document, 'mousemove', onMove);
-	$.onEvent(document, 'mouseup', onUp);
+	document.addEventListener('mousedown', resolveMouse, true);
+	document.addEventListener('mousemove', onMove, true);
+	document.addEventListener('mouseup', onUp, true);
 }
 
 exports = Class(lib.PubSub, function(supr) {
@@ -106,6 +104,8 @@ exports = Class(lib.PubSub, function(supr) {
 		}
 		
 		if (this._isActive) {
+			$.stopEvent(moveEvt);
+			
 			dragEvt.prevPt = dragEvt.currPt;
 			dragEvt.currPt = new Point(gCurrentMouse);
 			this.publish('Drag', dragEvt, moveEvt, Point.subtract(dragEvt.currPt, dragEvt.prevPt));
@@ -115,8 +115,12 @@ exports = Class(lib.PubSub, function(supr) {
 	this.onMouseUp = function(upEvt) {
 		gRemoveItem(this);
 		if (this._isActive) {
+			
+			logger.log('stop event', upEvt.type)
+			$.stopEvent(upEvt);
 			this._isActive = false;
 			this.publish('DragStop', this._evt, upEvt);
+			return true;
 		}
 	}
 });
