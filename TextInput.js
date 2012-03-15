@@ -5,7 +5,7 @@ var TextInput = exports = Class(Widget, function(supr) {
 	this._type = 'text';
 	this._tag = 'input';
 	this._css = 'textInput';
-	this._class = global.getWidgetPrefix() + this._css;
+	this._class = (global.getWidgetPrefix() === null) ? '' : (global.getWidgetPrefix() + this._css);
 	
 	this.init = function(opts) {
 		opts = merge(opts, {

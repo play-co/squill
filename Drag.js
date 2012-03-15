@@ -70,10 +70,7 @@ if ('ontouchstart' in window && document.addEventListener) {
 }
 
 exports = Class(lib.PubSub, function(supr) {
-	
 	this.init = function(params) {
-		
-		
 		this._isActive = false;
 	}
 
@@ -116,7 +113,6 @@ exports = Class(lib.PubSub, function(supr) {
 		gRemoveItem(this);
 		if (this._isActive) {
 			
-			logger.log('stop event', upEvt.type)
 			$.stopEvent(upEvt);
 			this._isActive = false;
 			this.publish('DragStop', this._evt, upEvt);

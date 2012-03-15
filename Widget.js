@@ -228,7 +228,9 @@ var Widget = exports = Class([Element, Events], function() {
 	this.buildContent = function() {
 		var opts = this._opts;
 
-		$.addClass(this._el, global.getWidgetPrefix() + this._css);
+		if (global.getWidgetPrefix() !== null) {
+			$.addClass(this._el, global.getWidgetPrefix() + this._css);
+		}
 
 		if (!this.delegate) { this.delegate = new Delegate(); }
 
