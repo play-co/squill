@@ -96,7 +96,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 			}
 		}
 
-		return this;
+		return item;
 	};
 	
 	this.remove = function(id) {
@@ -119,9 +119,9 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.keepOnly = function(list) {
-		this.compare(list, function(local, remote) {
+		this.compare(list, function(dataSource, local, remote) {
 			if (!remote) {
-				this.remove(local);
+				dataSource.remove(local);
 			}
 		});
 	};
@@ -195,6 +195,8 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		this.add(data.items);
 	};
 
+	this.toArray = function() { return this._byIndex.slice(0); }
+
 	this.beginChanges = function() {
 		this._changeDataSave = true;
 		this._changeData = {
@@ -256,13 +258,13 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		var items = this._byIndex;
 		for (var i = 0, item; item = items[i]; ++i) {
 			var k = item[key];
-			cb.call(this, item, compareTo[k]);
+			cb.call(this, this, item, compareTo[k]);
 			delete compareTo[k];
 		}
 
 		// then, for any remaining dict items, they don't exist in the local version
 		for (var k in compareTo) {
-			cb.call(this, null, compareTo[k]);
+			cb.call(this, this, null, compareTo[k]);
 		}
 	}
 
