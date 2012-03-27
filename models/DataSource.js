@@ -227,9 +227,14 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		}
 	};
 
-	this.load = function() {
+	this.load = function(cb) {
 		if (this._persistence) {
-			this._persistence.load(bind(this, 'fromJSON'));
+			this._persistence.load(this, function(err) {
+				if (err) {
+					logger.log('error loading', JSON.stringify(err));
+				}
+				cb && cb(err);
+			});
 		}
 	};
 

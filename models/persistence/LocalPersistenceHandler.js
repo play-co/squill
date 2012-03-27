@@ -14,12 +14,12 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(
 		if (dataStr) {
 			try {
 				dataSource.fromJSON(JSON.parse(dataStr));
-				return cb();
+				return cb && cb();
 			} catch(e) {
-				return cb({'InvalidJSON': 'local storage may be corrupted'});
+				return cb && cb({'InvalidJSON': 'local storage may be corrupted'});
 			}
 		} else {
-			return cb({'NoData': true});
+			return cb && cb({'NoData': true});
 		}
 	}
 

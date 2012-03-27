@@ -63,7 +63,7 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 		}
 	};
 
-	this.load = function(cb) {
+	this.load = function(dataSource, cb) {
 		if (this._loadURL === null) {
 			cb && cb({NoURL: 'Loading URL is not set.'});
 			return;
@@ -119,10 +119,11 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 					if (errorMessage) {
 						cb && cb({LoadingError: 'Loading error: ' + errorMessage});
 					} else {
-						cb && cb(null, {
-							key: this._key,
-							items: data
-						});
+						dataSource.fromJSON({
+								key: this._key,
+								items: data
+							});
+						cb && cb();
 					}
 				}
 			)
