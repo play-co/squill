@@ -101,7 +101,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	
 	this.remove = function(id) {
 		if (typeof id == 'object') { id = id[this._key]; }
-		if (!id) { return; }
+		if (id == null) { return; }
 
 		if (this._byID[id]) {
 			this.signalUpdate('REMOVE', this._byID[id], id);
