@@ -78,16 +78,17 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 				item[i] && this.add(item[i]);
 			}
 		} else {
-			if (this._byID[item[this.key]]) {
-				this.remove(item);
-			}
-
 			if (this._ctor && !(item instanceof this._ctor)) {
 				item = new this._ctor(item);
 			}
 
+			var id = item[this.key];
+			if (!id) { return; }
+
+			if (this._byID[id]) { this.remove(item); }
+
 			var index = this.length++;
-			this._byIndex[index] = this._byID[item[this.key]] = item;
+			this._byIndex[index] = this._byID[id] = item;
 			this.signalUpdate('UPDATE', item);
 
 			if (this._sorter) {
