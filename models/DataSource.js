@@ -83,7 +83,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 			}
 
 			var id = item[this.key];
-			if (!id) { return; }
+			if (id === undefined || id === null) { return; }
 
 			if (this._byID[id]) { this.remove(item); }
 
