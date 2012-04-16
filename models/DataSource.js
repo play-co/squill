@@ -70,6 +70,8 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	var toStringSort = function() {
 		return this._sortKey;
 	};
+	// NEVER CHANGE THE ID OF AN ITEM WITHOUT REMOVING IT FROM THE DATASOURCE FIRST.
+	// Love, Jeff Hubbard and Marcus Cavanaugh
 
 	this.updated = 
 	this.add = function(item) {
@@ -192,7 +194,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 	this.fromJSON = function(data) {
 		this.clear();
-		var key = this._key = data.key;
+		var key = this._key = this.key = data.key;
 		this.add(data.items);
 	};
 
