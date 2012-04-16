@@ -51,17 +51,17 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.signalUpdate = function(type, item, id) {
-		if (item[this._key] === undefined) {
+		if (item[this.key] === undefined) {
 			return;
 		}
 		switch (type) {
 			case 'UPDATE':
-				this._saveChanges('updated', item[this._key]);
-				this.publish('Update', item[this._key], item);
+				this._saveChanges('updated', item[this.key]);
+				this.publish('Update', item[this.key], item);
 				break;
 
 			case 'REMOVE':
-				this._saveChanges('removed', item[this._key]);
+				this._saveChanges('removed', item[this.key]);
 				this.publish('Remove', id, item);
 				break;
 		}
@@ -103,14 +103,14 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 	
 	this.remove = function(id) {
-		if (typeof id == 'object') { id = id[this._key]; }
+		if (typeof id == 'object') { id = id[this.key]; }
 		if (id == null) { return; }
 
 		if (this._byID[id]) {
 			this.signalUpdate('REMOVE', this._byID[id], id);
 			delete this._byID[id];
 			for (var i = 0, item; item = this._byIndex[i]; ++i) {
-				if (item[this._key] == id) {
+				if (item[this.key] == id) {
 					this._byIndex.splice(i, 1);
 					break;
 				}
@@ -137,7 +137,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		this.length = 0;
 
 		for (var i = 0, item; item = index[i]; ++i) {
-			this.signalUpdate('REMOVE', item, item[this._key]);
+			this.signalUpdate('REMOVE', item, item[this.key]);
 		}
 	};
 
@@ -161,7 +161,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.getKey = function() {
-		return this._key;
+		return this.key;
 	}
 
 	this.get = this.getItemForID = function(id) {
@@ -179,7 +179,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 	this.forEach = this.each = function(cb, context) {
 		for (var i = 0; i < this.length; ++i) {
-			if (cb.call(context, this._byIndex[i], this._byIndex[i][this._key])) {
+			if (cb.call(context, this._byIndex[i], this._byIndex[i][this.key])) {
 				return;
 			}
 		}
@@ -187,14 +187,14 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 	this.toJSON = function() {
 		return {
-			key: this._key,
+			key: this.key,
 			items: this._byIndex
 		};
 	};
 
 	this.fromJSON = function(data) {
 		this.clear();
-		var key = this._key = this.key = data.key;
+		var key = this.key = data.key;
 		this.add(data.items);
 	};
 
