@@ -80,17 +80,41 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 				item[i] && this.add(item[i]);
 			}
 		} else {
-			if (this._ctor && !(item instanceof this._ctor)) {
-				item = new this._ctor(item);
+			var id = item[this.key];
+
+			// note: not the same as `if (!id) { ... }`
+			if (id == null) { return; }
+
+			var index = null;
+			if (this._byID[id]) {
+				for (var i = 0, _item; _item = this._byIndex[i]; ++i) {
+					if (_item[this.key] == id) {
+						if (typeof _item.update == 'function') {
+							_item.update(item);
+							item = _item;
+						} else {
+							index = i;
+						}
+						break;
+					}
+				}
+			} else {
+				index = this.length++;
 			}
 
-			var id = item[this.key];
-			if (id === undefined || id === null) { return; }
+			// if we're adding it to the array:
+			if (index !== null) {
 
-			if (this._byID[id]) { this.remove(item); }
+				// make sure it's an instance of the specified class
+				if (this._ctor && !(item instanceof this._ctor)) {
+					item = new this._ctor(item);
+				}
 
-			var index = this.length++;
-			this._byIndex[index] = this._byID[id] = item;
+				this._byIndex[index] = item;
+			}
+
+			this._byID[id] = item;
+
 			this.signalUpdate('UPDATE', item);
 
 			if (this._sorter) {
@@ -111,14 +135,11 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 			delete this._byID[id];
 			for (var i = 0, item; item = this._byIndex[i]; ++i) {
 				if (item[this.key] == id) {
-					this._byIndex.splice(i, 1);
-					break;
+					--this.length;
+					return this._byIndex.splice(i, 1)[0];
 				}
 			}
 		}
-
-		--this.length;
-		return this;
 	};
 
 	this.keepOnly = function(list) {
