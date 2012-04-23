@@ -5,6 +5,9 @@ import .Widget;
 import .transforms;
 from util.browser import $;
 
+/**
+ * @extends squill.Widget
+ */
 exports = Class(Widget, function(supr) {
 	this._css = 'scroller';
 	

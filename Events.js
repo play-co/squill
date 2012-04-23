@@ -4,6 +4,9 @@ from util.browser import $;
 import .Drag;
 import lib.PubSub;
 
+/**
+ * @extends lib.PubSub
+ */
 exports = Class(lib.PubSub, function() {
 	var SLICE = Array.prototype.slice;
 

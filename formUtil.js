@@ -1,5 +1,9 @@
 jsio('from util.browser import $');
 
+/**
+ * @namespace
+ */
+
 exports.onEnter = function(el, cb) {
 	if (arguments.length > 2) { cb = bind.apply(this, Array.prototype.slice.call(arguments, 1)); }
 	

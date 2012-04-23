@@ -4,6 +4,9 @@ jsio('import math2D.Point as Point');
 jsio('from util.browser import $');
 jsio('import .Window');
 
+/**
+ * @extends squill.Widget
+ */
 var Dialog = exports = Class(Widget, function(supr) {
 	this.init = function(params) {
 		var params = merge(params, {

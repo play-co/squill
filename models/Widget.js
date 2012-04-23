@@ -2,6 +2,9 @@
 
 import lib.PubSub;
 
+/**
+ * @extends lib.PubSub
+ */
 exports = Class(lib.PubSub, function() {
 	this.init = function(opts) {
 		this._opts = opts;

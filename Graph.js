@@ -5,6 +5,9 @@ import .Widget;
 
 var hint = null;
 
+/**
+ * @extends squill.Widget
+ */
 var Graph = exports = Class(Widget, function(supr) {
 	this._css = 'cnvs';
 	this._type = 'canvas';

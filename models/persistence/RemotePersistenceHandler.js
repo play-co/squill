@@ -15,6 +15,9 @@ import util.ajax;
 
 import .BasicPersistenceHandler as BasicPersistenceHandler;
 
+/**
+ * @extends squill.models.persistence.BasicPersistenceHandler
+ */
 var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function(supr) {	
 	this._checkChangeData = function() {
 		if (!this._updateList) {

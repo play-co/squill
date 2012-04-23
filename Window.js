@@ -5,6 +5,9 @@ jsio('from util.browser import $');
 
 var UNIQUE_ID = '__squill__window_id';
 
+/**
+ * @extends lib.PubSub
+ */
 var Window = exports = Class(lib.PubSub, function() {
 	this.init = function(win) {
 		this._win = win || window;

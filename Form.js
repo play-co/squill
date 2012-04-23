@@ -2,6 +2,9 @@ jsio('import std.js as JS');
 jsio('import .Element');
 jsio('import .Widget');
 
+/**
+ * @extends squill.Widget
+ */
 exports = Class(Widget, function(supr) {
 	
 	this.isValid = true;

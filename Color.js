@@ -5,6 +5,9 @@ import .Widget;
 
 import .jscolor.jscolor as jscolor;
 
+/**
+ * @extends squill.Widget
+ */
 var Color = exports = Class(Widget, function(supr) {
 	this._css = 'clr';
 	this._type = 'text';

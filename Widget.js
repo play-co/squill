@@ -42,6 +42,9 @@ var WidgetSet = Class(function() {
 	}
 });
 
+/**
+ * @extends squill.Element
+ */
 var Widget = exports = Class([Element, Events], function() {
 	this._css = 'widget';
 	this._name = '';

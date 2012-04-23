@@ -5,6 +5,10 @@ import lib.Callback;
 var _cache = {};
 var _groups = {};
 
+/**
+ * @namespace
+ */
+
 exports.register = function(baseDir, groups) {
 	for (var name in groups) {
 		var g = groups[name];

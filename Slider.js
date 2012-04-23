@@ -3,6 +3,9 @@
 from util.browser import $;
 import .Widget;
 
+/**
+ * @extends squill.Widget
+ */
 var Slider = exports = Class(Widget, function(supr) {
 	this._css = 'rng';
 	this._type = 'range';

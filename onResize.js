@@ -1,5 +1,9 @@
 jsio('from util.browser import $');
 
+/**
+ * @namespace
+ */
+
 var cbs = [];
 
 $.onEvent(window, 'resize', function() {

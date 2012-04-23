@@ -3,6 +3,9 @@
 import .Widget;
 from util.browser import $;
 
+/**
+ * @extends squill.Widget
+ */
 var CheckBox = exports = Class(Widget, function(supr) {
 	this._def = {
 		tag: 'label',

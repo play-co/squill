@@ -1,5 +1,9 @@
 var gLang = null;
 
+/**
+ * @namespace
+ */
+
 exports.setLang = function(lang) { gLang = lang; }
 exports.get = function(key) {
 	return gLang && gLang.get(key);

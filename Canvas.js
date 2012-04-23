@@ -3,6 +3,9 @@
 from util.browser import $;
 import .Widget;
 
+/**
+ * @extends squill.Widget
+ */
 var Canvas = exports = Class(Widget, function(supr) {
 	this._css = 'cnvs';
 	this._type = 'canvas';

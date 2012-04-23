@@ -1,6 +1,9 @@
 jsio('from util.browser import $');
 jsio('import .Widget, .global');
 
+/**
+ * @extends squill.Widget
+ */
 var TextInput = exports = Class(Widget, function(supr) {
 	this._type = 'text';
 	this._tag = 'input';

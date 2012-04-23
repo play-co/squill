@@ -3,6 +3,9 @@
 import .Widget;
 from util.browser import $;
 
+/**
+ * @extends squill.Widget
+ */
 var Cell = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
 		supr(this, 'init', [opts]);

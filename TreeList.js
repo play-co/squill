@@ -6,6 +6,9 @@ import .Widget;
 
 var elementIDPrefix = 0;
 
+/**
+ * @extends squill.Widget
+ */
 var TreeList = exports = Class(Widget, function(supr) {	
 	var defaults = {
 		key: 'id',

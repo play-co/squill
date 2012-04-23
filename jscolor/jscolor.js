@@ -11,7 +11,9 @@
  * @link    http://jscolor.com
  */
 
-
+/**
+ * @namespace
+ */
 var jscolor = {
 
 

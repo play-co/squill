@@ -158,6 +158,9 @@ var TreeDataSourceNode = Class(function() {
 	};
 });
 
+/**
+ * @extends squill.models.BasicDataSource
+ */
 var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 	var defaults = {
 		key: 'id',

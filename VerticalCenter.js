@@ -3,6 +3,9 @@
 import .Widget;
 from util.browser import $;
 
+/**
+ * @extends squill.Widget
+ */
 exports = Class(Widget, function() {
 	this._def = {
 		tag: 'table',

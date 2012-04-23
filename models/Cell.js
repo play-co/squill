@@ -1,5 +1,8 @@
 jsio('import .Widget');
 
+/**
+ * @extends squill.models.Widget
+ */
 var Cell = exports = Class(Widget, function(supr) {
 	this.init = function(params) {
 		supr(this, 'init', arguments);

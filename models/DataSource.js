@@ -2,6 +2,9 @@
 
 import .BasicDataSource as BasicDataSource;
 
+/**
+ * @extends squill.models.BasicDataSource
+ */
 var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 	var defaults = {
