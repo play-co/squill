@@ -2,6 +2,9 @@ jsio('from util.browser import $');
 jsio('import .Widget');
 jsio('import .TextArea');
 
+/**
+ * @extends squill.TextArea
+ */
 var TextLimitArea = exports = Class(TextArea, function(supr){
 
 	this.buildWidget = function(){

@@ -4,6 +4,9 @@ from util.browser import $;
 import .Widget;
 import .TextInput;
 
+/**
+ * @extends squill.TextInput
+ */
 var TextArea = exports = Class(TextInput, function(supr) {
 	this._tag = 'textarea';
 });

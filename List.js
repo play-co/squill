@@ -5,6 +5,9 @@ from util.browser import $;
 import .models.DataSource as DataSource;
 import .Selection;
 
+/**
+ * @extends squill.Widget
+ */
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
 		opts = merge(opts, {

@@ -18,6 +18,8 @@ import lib.PubSub;
  * at once, and provides the API that UI widgets can interact with.  For example,
  * the squill.List class contains a public proprty .selection that is an
  * instance of a Selection instance.
+ *
+ * @extends lib.PubSub
  */
 exports = Class(lib.PubSub, function() {
 

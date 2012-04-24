@@ -3,6 +3,9 @@
 from util.browser import $;
 import squill.Widget;
 
+/**
+ * @extends squill.Widget
+ */
 exports = Class(squill.Widget, function() {
 	this._css = 'label';
 	

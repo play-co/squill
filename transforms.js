@@ -2,6 +2,10 @@
 
 from util.browser import $;
 
+/**
+ * @namespace
+ */
+
 var vendor = (/webkit/i).test(navigator.appVersion) ? 'webkit' :
 	(/firefox/i).test(navigator.userAgent) ? 'Moz' :
 	'opera' in window ? 'O' : '',

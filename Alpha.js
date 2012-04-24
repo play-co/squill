@@ -8,6 +8,9 @@ import .jscolor.jscolor as jscolor;
 var alphaSelect = false,
 	alphaIndicator;
 
+/**
+ * @extends squill.Widget
+ */
 var Alpha = exports = Class(Widget, function(supr) {
 	this._css = 'lph';
 	this._type = 'text';

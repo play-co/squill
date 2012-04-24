@@ -6,6 +6,9 @@ from util.browser import $;
 import .Widget;
 import .transforms;
 
+/**
+ * @extends squill.Widget
+ */
 exports = Class(Widget, function(supr) {
 	this._def = {className: 'menuController'};
 	

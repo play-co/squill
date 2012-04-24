@@ -1,6 +1,9 @@
 jsio('from util.browser import $');
 jsio('import .TextButton, .Widget');
 
+/**
+ * @extends squill.TextButton
+ */
 var SubmitButton  = exports = Class(TextButton, function(supr) {
 	this.putHere = function() {
 		supr(this, 'putHere', arguments);

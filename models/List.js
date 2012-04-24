@@ -2,6 +2,9 @@ jsio('import .Resource');
 jsio('import .Widget');
 jsio('import ..Selection');
 
+/**
+ * @extends squill.models.Widget
+ */
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
 		opts = merge(opts, {isFixedSize: true});

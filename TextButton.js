@@ -3,6 +3,9 @@
 import .Button, .Widget;
 from util.browser import $;
 
+/**
+ * @extends squill.Button
+ */
 var TextButton = exports = Class(Button, function(supr) {
 	this._type = 'text-button';
 	

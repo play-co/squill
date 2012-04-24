@@ -1,6 +1,9 @@
 jsio('import .Widget');
 jsio('from util.browser import $');
 
+/**
+ * @extends squill.Widget
+ */
 var PillButtons = exports = Class(Widget, function(supr) {
 	
 	Class.ctor(this, supr, {className: 'pillButtons'});

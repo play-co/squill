@@ -1,5 +1,8 @@
 jsio('import .TextInput, .Widget');
 
+/**
+ * @extends squill.TextInput
+ */
 var PasswordInput = exports = Class(TextInput, function(supr) {
 	this._type = 'password';
 });

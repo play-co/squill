@@ -9,6 +9,9 @@ import .Delegate;
 from util.browser import $;
 import util.Animation;
 
+/**
+ * @extends squill.Scroller
+ */
 exports = Class(Scroller, function(supr) {
 	// this.init = function(params) {
 	// 	var params = JS.merge(params, {parent: $.id('wrapper')});

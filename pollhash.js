@@ -1,5 +1,8 @@
 jsio('import lib.PubSub');
 
+/**
+ * @extends lib.PubSub
+ */
 exports.Poller = new (Class(lib.PubSub, function() {
 	
 	this._lastTag = null;

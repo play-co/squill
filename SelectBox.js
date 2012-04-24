@@ -4,6 +4,9 @@ import .Widget;
 from util.browser import $;
 import squill.models.DataSource as DataSource;
 
+/**
+ * @extends squill.Widget
+ */
 var SelectBox = exports = Class(Widget, function(supr) {
 	this._def = {
 		tag: 'select'

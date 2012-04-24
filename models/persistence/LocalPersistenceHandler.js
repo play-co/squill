@@ -2,6 +2,9 @@
 
 import .BasicPersistenceHandler as BasicPersistenceHandler;
 
+/**
+ * @extends squill.models.persistence.BasicPersistenceHandler
+ */
 var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(supr) {	
 	this.init = function(opts) {
 		supr(this, 'init', arguments);

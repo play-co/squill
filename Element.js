@@ -3,6 +3,9 @@
 import lib.PubSub;
 from util.browser import $;
 
+/**
+ * @extends lib.PubSub
+ */
 var Element = exports = Class(lib.PubSub, function(supr) {
 	this.init = function(opts) {
 		this._opts = JS.merge(opts, {

@@ -2,6 +2,9 @@
 
 import lib.PubSub as PubSub;
 
+/**
+ * @extends lib.PubSub
+ */
 var BasicDataSource = exports = Class(PubSub, function(supr) {
 	this.init = function(opts) {
 		supr(this, 'init', arguments);

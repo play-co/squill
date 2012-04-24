@@ -4,6 +4,9 @@ from util.browser import $;
 import .Widget;
 import lib.sort;
 
+/**
+ * @extends squill.Widget
+ */
 var TabbedPane = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
 		opts = opts || {};

@@ -71,6 +71,9 @@ if ('ontouchstart' in window && document.addEventListener) {
 	$.onEvent(document, 'mouseup', onUp);
 }
 
+/**
+ * @extends lib.PubSub
+ */
 exports = Class(lib.PubSub, function(supr) {
 	
 	this.init = function(params) {

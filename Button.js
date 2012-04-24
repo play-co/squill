@@ -3,6 +3,9 @@
 from util.browser import $;
 import .Widget;
 
+/**
+ * @extends squill.Widget
+ */
 var Button = exports = Class(Widget, function(supr) {
 	this._css = 'btn';
 	this._type = 'button';
