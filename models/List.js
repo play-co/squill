@@ -30,7 +30,7 @@ var List = exports = Class(Widget, function(supr) {
 	
 	this._onUpdate = function(id, item) {
 		var cell = this._cells[id];
-		if (cell) { cell.setData(item); }
+		if (cell) { cell.setData(item, id); }
 		this.needsSort();
 	}
 	
@@ -174,7 +174,7 @@ var List = exports = Class(Widget, function(supr) {
 				r.cellWidth = cell.getWidth();
 				r.cellHeight = cell.getHeight();
 				cell.setPosition({width: r.cellWidth, height: r.cellHeight});
-				if (!r.cellWidth || !r.cellHeight) { return null; }
+				if ((this._opts.isTiled && !r.cellWidth) || !r.cellHeight) { return null; }
 				
 				var margin = this._opts.margin;
 				if (margin) { r.cellWidth += margin; r.cellHeight += margin; }
@@ -205,6 +205,7 @@ var List = exports = Class(Widget, function(supr) {
 		var dataSource = this._dataSource;
 		var key = dataSource.key;
 		var newCells = {};
+
 		for (var i = r.start; i < r.end; ++i) {
 			var item = dataSource.getItemForIndex(i);
 			if (!item) {
