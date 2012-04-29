@@ -10,7 +10,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.init = function(opts) {
-		opts = merge(opts, defaults);
+		this._opts = opts = merge(opts, defaults);
 
 		supr(this, 'init', [opts]);
 
@@ -48,6 +48,20 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 			this._changeData[type + 'Hash'][key] = true;
 			this._changeData[type].push(key);
 		}
+	};
+	
+	this.getFilteredDataSource = function(filterFn) {
+		var ds = new DataSource(this._opts);
+		this.forEach(function (item) {
+			ds.add(item);
+		});
+		this.subscribe('Update', function (id, item) {
+			if (filterFn(item)) {
+				ds.add(item);
+			}
+		});
+		this.subscribe('Remove', function (id, item) { ds.remove(item); });
+		return ds;
 	};
 
 	this.signalUpdate = function(type, item, id) {
