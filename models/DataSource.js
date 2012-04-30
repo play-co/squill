@@ -53,13 +53,19 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	this.getFilteredDataSource = function(filterFn) {
 		var ds = new DataSource(this._opts);
 		this.forEach(function (item) {
-			ds.add(item);
-		});
-		this.subscribe('Update', function (id, item) {
 			if (filterFn(item)) {
 				ds.add(item);
 			}
 		});
+
+		this.subscribe('Update', function (id, item) {
+			if (filterFn(item)) {
+				ds.add(item);
+			} else {
+				ds.remove(item);
+			}
+		});
+
 		this.subscribe('Remove', function (id, item) { ds.remove(item); });
 		return ds;
 	};
