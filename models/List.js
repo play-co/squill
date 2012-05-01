@@ -56,12 +56,15 @@ var List = exports = Class(Widget, function(supr) {
 			this._dataSource.sort();
 		}
 		
-		if (!this._dataSource.length) { return; }
-		
-		if (this._opts.isFixedSize) {
+		var count = this._dataSource.length;
+		if (this._opts.isFixedSize && count) {
 			this.renderFixed(viewport);
 		} else {
-			this.renderVariable(viewport);
+			this._removeCells(); // remove the views that were deleted from the datasource
+
+			if (count) {
+				this.renderVariable(viewport);
+			}
 		}
 	}
 
@@ -128,6 +131,10 @@ var List = exports = Class(Widget, function(supr) {
 			setTimeout(bind(this, renderMany), 100);
 		}
 		
+		renderMany.call(this);
+	}
+
+	this._removeCells = function () {
 		var removed = this._removed;
 		this._removed = {};
 		for (var id in removed) {
@@ -139,8 +146,6 @@ var List = exports = Class(Widget, function(supr) {
 				}
 			}
 		}
-		
-		renderMany.call(this);
 	}
 	
 	this._createCell = function(item) {
