@@ -1,4 +1,6 @@
-jsio('import .Widget');
+"use import";
+
+import .Widget;
 
 var Cell = exports = Class(Widget, function(supr) {
 	this.init = function(params) {
