@@ -80,20 +80,22 @@ var List = exports = Class(Widget, function(supr) {
 				var x = i % r.numPerRow;
 				var y = (i / r.numPerRow) | 0;
 				cell.setPosition({
-					x: x * r.cellWidth,
-					y: y * r.cellHeight
+					x: x * r.fullWidth,
+					y: y * r.fullHeight,
+					width: r.cellWidth,
+					height: r.cellHeight
 				});
 			} else {
 				cell.setPosition({
 					x: 0,
-					y: i * r.cellHeight || 0
+					y: i * r.fullHeight || 0,
+					height: r.cellHeight
 				});
 			}
 		} else {
 			cell.setPosition({
 					x: 0,
-					y: y,
-					height: cell.getHeight()
+					y: y
 				});
 		}
 	}
@@ -176,27 +178,26 @@ var List = exports = Class(Widget, function(supr) {
 
 				var key = item[this._dataSource.key];
 				var cell = this._cells[key] || (this._cells[key] = this._createCell(item));
-				r.cellWidth = cell.getWidth();
-				r.cellHeight = cell.getHeight();
-				cell.setPosition({width: r.cellWidth, height: r.cellHeight});
+				r.fullWidth = r.cellWidth = cell.getWidth();
+				r.fullHeight = r.cellHeight = cell.getHeight();
 				if ((this._opts.isTiled && !r.cellWidth) || !r.cellHeight) { return null; }
 				
-				var margin = this._opts.margin;
-				if (margin) { r.cellWidth += margin; r.cellHeight += margin; }
+				var margin = this._opts.margin || 0;
+				if (margin) { r.fullWidth += margin; r.fullHeight += margin; }
 			}
 			
 			if (this._opts.isTiled) {
 				r.maxWidth = viewport.width;
-				r.numPerRow = r.maxWidth / r.cellWidth | 0;
+				r.numPerRow = r.maxWidth / r.fullWidth | 0;
 				r.numRows = Math.ceil(n / r.numPerRow);
-				r.start = Math.max(0, (r.top / r.cellHeight | 0) * r.numPerRow);
-				r.end = Math.ceil(r.bottom / r.cellHeight) * r.numPerRow;
+				r.start = Math.max(0, (r.top / r.fullHeight | 0) * r.numPerRow);
+				r.end = Math.ceil(r.bottom / r.fullHeight) * r.numPerRow;
 			} else {
-				r.start = Math.max(0, r.top / r.cellHeight | 0);
-				r.end = (r.bottom / r.cellHeight + 1) | 0;
+				r.start = Math.max(0, r.top / r.fullHeight | 0);
+				r.end = (r.bottom / r.fullHeight + 1) | 0;
 			}
 
-			this._view.setMaxY(r.numRows * r.cellHeight);
+			this._view.setMaxY(r.numRows * r.fullHeight);
 		}
 		
 		return true;
