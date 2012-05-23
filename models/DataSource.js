@@ -194,6 +194,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 				item.toString = toStringSort;
 			}
 		}
+		this.sort();
 		return this;
 	};
 
@@ -304,7 +305,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		}
 
 		// first, compare all items in the index to the dict items
-		var items = this._byIndex;
+		var items = this._byIndex.slice(0);
 		for (var i = 0, item; item = items[i]; ++i) {
 			var k = item[key];
 			cb.call(this, this, item, compareTo[k]);
