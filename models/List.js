@@ -16,6 +16,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._cells = {};
 		this._needsSort = true;
 		this._removed = {};
+		this._renderMargin = opts.renderMargin || 0;
 		this._renderOpts = {margin: 0};
 		if (opts.selectable) {
 			this.selection = new Selection({dataSource: this._dataSource, type: opts.selectable});
@@ -151,6 +152,7 @@ var List = exports = Class(Widget, function(supr) {
 	}
 	
 	this._createCell = function(item) {
+
 		var id = item[this._dataSource.key];
 		var cell = this._cells[id];
 		if (!cell) {
@@ -166,8 +168,8 @@ var List = exports = Class(Widget, function(supr) {
 	
 	this._updateRenderOpts = function(viewport) {
 		var r = this._renderOpts;
-		r.top = viewport.y;
-		r.height = viewport.height;
+		r.top = viewport.y - this._renderMargin;
+		r.height = viewport.height + 2 * this._renderMargin;
 		r.bottom = r.top + r.height;
 		var n = r.numRows = this._dataSource.length;
 
