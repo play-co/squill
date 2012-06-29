@@ -1,10 +1,13 @@
-jsio('import .Resource');
-jsio('import .Widget');
-jsio('import ..Selection');
+import .Resource;
+import .Widget;
+import ..Selection;
 
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
-		opts = merge(opts, {isFixedSize: true});
+		opts = merge(opts, {
+			isFixedSize: true,
+			recycle: true
+		});
 		
 		supr(this, 'init', arguments);
 		
@@ -18,6 +21,8 @@ var List = exports = Class(Widget, function(supr) {
 		this._removed = {};
 		this._renderMargin = opts.renderMargin || 0;
 		this._renderOpts = {margin: 0};
+
+		this.isRecycleEnabled = opts.recycle;
 		if (opts.selectable) {
 			this.selection = new Selection({dataSource: this._dataSource, type: opts.selectable});
 		}
@@ -144,19 +149,26 @@ var List = exports = Class(Widget, function(supr) {
 			if (!this._dataSource.getItemForID(id)) {
 				var cell = this._cells[id];
 				if (cell) {
-					cell.remove();
+					cell.remove(this);
 					delete this._cells[id];
 				}
 			}
 		}
 	}
-	
+
 	this._createCell = function(item) {
 
 		var id = item[this._dataSource.key];
 		var cell = this._cells[id];
 		if (!cell) {
-			cell = this._getCell(item, this._cellResource);
+			if (this.isRecycleEnabled) {
+				cell = this._cellResource.get();
+			}
+
+			if (!cell) {
+				cell = this._getCell(item, this._cellResource);
+			}
+
 			this._cells[id] = cell;
 			cell.controller = this;
 			cell.setData(item, id);
@@ -212,6 +224,8 @@ var List = exports = Class(Widget, function(supr) {
 		var i = 0;
 		var dataSource = this._dataSource;
 		var key = dataSource.key;
+
+		var cells = this._cells;
 		var newCells = {};
 
 		for (var i = r.start; i < r.end; ++i) {
@@ -226,14 +240,16 @@ var List = exports = Class(Widget, function(supr) {
 					
 					// we remove all cells in prevCells that aren't used.
 					// mark it as used by deleting it.
-					delete this._cells[item[key]];
+					delete cells[item[key]];
 				}
 			}
 		}
 		
-		for (var id in this._cells) {
-			this._cells[id].remove();
-			this._cells[id].model.recycle();
+		for (var id in cells) {
+			var cell = cells[id];
+
+			cell.remove(this);
+			cell.model.recycle();
 		}
 		
 		this._cells = newCells;
