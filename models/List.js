@@ -9,23 +9,33 @@ var List = exports = Class(Widget, function(supr) {
 			recycle: true
 		});
 		
-		supr(this, 'init', arguments);
-		
-		if (opts.getCell) { this.setCellGetter(opts.getCell); }
-		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
-		if (opts.sorter) { this.setSorter(opts.sorter); }
+		supr(this, 'init', [opts]);
 		
 		this._cellResource = new Resource();
 		this._cells = {};
 		this._needsSort = true;
 		this._removed = {};
-		this._renderMargin = opts.renderMargin || 0;
 		this._renderOpts = {margin: 0};
 
 		this.isRecycleEnabled = opts.recycle;
+
+		this.updateOpts(opts);
+	}
+
+	this.updateOpts = function (opts) {
+		this._opts = opts = merge(this._opts, opts);
+
+		if (opts.getCell) { this.setCellGetter(opts.getCell); }
+		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
+		if (opts.sorter) { this.setSorter(opts.sorter); }
+
+		this._renderMargin = opts.renderMargin || 0;
+
 		if (opts.selectable) {
 			this.selection = new Selection({dataSource: this._dataSource, type: opts.selectable});
 		}
+
+		return this._opts;
 	}
 	
 	this.setDataSource = function(dataSource) {
@@ -249,7 +259,9 @@ var List = exports = Class(Widget, function(supr) {
 			var cell = cells[id];
 
 			cell.remove(this);
-			cell.model.recycle();
+			if (this.isRecycleEnabled) {
+				cell.model.recycle();
+			}
 		}
 		
 		this._cells = newCells;
