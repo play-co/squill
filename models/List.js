@@ -23,7 +23,13 @@ var List = exports = Class(Widget, function(supr) {
 	}
 
 	this.updateOpts = function (opts) {
-		this._opts = opts = merge(this._opts, opts);
+		if (this._opts) {
+			for (var key in opts) {
+				this._opts[key] = opts[key];
+			}
+		} else {
+			this._opts = opts;
+		}
 
 		if (opts.getCell) { this.setCellGetter(opts.getCell); }
 		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
