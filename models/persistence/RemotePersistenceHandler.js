@@ -15,11 +15,19 @@ import util.ajax;
 
 import .BasicPersistenceHandler as BasicPersistenceHandler;
 
-var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function(supr) {	
+var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function(supr) {
+	this.init = function(opts) {
+		supr(this, 'init', arguments);
+
+		this._loadURL = opts && opts.loadURL;
+		this._saveURL = opts && opts.saveURL;
+	}
+
 	this._checkChangeData = function() {
 		if (!this._updateList) {
 			this._updateList = [];
 		}
+
 		if (!this._removeList) {
 			this._removeList = [];
 		}
@@ -55,11 +63,9 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 		}
 	};
 
-	this.load = function(successCallback, errorCallback) {
+	this.load = function(dataSource, cb) {
 		if (this._loadURL === null) {
-			errorCallback && errorCallback('Loading URL is not set.');
-
-			this._onLoad && this._onLoad();
+			cb && cb({NoURL: 'Loading URL is not set.'});
 			return;
 		}
 
@@ -111,14 +117,13 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 					}
 
 					if (errorMessage) {
-						errorCallback && errorCallback('Loading error: ' + errorMessage);
+						cb && cb({LoadingError: 'Loading error: ' + errorMessage});
 					} else {
-						successCallback({
-							key: this._key,
-							items: data
-						});
-
-						this._onLoad && this._onLoad();
+						dataSource.fromJSON({
+								key: this._key,
+								items: data
+							});
+						cb && cb();
 					}
 				}
 			)
@@ -156,8 +161,18 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 				function(err, response) {
 					this._removeList = [];
 					this._updateList = [];
+					this.publish('CommitFinished');
 				}
 			)
 		);
+	};
+
+
+	this.setLoadURL = function(loadURL) {
+		this._loadURL = loadURL;
+	};
+
+	this.setSaveURL = function(saveURL) {
+		this._saveURL = saveURL;
 	};
 });

@@ -1,4 +1,6 @@
-jsio('import .Widget');
+"use import";
+
+import .Widget;
 
 var Cell = exports = Class(Widget, function(supr) {
 	this.init = function(params) {
@@ -10,6 +12,8 @@ var Cell = exports = Class(Widget, function(supr) {
 
 	this.recycle = function() {
 		this.publish('Recycle');
-		this._resource.put(this._view, this._recycleID);
+		if (this._resource) {
+			this._resource.put(this._view, this._recycleID);
+		}
 	}
 });

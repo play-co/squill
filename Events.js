@@ -49,6 +49,7 @@ exports = Class(lib.PubSub, function() {
 			this.event(el, 'touchend', '_onTouchEnd');
 		} else {
 			this.event(el, 'mouseover', 'onMouseOver');
+			this.event(el, 'mousemove', 'onMouseMove');
 			this.event(el, 'mouseout', 'onMouseOut');
 			this.event(el, 'mousedown', 'onMouseDown');
 			this.event(el, 'mouseup', 'onMouseUp');
@@ -90,9 +91,13 @@ exports = Class(lib.PubSub, function() {
 		this.publish('Over', e);
 	};
 
+	this.onMouseMove = function(e) {
+		if (!this._enableMouseEvents) 
+		this.publish('Move', e);
+	};
+
 	this.onMouseOut = function(e) {
 		this._isOver = false;
-		this.onMouseUp();
 		this.publish('Out', e);
 	};
 

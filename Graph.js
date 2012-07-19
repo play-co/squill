@@ -3,7 +3,7 @@
 from util.browser import $;
 import .Widget;
 
-var hint = null;
+import .hint as hint;
 
 var Graph = exports = Class(Widget, function(supr) {
 	this._css = 'cnvs';
@@ -17,11 +17,6 @@ var Graph = exports = Class(Widget, function(supr) {
 
 		this._width = opts.width || 400;
 		this._height = opts.height || 400;
-
-		this._hint = hint || $({
-			parent: document.body,
-			className: 'graphHint'
-		});
 
 		this._rectangles = [];
 		this._data = false;
@@ -46,17 +41,14 @@ var Graph = exports = Class(Widget, function(supr) {
 		}
 
 		if (found) {
-			this._hint.innerHTML = rectangle.label;
-			this._hint.style.left = (evt.pageX + 15) + 'px';
-			this._hint.style.top = (evt.pageY + 15) + 'px';
-			this._hint.style.display = 'block';
+			hint.show(evt.pageX + 15, evt.pageY + 15, rectangle.label);
 		} else {
-			this._hint.style.display = 'none';
+			hint.hide();
 		}
 	};
 
 	this._onMouseOut = function(evt) {
-		this._hint.style.display = 'none';
+		hint.hide();
 	};
 
 	this.buildWidget = function() {
@@ -74,8 +66,12 @@ var Graph = exports = Class(Widget, function(supr) {
 		this._currentWidth = width;
 		this._currentHeight = height;
 
-		ctx.fillStyle = this._settings.fillColor;
-		ctx.fillRect(0, 0, width, height);
+		if (this._settings.fillColor) {
+			ctx.fillStyle = this._settings.fillColor;
+			ctx.fillRect(0, 0, width, height);
+		} else {
+			ctx.clearRect(0, 0, width, height);
+		}
 	};
 
 	this._calculateSegments = function(ctx, data) {
@@ -155,10 +151,11 @@ var Graph = exports = Class(Widget, function(supr) {
 
 		for (i = 0, j = data.length; i < j; i++) {
 			x = valueSpace + mainPadding + i * step;
-			ctx.fillStyle = '#000000';
 			ctx.save();
 			ctx.rotate(Math.PI * -0.5);
 			label = this._trimLabel(segmentInfo, ctx, data[i].title);
+
+			ctx.fillStyle = this._settings.textColor;
 			ctx.fillText(label, -(mainPadding + height + 4), x);
 			ctx.restore();
 
@@ -168,7 +165,7 @@ var Graph = exports = Class(Widget, function(supr) {
 			}
 		}
 
-		ctx.strokeStyle = '#000000';
+		ctx.strokeStyle = this._settings.lineColor;
 		ctx.fillStyle = '#000000';
 
 		hasDecimal = 0;
@@ -204,6 +201,7 @@ var Graph = exports = Class(Widget, function(supr) {
 					label += '0';
 				}
 			}
+			ctx.fillStyle = this._settings.textColor;
 			ctx.fillText(label, valueSpace + mainPadding - 2, mainPadding + i - 8);
 
 			i = Math.ceil(i - height / segmentInfo.steps);
@@ -218,6 +216,7 @@ var Graph = exports = Class(Widget, function(supr) {
 		j = mainPadding + height / 2 + (ctx.measureText(label).width + settings.itemSize) / 2;
 		ctx.save();
 		ctx.rotate(Math.PI * -0.5);
+		ctx.fillStyle = this._settings.textColor;
 		ctx.fillText(label, -j - settings.itemSize, i);
 		ctx.restore();
 
@@ -368,7 +367,8 @@ var Graph = exports = Class(Widget, function(supr) {
 		for (i = 0, j = data.length; i < j; i++) {
 			y = mainPadding + i * step;
 			label = this._trimLabel(segmentInfo, ctx, data[i].title);
-			ctx.fillStyle = '#000000';
+
+			ctx.fillStyle = this._settings.textColor;
 			ctx.fillText(label, mainPadding + segmentInfo.maxLabel - 4, y + 4);
 			this._rectangles.push({
 				x1: mainPadding + segmentInfo.maxLabel - 4 - ctx.measureText(label).width,
@@ -385,7 +385,7 @@ var Graph = exports = Class(Widget, function(supr) {
 
 		ctx.textAlign = 'center';
 
-		ctx.strokeStyle = '#000000';
+		ctx.strokeStyle = this._settings.lineColor;
 		ctx.fillStyle = '#000000';
 
 		hasDecimal = 0;
@@ -422,6 +422,8 @@ var Graph = exports = Class(Widget, function(supr) {
 					label += '0';
 				}
 			}
+
+			ctx.fillStyle = this._settings.textColor;
 			ctx.fillText(label, mainPadding + segmentInfo.maxLabel + i, mainPadding + height + 2);
 
 			i = Math.floor(i + width / segmentInfo.steps);
@@ -434,6 +436,8 @@ var Graph = exports = Class(Widget, function(supr) {
 
 		i = mainPadding + width / 2 - (ctx.measureText(label).width + settings.itemSize) / 2 + segmentInfo.maxLabel;
 		j = mainPadding + height + 18;
+
+		ctx.fillStyle = this._settings.textColor;
 		ctx.fillText(label, i, j);
 
 		i += ctx.measureText(label).width;
@@ -606,7 +610,9 @@ var Graph = exports = Class(Widget, function(supr) {
 
 	this.setSettings = function(settings) {
 		settings.mainLabel = settings.mainLabel || '';
-		settings.fillColor = settings.fillColor || '#FFFFFF';
+		settings.textColor = settings.textColor || '#000000';
+		settings.fillColor = (settings.fillColor === undefined) ? '#FFFFFF' : settings.fillColor;
+		settings.lineColor = settings.lineColor || '#000000';
 		settings.orientation = settings.oriantation || 'horizontal';
 		settings.types = settings.types || 'bars,lines,area,points';
 		settings.barPadding = settings.barPadding || 2;

@@ -2,8 +2,15 @@ jsio('import .Widget');
 jsio('from util.browser import $');
 
 var PillButtons = exports = Class(Widget, function(supr) {
-	
-	Class.ctor(this, supr, {className: 'pillButtons'});
+
+	var defaults = {
+		className: 'pillButtons',
+	};
+
+	this.init = function (opts) {
+		opts = merge(opts, defaults);
+		supr(this, 'init', [opts]);
+	}
 	
 	this.buildWidget = function(el) {
 		this._options = {};

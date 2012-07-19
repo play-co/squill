@@ -1,25 +1,41 @@
-jsio('import .Resource');
-jsio('import .Widget');
-jsio('import ..Selection');
+import .Resource;
+import .Widget;
+import ..Selection;
 
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
-		opts = merge(opts, {isFixedSize: true});
+		opts = merge(opts, {
+			isFixedSize: true,
+			recycle: true
+		});
 		
-		supr(this, 'init', arguments);
-		
-		if (opts.getCell) { this.setCellGetter(opts.getCell); }
-		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
-		if (opts.sorter) { this.setSorter(opts.sorter); }
+		supr(this, 'init', [opts]);
 		
 		this._cellResource = new Resource();
 		this._cells = {};
 		this._needsSort = true;
 		this._removed = {};
 		this._renderOpts = {margin: 0};
+
+		this.isRecycleEnabled = opts.recycle;
+
+		this.updateOpts(opts);
+	}
+
+	this.updateOpts = function (opts) {
+		this._opts = opts = merge(this._opts, opts);
+
+		if (opts.getCell) { this.setCellGetter(opts.getCell); }
+		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
+		if (opts.sorter) { this.setSorter(opts.sorter); }
+
+		this._renderMargin = opts.renderMargin || 0;
+
 		if (opts.selectable) {
 			this.selection = new Selection({dataSource: this._dataSource, type: opts.selectable});
 		}
+
+		return this._opts;
 	}
 	
 	this.setDataSource = function(dataSource) {
@@ -30,7 +46,7 @@ var List = exports = Class(Widget, function(supr) {
 	
 	this._onUpdate = function(id, item) {
 		var cell = this._cells[id];
-		if (cell) { cell.setData(item); }
+		if (cell) { cell.setData(item, id); }
 		this.needsSort();
 	}
 	
@@ -56,12 +72,15 @@ var List = exports = Class(Widget, function(supr) {
 			this._dataSource.sort();
 		}
 		
-		if (!this._dataSource.length) { return; }
-		
-		if (this._opts.isFixedSize) {
+		var count = this._dataSource.length;
+		if (this._opts.isFixedSize && count) {
 			this.renderFixed(viewport);
 		} else {
-			this.renderVariable(viewport);
+			this._removeCells(); // remove the views that were deleted from the datasource
+
+			if (count) {
+				this.renderVariable(viewport);
+			}
 		}
 	}
 
@@ -77,20 +96,22 @@ var List = exports = Class(Widget, function(supr) {
 				var x = i % r.numPerRow;
 				var y = (i / r.numPerRow) | 0;
 				cell.setPosition({
-					x: x * r.cellWidth,
-					y: y * r.cellHeight
+					x: x * r.fullWidth,
+					y: y * r.fullHeight,
+					width: r.cellWidth,
+					height: r.cellHeight
 				});
 			} else {
 				cell.setPosition({
 					x: 0,
-					y: i * r.cellHeight || 0
+					y: i * r.fullHeight || 0,
+					height: r.cellHeight
 				});
 			}
 		} else {
 			cell.setPosition({
 					x: 0,
-					y: y,
-					height: cell.getHeight()
+					y: y
 				});
 		}
 	}
@@ -128,26 +149,36 @@ var List = exports = Class(Widget, function(supr) {
 			setTimeout(bind(this, renderMany), 100);
 		}
 		
+		renderMany.call(this);
+	}
+
+	this._removeCells = function () {
 		var removed = this._removed;
 		this._removed = {};
 		for (var id in removed) {
 			if (!this._dataSource.getItemForID(id)) {
 				var cell = this._cells[id];
 				if (cell) {
-					cell.remove();
+					cell.remove(this);
 					delete this._cells[id];
 				}
 			}
 		}
-		
-		renderMany.call(this);
 	}
-	
+
 	this._createCell = function(item) {
+
 		var id = item[this._dataSource.key];
 		var cell = this._cells[id];
 		if (!cell) {
-			cell = this._getCell(item, this._cellResource);
+			if (this.isRecycleEnabled) {
+				cell = this._cellResource.get();
+			}
+
+			if (!cell) {
+				cell = this._getCell(item, this._cellResource);
+			}
+
 			this._cells[id] = cell;
 			cell.controller = this;
 			cell.setData(item, id);
@@ -159,8 +190,8 @@ var List = exports = Class(Widget, function(supr) {
 	
 	this._updateRenderOpts = function(viewport) {
 		var r = this._renderOpts;
-		r.top = viewport.y;
-		r.height = viewport.height;
+		r.top = viewport.y - this._renderMargin;
+		r.height = viewport.height + 2 * this._renderMargin;
 		r.bottom = r.top + r.height;
 		var n = r.numRows = this._dataSource.length;
 
@@ -171,27 +202,26 @@ var List = exports = Class(Widget, function(supr) {
 
 				var key = item[this._dataSource.key];
 				var cell = this._cells[key] || (this._cells[key] = this._createCell(item));
-				r.cellWidth = cell.getWidth();
-				r.cellHeight = cell.getHeight();
-				cell.setPosition({width: r.cellWidth, height: r.cellHeight});
-				if (!r.cellWidth || !r.cellHeight) { return null; }
+				r.fullWidth = r.cellWidth = cell.getWidth();
+				r.fullHeight = r.cellHeight = cell.getHeight();
+				if ((this._opts.isTiled && !r.cellWidth) || !r.cellHeight) { return null; }
 				
-				var margin = this._opts.margin;
-				if (margin) { r.cellWidth += margin; r.cellHeight += margin; }
+				var margin = this._opts.margin || 0;
+				if (margin) { r.fullWidth += margin; r.fullHeight += margin; }
 			}
 			
 			if (this._opts.isTiled) {
 				r.maxWidth = viewport.width;
-				r.numPerRow = r.maxWidth / r.cellWidth | 0;
+				r.numPerRow = r.maxWidth / r.fullWidth | 0;
 				r.numRows = Math.ceil(n / r.numPerRow);
-				r.start = Math.max(0, (r.top / r.cellHeight | 0) * r.numPerRow);
-				r.end = Math.ceil(r.bottom / r.cellHeight) * r.numPerRow;
+				r.start = Math.max(0, (r.top / r.fullHeight | 0) * r.numPerRow);
+				r.end = Math.ceil(r.bottom / r.fullHeight) * r.numPerRow;
 			} else {
-				r.start = Math.max(0, r.top / r.cellHeight | 0);
-				r.end = (r.bottom / r.cellHeight + 1) | 0;
+				r.start = Math.max(0, r.top / r.fullHeight | 0);
+				r.end = (r.bottom / r.fullHeight + 1) | 0;
 			}
 
-			this._view.setMaxY(r.numRows * r.cellHeight);
+			this._view.setMaxY(r.numRows * r.fullHeight);
 		}
 		
 		return true;
@@ -204,7 +234,10 @@ var List = exports = Class(Widget, function(supr) {
 		var i = 0;
 		var dataSource = this._dataSource;
 		var key = dataSource.key;
+
+		var cells = this._cells;
 		var newCells = {};
+
 		for (var i = r.start; i < r.end; ++i) {
 			var item = dataSource.getItemForIndex(i);
 			if (!item) {
@@ -217,14 +250,18 @@ var List = exports = Class(Widget, function(supr) {
 					
 					// we remove all cells in prevCells that aren't used.
 					// mark it as used by deleting it.
-					delete this._cells[item[key]];
+					delete cells[item[key]];
 				}
 			}
 		}
 		
-		for (var id in this._cells) {
-			this._cells[id].remove();
-			this._cells[id].model.recycle();
+		for (var id in cells) {
+			var cell = cells[id];
+
+			cell.remove(this);
+			if (this.isRecycleEnabled) {
+				cell.model.recycle();
+			}
 		}
 		
 		this._cells = newCells;

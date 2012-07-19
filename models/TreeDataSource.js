@@ -4,24 +4,26 @@ import .BasicDataSource as BasicDataSource;
 
 var TreeDataSourceNode = Class(function() {
 	this.init = function(opts) {
-		this._key = opts.key;
-		this._parentKey = opts.parentKey,
+		this.key = opts.key;
+		this.parentKey = opts.parentKey;
+
 		this._data = opts.data;
 		this._dataContainer = {};
 		this._children = [];
 		this._parent = opts.parent;
 		this._signalUpdate = opts.signalUpdate;
 
-		var dataContainer = this._dataContainer,
-			signalUpdate = opts.signalUpdate,
-			data = opts.data,
-			key = opts.key;
+		var dataContainer = this._dataContainer;
+		var signalUpdate = opts.signalUpdate;
+		var data = opts.data;
+		var key = opts.key;
+		var f;
 
-		for (field in data) {
-			if (data.hasOwnProperty(field) && (field !== key) && (field[0] !== '_')) {
-				this._dataContainer['_' + field] = data[field];
-				data.__defineSetter__(field, this._createSetter(dataContainer, field, signalUpdate)());
-				data.__defineGetter__(field, this._createGetter(dataContainer, field)());
+		for (f in data) {
+			if (data.hasOwnProperty(f) && (f !== key) && (f[0] !== '_')) {
+				this._dataContainer['_' + f] = data[f];
+				data.__defineSetter__(f, this._createSetter(dataContainer, f, signalUpdate)());
+				data.__defineGetter__(f, this._createGetter(dataContainer, f)());
 			}
 		}
 	};
@@ -59,8 +61,8 @@ var TreeDataSourceNode = Class(function() {
 	};
 
 	this.removeChild = function(node) {
-		var children = this._children,
-			i, j
+		var children = this._children;
+		var i, j;
 
 		for (i = 0, j = children.length; i < j; i++) {
 			child = children[i];
@@ -83,8 +85,8 @@ var TreeDataSourceNode = Class(function() {
 	};
 
 	this.callback = function(cb) {
-		var children = this._children,
-			i, j
+		var children = this._children;
+		var i, j;
 
 		cb(this._data);
 		for (i = 0, j = children.length; i < j; i++) {
@@ -93,8 +95,8 @@ var TreeDataSourceNode = Class(function() {
 	};
 
 	this.sort = function() {
-		var children = this._children,
-			i, j
+		var children = this._children;
+		var i, j;
 
 		children.sort();
 		for (i = 0, j = children.length; i < j; i++) {
@@ -128,11 +130,11 @@ var TreeDataSourceNode = Class(function() {
 
 		for (i in data) {
 			if (data.hasOwnProperty(i)) {
-				if (i === this._parentKey) {
+				if (i === this.parentKey) {
 					if (data[i] === null) {
 						node[i] = null;
 					} else {
-						node[i] = this._parent.getData()[this._key];
+						node[i] = this._parent.getData()[this.key];
 					}
 				} else {
 					node[i] = data[i];
@@ -161,37 +163,20 @@ var TreeDataSourceNode = Class(function() {
 var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 	var defaults = {
 		key: 'id',
-		parentKey: 'parent',
-		channel: null,
-		hasRemote: false
+		parentKey: 'parent'
 	};
 
 	this.init = function(opts) {
 		opts = opts || {};
 		opts = merge(opts, defaults);
 
-		supr(this, 'init', [opts]);
-
 		this._maxKey = 0;
-		this._parentKey = opts.parentKey;
+		this.parentKey = opts.parentKey;
 
 		this._nodeByKey = {};
 		this._root = null;
 
-		this._sorter = null;
-		if (opts.sorter) {
-			this.setSorter(opts.sorter);
-		}
-
-		this._persistenceHandler = opts.persistenceHandler || null;
-
-		this._changeDataSave = false;
-		this._changeData = {
-			updated: [], 
-			updatedHash: {},
-			removed: [],
-			removedHash: {}
-		};
+		supr(this, 'init', [opts]);
 	};
 
 	this._saveChanges = function(type, key) {
@@ -202,7 +187,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.signalUpdate = function(type, node) {
-		var key = this._key,
+		var key = this.key,
 			keyValue = node[key],
 			channel = this._channel,
 			data;
@@ -215,17 +200,11 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 			case 'UPDATE':
 				this._saveChanges('updated', keyValue);
 				this.publish('Update', node, keyValue);
-				if (this._hasRemote) {
-					this.publish('Remote', {type: 'UPDATE', channel: channel, node: node, key: keyValue});
-				}
 				break;
 
 			case 'REMOVE':
 				this._saveChanges('removed', keyValue);
 				this.publish('Remove', node, keyValue);
-				if (this._hasRemote) {
-					this.publish('Remote', {type: 'REMOVE', channel: channel, node: node, key: keyValue});
-				}
 				delete(this._nodeByKey[keyValue]);
 				break;
 		}
@@ -236,7 +215,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.add = function(node) {
-		var parent = node[this._parentKey] || null,
+		var parent = node[this.parentKey] || null,
 			internalParent,
 			internalNode,
 			key,
@@ -247,7 +226,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 				node[i] && this.add(node[i]);
 			}
 		} else {
-			key = this._key;
+			key = this.key;
 
 			if (!node[key]) {
 				node[key] = this._maxKey + 1;
@@ -261,8 +240,8 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 
 			internalParent = parent ? this._nodeByKey[parent[key]] : null;
 			internalNode = new TreeDataSourceNode({
-				key: this._key,
-				parentKey: this._parentKey,
+				key: this.key,
+				parentKey: this.parentKey,
 				parent: internalParent,
 				data: node,
 				signalUpdate: bind(this, this.signalUpdate)
@@ -289,7 +268,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.remove = function(node) {
-		var key = node[this._key],
+		var key = node[this.key],
 			internalNode = this._nodeByKey[key];
 
 		if (internalNode) {
@@ -313,8 +292,8 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 
 	this.toJSON = function() {
 		var result = {
-			key: this._key,
-			parentKey: this._parentKey,
+			key: this.key,
+			parentKey: this.parentKey,
 			items: this._root ? this._root.toJSON() : []
 		};
 
@@ -338,10 +317,10 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 
 	**/
 	this.fromJSON = function(data) {
-		this._key = data.key;
-		this._parentKey = data.parentKey;
+		this.key = data.key;
+		this.parentKey = data.parentKey;
 
-		var parentKey = this._parentKey,
+		var parentKey = this.parentKey,
 			items = data.items,
 			item,
 			i, j;
@@ -388,21 +367,21 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 
 	this.saveChanges = function() {
 		this._changeDataSave = false;
-		if (this._persistenceHandler) {
+		if (this._persistence) {
 			var changeData = this._changeData,
 				i, j;
 
-			this._persistenceHandler.remove(changeData.removed);
+			this._persistence.remove(changeData.removed);
 
 			if (changeData.updated.length) {
 				var updateList = [];
 				for (i = 0, j = changeData.updated.length; i < j; i++) {
 					updateList.push(this._nodeByKey[changeData.updated[i]].toJSONData(false, true));
 				}
-				this._persistenceHandler.update(updateList);
+				this._persistence.update(updateList);
 			}
 
-			this._persistenceHandler.commit();
+			this._persistence.commit();
 		}
 	};
 
@@ -410,9 +389,8 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 		this._sorter = sorter;
 	};
 
-	this.setPersistenceHandler = function(persistenceHandler) {
-		this._persistenceHandler = persistenceHandler;
-	};
+	// this.onCommitFinished = function() {
+	// };
 
 	this.getByKey = function(id) {
 		return this._nodeByKey[id] || null;
@@ -425,16 +403,16 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 	};
 
 	this.load = function(onLoad) {
-		if (this._persistenceHandler) {
+		if (this._persistence) {
 			this.clear();
 
-			this._persistenceHandler.load(
+			this._persistence.load(
 				bind(
 					this,
 					function(data) {
 						this.fromJSON({
 							key: data.key,
-							parentKey: this._parentKey,
+							parentKey: this.parentKey,
 							items: data.items
 						});
 						onLoad && onLoad();

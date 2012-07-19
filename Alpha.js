@@ -47,7 +47,7 @@ var Alpha = exports = Class(Widget, function(supr) {
 			$.style(
 				alphaGradient,
 				{
-					float: 'left',
+					'float': 'left',
 					width: '20px',
 					height: '100px',
 					margin: '8px 0 0 12px',
@@ -62,7 +62,7 @@ var Alpha = exports = Class(Widget, function(supr) {
 			$.onEvent(alphaGradient, 'mouseout', this, '_onMouseOut');
 
 			alphaIndicator = document.createElement('img');
-			alphaIndicator.src = 'img/arrow.gif';
+			alphaIndicator.src = 'img/colorpicker/arrow.gif';
 			alphaSelect.appendChild(alphaIndicator);
 
 			$.style(
