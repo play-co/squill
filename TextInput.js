@@ -76,6 +76,8 @@ var TextInput = exports = Class(Widget, function(supr) {
 		this.initFocusEvents(this._input);
 		this.initKeyEvents(this._input);
 	}
+
+	this.getInputElement = function () { return this._input; }
 	
 	this.setName = function(name) {
 		supr(this, 'setName', arguments);
@@ -98,6 +100,8 @@ var TextInput = exports = Class(Widget, function(supr) {
 	}
 
 	this.onMouseDown = function(evt) {
+		supr(this, 'onMouseDown', arguments);
+
 		evt.stopPropagation();
 //		$.stopEvent(evt);
 	}
