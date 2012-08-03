@@ -64,6 +64,8 @@ var List = exports = Class(Widget, function(supr) {
 		this._dataSource = dataSource;
 		this._dataSource.subscribe('Update', this, 'onUpdateItem');
 		this._dataSource.subscribe('Remove', this, 'onRemoveItem');
+
+		this.render();
 	};
 
 	this.onUpdateItem = function(id, item) {
