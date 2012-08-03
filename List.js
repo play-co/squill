@@ -7,7 +7,7 @@ import .Selection;
 
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
-		opts = merge(opts, {
+		this._opts = opts = merge(opts, {
 			containSelf: true,
 			margin: 0,
 			isTiled: false,
@@ -391,7 +391,7 @@ var List = exports = Class(Widget, function(supr) {
 
 	this.getOffsetParent = function() {
 		// the list might be contained in some other scrolling div
-		return this._opts.offsetParent || this._container.offsetParent || document.body;
+		return this._opts.offsetParent || (this._container && this._container.offsetParent) || document.body;
 	};
 
 	this.renderFixedHeight = function() {

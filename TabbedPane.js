@@ -53,8 +53,8 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 	this.addWidget = function(def, results) {
 		var el = supr(this, 'addWidget', arguments);
 		if (el instanceof exports.Pane) {
-			this._addPane(el);
 			el.hide(); // hack for now!
+			this._addPane(el);
 		}
 		
 		return el;
@@ -94,16 +94,16 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 	};
 
 	this.selectPane = function(pane) {
-		if (this._selectedTab !== pane.tab) {
+		if (this._selectedTab != pane.tab) {
 			this.publish('SelectPane', pane);
+			this.showPane(pane);
 		}
-		this.showPane(pane);
 	};
 
 	this.getSelectedPane = function() { return this._selectedPane; }
 
-	this.showPane = function(pane) {
-		if (!pane) { return; }
+	this.showPane = function (pane) {
+		if (!pane || this._selectedTab == pane.tab) { return; }
 
 		var tab = pane.tab;
 		$.removeClass(this._selectedTab, 'selected');
