@@ -18,6 +18,8 @@ var List = exports = Class(Widget, function(supr) {
 			filter: null
 		});
 
+		this.needsRender = delay(this.render);
+		
 		if (opts.cellCtor) { this.setCellCtor(opts.cellCtor); }
 		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
 		if (opts.sorter) { this.setSorter(opts.sorter); }
@@ -34,7 +36,6 @@ var List = exports = Class(Widget, function(supr) {
 			margin: opts.margin || 0
 		};
 
-		this.needsRender = delay(this.render);
 		this.updateFilter = delay(function() {
 			this._lastFilter = -1;
 			this.needsRender();
@@ -65,7 +66,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._dataSource.subscribe('Update', this, 'onUpdateItem');
 		this._dataSource.subscribe('Remove', this, 'onRemoveItem');
 
-		this.render();
+		this.needsRender();
 	};
 
 	this.onUpdateItem = function(id, item) {
