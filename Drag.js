@@ -1,5 +1,5 @@
 jsio('import lib.PubSub');
-jsio('import math2D.Point as Point');
+jsio('import math.geom.Point as Point');
 jsio('from util.browser import $');
 
 var gCurrentDrag = [],
