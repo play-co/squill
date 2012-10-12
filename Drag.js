@@ -1,7 +1,5 @@
-"use import";
-
 import lib.PubSub;
-import math2D.Point as Point;
+import math.geom.Point as Point;
 from util.browser import $;
 
 var gCurrentDrag = [],
