@@ -47,6 +47,41 @@ var Widget = exports = Class([Element, Events], function() {
 	this._css = 'widget';
 	this._name = '';
 
+	this.__getDef__ = function () {
+		var protoDef = this.constructor.prototype._def;
+		var cls = this.constructor;
+		var def;
+		while ((cls = cls.prototype.__parentClass__)) {
+			if (cls.prototype.hasOwnProperty('_def')) {
+				if (!def) { def = protoDef || {}; }
+
+				copyDef(def, cls.prototype._def);
+			}
+		}
+
+		// no parent classes were merged in?
+		if (!def) { def = protoDef || {}; }
+
+		// handle base _def
+		if (this.hasOwnProperty('_def')) {
+			copyDef(def, this._def);
+		}
+
+		function copyDef (target, src) {
+			for (var key in src) {
+				if (key == 'className' && target.className) {
+					target.className = src.className + ' ' + target.className;
+				} else if (key == 'children' && target.children) {
+					target.children = src.children.concat(target.children);
+				} else if (!target.hasOwnProperty(key)) {
+					target[key] = src[key];
+				}
+			}
+		}
+
+		return def;
+	}
+
 	this.init = function(opts) {
 		opts = opts || {};
 
@@ -54,8 +89,8 @@ var Widget = exports = Class([Element, Events], function() {
 
 		// ===
 		// merge this._def and opts
-		var def = this._def;
-		if (!def) { def = this._def = {}};
+
+		var def = this._def = this.__getDef__();
 
 		// className merges
 		if (def.className) {

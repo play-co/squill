@@ -1,5 +1,3 @@
-"use import";
-
 import std.uri;
 import util.ajax;
 from util.browser import $;
@@ -26,7 +24,12 @@ exports.get = function(opts, cb) {
 		util.ajax.get({
 			url: opts.url
 		}, function(err, content) {
-			if (err) { logger.error('could not fetch css at', opts.url); return; }
+			if (err) {
+				logger.error('could not fetch css at', opts.url);
+				cb && cb(err);
+				return;
+			}
+
 			var el = $({tag: 'style', text: content, parent: parent});
 
 			if (window.DEV_MODE) {
@@ -36,7 +39,9 @@ exports.get = function(opts, cb) {
 				});
 			}
 			
-			setTimeout(cb, 0);
+			setTimeout(function () {
+				cb && cb(err, el);
+			}, 0);
 		});
 	}
 }
