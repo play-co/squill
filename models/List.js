@@ -36,13 +36,20 @@ var List = exports = Class(Widget, function(supr) {
 		if (opts.sorter) { this.setSorter(opts.sorter); }
 
 		this._renderMargin = opts.renderMargin || 0;
+		this._maxSelections = opts.maxSelections || 1;
 
 		if (opts.selectable) {
-			this.selection = new Selection({dataSource: this._dataSource, type: opts.selectable});
+			this.selection = new Selection({parent: this, type: opts.selectable, maxSelections: opts.maxSelections});
+			this.selection.subscribe('Select',   this, this._onSelect);
+			this.selection.subscribe('Deselect', this, this._onDeselect);		
 		}
 
 		return this._opts;
 	}
+
+	this.getDataSource = function() {
+		return this._dataSource;
+	};
 	
 	this.setDataSource = function(dataSource) {
 		this._dataSource = dataSource;
@@ -186,7 +193,7 @@ var List = exports = Class(Widget, function(supr) {
 			}
 
 			this._cells[id] = cell;
-			cell.controller = this;
+			cell.setController(this);
 			cell.setData(item, id);
 			cell.model.setResource(this._cellResource);
 		}
@@ -271,5 +278,45 @@ var List = exports = Class(Widget, function(supr) {
 		}
 		
 		this._cells = newCells;
+	};
+
+	this._onSelect = function(dataItem, id) {
+		this.publish('Select', dataItem, id);
+	};
+
+	this._onDeselect = function(dataItem, id) {
+		this.publish('Deselect', dataItem, id);
+	};
+
+	this.isSelected = function(dataItem) {
+		return this.selection && this.selection.isSelected(dataItem);
+	};
+
+	this.toggle = function(dataItem) {
+		this.selection && this.selection.toggle(dataItem);
 	}
+
+	this.select = function(dataItem) {
+		this.selection && this.selection.select(dataItem);
+	};
+
+	this.deselect = function(dataItem) {
+		this.selection && this.selection.deselect(dataItem);
+	};
+
+	this.deselectAll = function() {
+		this.selection && this.selection.deselectAll();
+	};
+
+	this.getSelections = function() {
+		return (this.selection && this.selection.get()) || {};
+	};
+
+	this.getSelectionCount = function() {
+		var selections = this.getSelections();
+		if(!!selections) {
+			return Object.keys(selections).length;
+		}
+		return 0;
+	};
 });
