@@ -18,11 +18,17 @@ function shallowCopy(p) {
 	return o;
 }
 
-var WidgetSet = Class(function() {
-	this.init = function() {
+var WidgetSet = Class(function () {
+	this.init = function (target) {
+		this._target = target;
 		this.events = [];
-		this.widgets = {};
 	}
+
+	this.hasWidget = function (id) { return !!this._target[id]; };
+
+	this.addWidget = function (id, widget) {
+		this._target[id] = widget;
+	};
 
 	this.addSubscription  = function(widget, signal /* ... args */) {
 		this.events.push({
@@ -39,6 +45,8 @@ var WidgetSet = Class(function() {
 			for (var i = 0, evt; evt = this.events[i]; ++i) {
 				evt.widget.subscribe.apply(evt.widget, [evt.signal, target, 'dispatchEvent'].concat(evt.args));
 			}
+
+			this.events = [];
 		}
 	}
 });
@@ -174,11 +182,6 @@ var Widget = exports = Class([Element, Events], function() {
 	};
 
 	this.addWidget = function(def, result) {
-		if (!result) {
-			var applyResult = true;
-			result = new WidgetSet();
-		}
-
 		if (!this._el) { this.build(); }
 
 		// def is either a Widget or a definition for a Widget
@@ -192,6 +195,10 @@ var Widget = exports = Class([Element, Events], function() {
 			}
 
 			var el;
+			if ('type' in opts && !opts.type) {
+				logger.warn('Did you forget to provide a type?', opts);
+			}
+			
 			if (!opts.type || typeof opts.type == 'string') {
 				if (WIDGET_CLASSES[opts.type]) {
 					var Constructor = jsio('import ' + WIDGET_CLASSES[opts.type]);
@@ -212,7 +219,9 @@ var Widget = exports = Class([Element, Events], function() {
 								import .TextButton;
 							}
 							el = new TextButton(opts);
-							result.addSubscription(el, 'Select', opts.id);
+							if (result) {
+								result.addSubscription(el, 'Select', opts.id);
+							}
 							break;
 
 						case 'select':
@@ -227,8 +236,8 @@ var Widget = exports = Class([Element, Events], function() {
 				el = new opts.type(opts);
 			}
 			
-			if (opts.id && !result.widgets[opts.id]) {
-				result.widgets[opts.id] = el;
+			if (result && opts.id && !result.hasWidget(opts.id)) {
+				result.addWidget(opts.id, el);
 			}
 		} else {
 			el = def;
@@ -247,10 +256,6 @@ var Widget = exports = Class([Element, Events], function() {
 					this.addWidget(merge({parent: el}, c), result);
 				}
 			}
-		}
-
-		if (applyResult) {
-			result.apply(this);
 		}
 
 		return el;
@@ -278,23 +283,18 @@ var Widget = exports = Class([Element, Events], function() {
 
 		// def items always go on the widget
 		if (def && def.children) {
-			var result = new WidgetSet();
-			this.buildChildren(def.children, result);
-			result.apply(this);
+			var localRes = new WidgetSet(this);
+			this.buildChildren(def.children, localRes);
 		}
+
+		var result = opts.__result || new WidgetSet(this);
 
 		// opts items sometimes go on the widget
 		if (opts.children) {
-			var shouldMerge = !opts.__result;
-			var result = opts.__result || new WidgetSet();
 			this.buildChildren(opts.children, result);
-
-			if (shouldMerge) {
-				result.apply(this);
-			}
 		}
 
-		this.buildWidget(this._el);
+		this.buildWidget(this._el, result);
 	};
 
 	this.buildChildren = function(children, result) {
@@ -427,3 +427,5 @@ Widget.register = function(cls, name) {
 Widget.get = function(name) {
 	return lowerCaseMap[name.toLowerCase()];
 }
+
+Widget.WidgetSet = WidgetSet;

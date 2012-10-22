@@ -23,13 +23,17 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 		supr(this, 'init', arguments);
 	};
 	
-	this.buildWidget = function() {
+	this.buildWidget = function (el, result) {
 		var opts = this._opts;
 
 		this._container = this.content;
 
 		if (opts.tabChildren) {
-			this.buildTabChildren(opts.tabChildren, opts.__result);
+			this.buildTabChildren(opts.tabChildren, result);
+		}
+
+		if (opts.panes) {
+			this.buildPanes(opts.panes, result);
 		}
 
 		if (opts.paneClassName) {
@@ -65,14 +69,19 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 		var el = supr(this, 'addWidget', arguments);
 		if (el instanceof exports.Pane) {
 			this._addPane(el);
-			el.hide(); // hack for now!
 		}
 		
 		return el;
 	};
 	
-	this.newPane = function(def) {
-		return this.addWidget(new exports.Pane(def));
+	this.buildPanes = function (def, result) {
+		def.forEach(function (opts) {
+			this.newPane(opts, result);
+		}, this);
+	}
+
+	this.newPane = function(def, res) {
+		return this.addWidget(merge({type: exports.Pane}, def), res);
 	}
 	
 	this._addPane = function(pane) {
@@ -87,6 +96,8 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 		$.onEvent(pane.tab, 'mousedown', this, this.selectPane, pane);
 		if (!this._selectedTab) {
 			this.showPane(pane);
+		} else {
+			pane.hide();
 		}
 
 		return this;
@@ -98,10 +109,6 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 
 	this.getPanes = function() {
 		return this._panes;
-	};
-
-	this.write = function(buffer) {
-		this._currentPane.innerHTML = String(buffer);
 	};
 
 	this.selectPane = function(pane) {
