@@ -31,22 +31,8 @@ var WidgetSet = Class(function () {
 	};
 
 	this.addSubscription  = function(widget, signal /* ... args */) {
-		this.events.push({
-			widget: widget,
-			signal: signal,
-			args: Array.prototype.slice.call(arguments, 2)
-		});
-	}
-
-	this.apply = function(target) {
-		merge(target, this.widgets);
-
-		if (target.dispatchEvent) {
-			for (var i = 0, evt; evt = this.events[i]; ++i) {
-				evt.widget.subscribe.apply(evt.widget, [evt.signal, target, 'dispatchEvent'].concat(evt.args));
-			}
-
-			this.events = [];
+		if (this._target.dispatchEvent) {
+			widget.subscribe.apply(widget, [signal, this._target, 'dispatchEvent'].concat(Array.prototype.slice.call(arguments, 2)));
 		}
 	}
 });
