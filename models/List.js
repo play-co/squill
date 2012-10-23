@@ -309,14 +309,18 @@ var List = exports = Class(Widget, function(supr) {
 	};
 
 	this.getSelections = function() {
-		return (this.selection && this.selection.get()) || {};
+		var selectionIDMap = this.selection.get();
+		var dataSource = this.getDataSource();
+		var key = dataSource.getKey();
+		var selectedDataSource = dataSource.getFilteredDataSource(
+			function(item){
+				var itemKey = item[key];
+				return !!selectionIDMap[itemKey];
+			});
+		return selectedDataSource;
 	};
 
 	this.getSelectionCount = function() {
-		var selections = this.getSelections();
-		if(!!selections) {
-			return Object.keys(selections).length;
-		}
-		return 0;
+		return this.selection && this.selection.getSelectionCount();
 	};
 });

@@ -59,6 +59,10 @@ exports = Class(lib.PubSub, function() {
 
 	this.get = function() { return this._selection.get(); };
 
+	this.getSelectionCount = function() {
+		return this._currentSelectionCount;
+	};
+	
 	this._setSelected = function(item, isSelected) {
 		if (!item) { return; }
 		
