@@ -1,6 +1,6 @@
 jsio('import .Widget');
 jsio('import .Events');
-jsio('import math2D.Point as Point');
+jsio('import math.geom.Point as Point');
 jsio('from util.browser import $');
 jsio('import .Window');
 

@@ -25,6 +25,8 @@ exports = Class(lib.PubSub, function() {
 		this._parent = opts.parent;
 		this._type = opts.type || false;
 		this._selection = opts.selectionStore || new exports.LocalStore();
+		this._maxSelections = opts.maxSelections || 1;
+		this._currentSelectionCount = 0;
 		this._lastSelected = null;
 	};
 
@@ -42,7 +44,9 @@ exports = Class(lib.PubSub, function() {
 	};
 
 	this.select = function(item) {
-		this._setSelected(item, true);
+		if((this._currentSelectionCount < this._maxSelections) || this._type == 'single') {
+			this._setSelected(item, true);
+		}
 	};
 
 	this.deselect = function(item) {
@@ -55,8 +59,13 @@ exports = Class(lib.PubSub, function() {
 
 	this.get = function() { return this._selection.get(); };
 
+	this.getSelectionCount = function() {
+		return this._currentSelectionCount;
+	};
+	
 	this._setSelected = function(item, isSelected) {
 		if (!item) { return; }
+		
 		var key = this._parent.getDataSource().key,
 			id = item[key];
 
@@ -65,13 +74,16 @@ exports = Class(lib.PubSub, function() {
 				if (this._lastSelected && this._type == 'single') {
 					var lastID = this._lastSelected[key];
 					this._selection.deselect(lastID);
+					this._currentSelectionCount--;
 					this.publish('Deselect', this._lastSelected, lastID);
 				}
 
 				this._lastSelected = item;
 				this._selection.select(id);
+				this._currentSelectionCount++;
 			} else {
 				this._selection.deselect(id);
+				this._currentSelectionCount--;
 			}
 
 			this.publish(isSelected ? 'Select' : 'Deselect', item, id);
