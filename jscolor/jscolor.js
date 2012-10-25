@@ -43,7 +43,7 @@ var jscolor = {
 			jscolor.dir = detected!==false ? detected : 'jscolor/';
 		}
 		*/
-		jscolor.dir = 'img/colorpicker/'
+		jscolor.dir = 'images/colorpicker/'
 		return jscolor.dir;
 	},
 
