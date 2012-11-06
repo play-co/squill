@@ -20,7 +20,7 @@ var Color = exports = Class(Widget, function(supr) {
 	this.buildWidget = function() {
 		var el = this._el;
 
-		el.className = 'color';
+		$.addClass(el, 'squill-color');
 		el.min = this._opts.min || 0;
 		el.max = this._opts.max || 100;
 		el.step = this._opts.step || 1;
