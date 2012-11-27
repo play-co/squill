@@ -221,7 +221,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 	this.forEach = this.each = function(cb, context) {
 		for (var i = 0; i < this.length; ++i) {
-			if (cb.call(context, this._byIndex[i], this._byIndex[i][this.key])) {
+			if (cb.call(context, this._byIndex[i], i)) {
 				return;
 			}
 		}
