@@ -5,7 +5,7 @@ import ..Selection;
 var List = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
 		opts = merge(opts, {
-			isFixedSize: true,
+			isFixedSize: false,
 			recycle: true
 		});
 		
