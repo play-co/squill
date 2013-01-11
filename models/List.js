@@ -8,9 +8,9 @@ var List = exports = Class(Widget, function(supr) {
 			isFixedSize: true,
 			recycle: true
 		});
-		
+
 		supr(this, 'init', [opts]);
-		
+
 		this._cellResource = new Resource();
 		this._cells = {};
 		this._needsSort = true;
@@ -41,7 +41,7 @@ var List = exports = Class(Widget, function(supr) {
 		if (opts.selectable) {
 			this.selection = new Selection({parent: this, type: opts.selectable, maxSelections: opts.maxSelections});
 			this.selection.subscribe('Select',   this, this._onSelect);
-			this.selection.subscribe('Deselect', this, this._onDeselect);		
+			this.selection.subscribe('Deselect', this, this._onDeselect);
 		}
 
 		return this._opts;
@@ -50,41 +50,41 @@ var List = exports = Class(Widget, function(supr) {
 	this.getDataSource = function() {
 		return this._dataSource;
 	};
-	
+
 	this.setDataSource = function(dataSource) {
 		this._dataSource = dataSource;
 		this._dataSource.subscribe('Update', this, '_onUpdate');
 		this._dataSource.subscribe('Remove', this, '_onRemove');
 	}
-	
+
 	this._onUpdate = function(id, item) {
 		var cell = this._cells[id];
 		if (cell) { cell.setData(item, id); }
 		this.needsSort();
 	}
-	
+
 	this._onRemove = function(id, item) {
 		this._removed[id] = true;
 		this.needsSort();
 	}
-	
+
 	this.needsSort = function() { this._needsSort = true; this._view.needsRepaint(); }
-	
+
 	this.setSelected = function(data) { this._selected = data; }
 	this.getSelected = function() { return this._selected; }
-	
+
 	this.setCellGetter = function(getCell) { this._getCell = getCell; }
 	this.getCellById = function(id) { return this._cells[id]; }
-	
+
 	this.setSorter = function(sorter) { this._sorter = sorter; }
-	
+
 	// just render all cells for now
 	this.render = function(viewport) {
 		if (this._needsSort) {
 			this._needsSort = null;
 			this._dataSource.sort();
 		}
-		
+
 		var count = this._dataSource.length;
 		if (this._opts.isFixedSize && count) {
 			this.renderFixed(viewport);
@@ -128,11 +128,11 @@ var List = exports = Class(Widget, function(supr) {
 				});
 		}
 	}
-	
+
 	this.renderVariable = function(viewport) {
 		if (!this._dataSource) { return; }
 		if (!this._updateRenderOpts(viewport)) { return; }
-		
+
 		var i = 0;
 		var y = 0;
 		function renderOne() {
@@ -141,27 +141,27 @@ var List = exports = Class(Widget, function(supr) {
 				this._view.setMaxY(y);
 				return false;
 			}
-			
+
 			var id = item[this._dataSource.key];
 			var cell = this._createCell(item);
 			this._positionCell(cell, i, y);
 			cell.needsRepaint();
-			
+
 			++i;
 			y += cell.style.height;
 			return true;
 		}
-		
+
 		function renderMany() {
 			var THRESHOLD = 50; // ms to render
 			var n = 0, t = +new Date();
 			while (n++ < 10 || +new Date() - t < THRESHOLD) {
 				if (!renderOne.call(this)) { return; }
 			}
-			
+
 			setTimeout(bind(this, renderMany), 100);
 		}
-		
+
 		renderMany.call(this);
 	}
 
@@ -200,7 +200,7 @@ var List = exports = Class(Widget, function(supr) {
 
 		return cell;
 	}
-	
+
 	this._updateRenderOpts = function(viewport) {
 		var r = this._renderOpts;
 		r.top = viewport.y - this._renderMargin;
@@ -218,11 +218,11 @@ var List = exports = Class(Widget, function(supr) {
 				r.fullWidth = r.cellWidth = cell.getWidth();
 				r.fullHeight = r.cellHeight = cell.getHeight();
 				if ((this._opts.isTiled && !r.cellWidth) || !r.cellHeight) { return null; }
-				
+
 				var margin = this._opts.margin || 0;
 				if (margin) { r.fullWidth += margin; r.fullHeight += margin; }
 			}
-			
+
 			if (this._opts.isTiled) {
 				r.maxWidth = viewport.width;
 				r.numPerRow = r.maxWidth / r.fullWidth | 0;
@@ -236,7 +236,7 @@ var List = exports = Class(Widget, function(supr) {
 
 			this._view.setMaxY(r.numRows * r.fullHeight);
 		}
-		
+
 		return true;
 	}
 
@@ -260,14 +260,14 @@ var List = exports = Class(Widget, function(supr) {
 				if (cell) {
 					newCells[item[key]] = cell;
 					this._positionCell(cell, i);
-					
+
 					// we remove all cells in prevCells that aren't used.
 					// mark it as used by deleting it.
 					delete cells[item[key]];
 				}
 			}
 		}
-		
+
 		for (var id in cells) {
 			var cell = cells[id];
 
@@ -276,7 +276,7 @@ var List = exports = Class(Widget, function(supr) {
 				cell.model.recycle();
 			}
 		}
-		
+
 		this._cells = newCells;
 	};
 
@@ -305,19 +305,27 @@ var List = exports = Class(Widget, function(supr) {
 	};
 
 	this.deselectAll = function() {
-		this.selection && this.selection.deselectAll();
+		if (this.selection) {
+			var selection = this.selection.get();
+			for (var id in selection) {
+				var cell = this._cells[id];
+				cell && cell._onDeselect && cell._onDeselect();
+			}
+			this.selection.deselectAll();
+		}
 	};
 
 	this.getSelections = function() {
 		var selectionIDMap = this.selection.get();
 		var dataSource = this.getDataSource();
 		var key = dataSource.getKey();
-		var selectedDataSource = dataSource.getFilteredDataSource(
-			function(item){
-				var itemKey = item[key];
-				return !!selectionIDMap[itemKey];
-			});
-		return selectedDataSource;
+
+		return dataSource.getFilteredDataSource(
+				function(item){
+					var itemKey = item[key];
+					return !!selectionIDMap[itemKey];
+				}
+			);
 	};
 
 	this.getSelectionCount = function() {
