@@ -81,6 +81,8 @@ var List = exports = Class(Widget, function(supr) {
 	
 	// just render all cells for now
 	this.render = function(viewport) {
+		if (!this._dataSource) { return; }
+		
 		if (this._needsSort) {
 			this._needsSort = null;
 			this._dataSource.sort();
@@ -139,7 +141,7 @@ var List = exports = Class(Widget, function(supr) {
 		function renderOne() {
 			var item = this._dataSource.getItemForIndex(i);
 			if (!item) {
-				this._view.setMaxY(y);
+				if (!isNaN(y)) { this._view.setMaxY(y); }
 				return false;
 			}
 			
