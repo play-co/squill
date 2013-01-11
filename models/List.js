@@ -32,6 +32,7 @@ var List = exports = Class(Widget, function(supr) {
 		}
 
 		if (opts.getCell) { this.setCellGetter(opts.getCell); }
+		if (opts.cellCtor) { this._cellCtor = opts.cellCtor; }
 		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
 		if (opts.sorter) { this.setSorter(opts.sorter); }
 
@@ -189,7 +190,11 @@ var List = exports = Class(Widget, function(supr) {
 			}
 
 			if (!cell) {
-				cell = this._getCell(item, this._cellResource);
+				if (this._cellCtor) {
+					cell = new this._cellCtor();
+				} else {
+					cell = this._getCell(item, this._cellResource);
+				}
 			}
 
 			this._cells[id] = cell;
