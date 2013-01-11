@@ -69,7 +69,7 @@ var List = exports = Class(Widget, function(supr) {
 		this.needsSort();
 	}
 	
-	this.needsSort = function() { this._needsSort = true; this._view.needsRepaint(); }
+	this.needsSort = function() { this._needsSort = true; this._view.needsReflow(); }
 	
 	this.setSelected = function(data) { this._selected = data; }
 	this.getSelected = function() { return this._selected; }

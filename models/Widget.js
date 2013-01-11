@@ -7,4 +7,6 @@ exports = Class(lib.PubSub, function() {
 		this._opts = opts;
 		this._view = opts.view;
 	}
+
+	this.getOpts = function () { return this._opts; }
 });
