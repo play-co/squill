@@ -32,14 +32,15 @@ var CheckBox = exports = Class(Widget, function(supr) {
 	
 	this._onCheck = function() {
 		this.publish('Check', this.isChecked());
+		this.emit('change', this.isChecked());
 	}
 	
-	this.setLabel = function(label) { $.setText(this.label, label); }
-	this.setName = function(name) { this.checkbox.name = name; }
-	this.setValue = function(value) { this.checkbox.value = value; }
+	this.setLabel = function (label) { $.setText(this.label, label); }
+	this.setName = function (name) { this.checkbox.name = name; }
+	this.setValue = function (value) { this.checkbox.checked = !!value; }
 
-	this.isChecked = function() { return this.checkbox.checked; }
-	this.setChecked = function(isChecked) { this.checkbox.checked = isChecked; }
+	this.isChecked = function () { return this.checkbox.checked; }
+	this.setChecked = function (isChecked) { this.checkbox.checked = isChecked; }
 	
-	this.getValue = function() { return this.checkbox.value; }
+	this.getValue = function () { return this.checkbox.value; }
 });
