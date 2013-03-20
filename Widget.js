@@ -107,6 +107,7 @@ var Widget = exports = Class([Element, Events], function() {
 		if (opts.name) { this._name = opts.name; }
 		if (opts.delegate) { this.delegate = opts.delegate; }
 		if (opts.controller) { this.controller = opts.controller; }
+
 		if (opts.parent) {
 			var parent = this._parent = opts.parent;
 			var hasWidgetParent = parent instanceof Widget;
@@ -117,16 +118,18 @@ var Widget = exports = Class([Element, Events], function() {
 				delete opts.parent;
 			}
 			
-			this.build();
+			this.build(opts.el);
 			
 			if (hasWidgetParent) {
 				widgetParent.addWidget(this);
 			}
+		} else if (opts.el) {
+			this.build(opts.el);
 		}
 	};
 
-	this.build = function() {
-		if (!this._el) {
+	this.build = function (el) {
+		if (!this._el || this._el != el) {
 			var opts = this._opts;
 			var children = opts.children;
 			
@@ -174,7 +177,6 @@ var Widget = exports = Class([Element, Events], function() {
 		if (!(def instanceof Widget)) {
 			// if it is not yet a widget, make it (or make a DOM node)
 			var opts = merge({}, def, {parent: this.getContainer(), __result: result});
-
 			if (opts.children) {
 				var children = opts.children;
 				delete opts.children;
