@@ -170,6 +170,10 @@ var Widget = exports = Class([Element, Events], function() {
 		this.delegate.call(this, target, evt);
 	};
 
+	this.addElement = function (el) {
+		this._el.appendChild(el);
+	}
+
 	this.addWidget = function(def, result) {
 		if (!this._el) { this.build(); }
 
