@@ -63,7 +63,9 @@ var Widget = exports = Class([Element, Events], function() {
 
 		function copyDef (target, src) {
 			for (var key in src) {
-				if (key == 'className' && target.className) {
+				if (key == 'attrs' || key == 'style') {
+					target[key] = merge(target[key], src[key]);
+				} if (key == 'className' && target.className) {
 					target.className = src.className + ' ' + target.className;
 				} else if (key == 'children' && target.children) {
 					target.children = src.children.concat(target.children);
@@ -89,6 +91,14 @@ var Widget = exports = Class([Element, Events], function() {
 		// className merges
 		if (def.className) {
 			opts.className = opts.className ? opts.className + " " + def.className : def.className;
+		}
+
+		if (def.attrs) {
+			opts.attrs = merge(opts.attrs, def.attrs);
+		}
+
+		if (def.style) {
+			opts.style = merge(opts.style, def.style);
 		}
 		
 		// opts take precedence over def
