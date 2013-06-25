@@ -246,6 +246,7 @@ var Widget = exports = Class([Element, Events], function() {
 
 		if (children) {
 			if (el.buildChildren) {
+				if (!result) { result = new WidgetSet(el); }
 				el.buildChildren(children, result);
 			} else {
 				for (var i = 0, c; c = children[i]; ++i) {
