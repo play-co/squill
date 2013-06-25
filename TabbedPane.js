@@ -6,12 +6,13 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 
 	this._def = {
 		className: 'tabbedPane',
+		activeTabClassName: 'selected',
 		children: [
 			{id: 'tabContainerWrapper', className: 'tabContainerWrapper', children: [
-				{id: 'tabContainer', className: 'tabContainer'}
+				{id: 'tabContainer', className: 'tabContainer', tagName: 'ul'}
 			]},
 			{id: 'tabContentsWrapper', className: 'tabContentsWrapper', children: [
-				{id: 'content', className: 'tabContents'}
+				{id: 'tabContent', className: 'tabContents'}
 			]}
 		]
 	};
@@ -26,7 +27,7 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 	this.buildWidget = function (el, result) {
 		var opts = this._opts;
 
-		this._container = this.content;
+		this._container = this.tabContent;
 
 		if (opts.tabChildren) {
 			this.buildTabChildren(opts.tabChildren, result);
@@ -81,7 +82,7 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 	}
 
 	this.newPane = function(def, res) {
-		return this.addWidget(merge({type: exports.Pane}, def), res);
+		return this.addWidget(merge({type: exports.Pane}, def, {tabPaneClassName: this._opts.tabPaneClassName}), res);
 	}
 	
 	this._addPane = function(pane) {
@@ -124,8 +125,8 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 		if (!pane) { return; }
 
 		var tab = pane.tab;
-		$.removeClass(this._selectedTab, 'selected');
-		$.addClass(tab, 'selected');
+		$.removeClass(this._selectedTab, this._opts.activeTabClassName);
+		$.addClass(tab, this._opts.activeTabClassName);
 		this._selectedTab = tab;
 		if (this._selectedPane) { this._selectedPane.hide(); }
 		
@@ -150,8 +151,11 @@ exports.Pane = Class(Widget, function(supr) {
 		}
 
 		this.tab =  $({
-			text: opts.title,
-			tagName: 'a',
+			tagName: 'li',
+			children: [{
+				tagName: 'a',
+				text: opts.title
+			}],
 			className: 'tab'
 		});
 
