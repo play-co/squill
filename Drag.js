@@ -68,6 +68,7 @@ if ('ontouchstart' in window && document.addEventListener) {
 }
 
 exports = Class(lib.PubSub, function(supr) {
+
 	this.init = function(params) {
 		this._isActive = false;
 	}
@@ -95,6 +96,7 @@ exports = Class(lib.PubSub, function(supr) {
 		
 		if (!this._isActive && absDelta.getMagnitude() > dragEvt.params.threshold) {
 			this._isActive = true;
+			this.setIframesEnabled(false);
 			this.publish('DragStart', dragEvt);
 		}
 		
@@ -113,9 +115,23 @@ exports = Class(lib.PubSub, function(supr) {
 			
 			$.stopEvent(upEvt);
 			this._isActive = false;
+			this.setIframesEnabled(true);
 			this.publish('DragStop', this._evt, upEvt);
 			return true;
 		}
+	}
+
+	this.setIframesEnabled = function (isEnabled) {
+		$("iframe").forEach(function (iframe) {
+			try {
+				if (isEnabled) {
+					iframe.style.pointerEvents = iframe.__squill_drag_pointer_events;
+				} else {
+					iframe.__squill_drag_pointer_events = getComputedStyle(iframe).getPropertyValue('pointerEvents');
+					iframe.style.pointerEvents = 'none';
+				}
+			} catch (e) {};
+		});
 	}
 });
 
