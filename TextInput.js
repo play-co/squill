@@ -20,7 +20,15 @@ var TextInput = exports = Class(Widget, function(supr) {
 					type: opts.type,
 					value: opts.value,
 					name: opts.name
-				}}
+				}, style: merge(opts.textStyle, {
+					display: 'block',
+					width: '100%',
+					height: '100%',
+					MozBoxSizing: 'border-box',
+					WebkitBoxSizing: 'border-box',
+					MsBoxSizing: 'border-box',
+					boxSizing: 'border-box'
+				})}
 			],
 			style: {position: 'relative'}
 		};
