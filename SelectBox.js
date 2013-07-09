@@ -38,7 +38,7 @@ var SelectBox = exports = Class(Widget, function(supr) {
 	}
 	
 	this._onSelect = function() {
-		this.publish('Select', this.getValue());
+		this.publish('Change', this._dataSource.get(this.getValue()));
 	}
 
 	this.setDataSource = function(dataSource) {
@@ -77,6 +77,7 @@ var SelectBox = exports = Class(Widget, function(supr) {
 		el.setAttribute('value', item[keyField]);
 		var renderer = this._opts.renderer;
 		el.innerText = (typeof renderer === 'string' ? item[renderer] : renderer(item))
+		el.value = item[keyField];
 	}
 	
 	this.onRemoveItem = function(id) {
