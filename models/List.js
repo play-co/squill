@@ -42,10 +42,17 @@ var List = exports = Class(Widget, function(supr) {
 			this.selection = new Selection({parent: this, type: opts.selectable, maxSelections: opts.maxSelections});
 			this.selection.subscribe('Select',   this, this._onSelect);
 			this.selection.subscribe('Deselect', this, this._onDeselect);
+			if (opts.selections) {
+				this.setSelections(opts.selections);
+			}
 		}
 
 		return this._opts;
 	}
+
+	this.setSelections = function(selections) {
+		selections.forEach(bind(this, 'select'));
+	};
 
 	this.getDataSource = function() {
 		return this._dataSource;
