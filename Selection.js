@@ -66,8 +66,12 @@ exports = Class(lib.PubSub, function() {
 	this._setSelected = function(item, isSelected) {
 		if (!item) { return; }
 		
-		var key = this._parent.getDataSource().key,
-			id = item[key];
+		var dataSource = this._parent.getDataSource(),
+			key = dataSource.key;
+		if (typeof item == 'string') {
+			item = dataSource.get(item);
+		}
+		var id = item[key];
 
 		if (this._selection.isSelected(id) != isSelected) {
 			if (isSelected) {
