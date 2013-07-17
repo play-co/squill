@@ -1,8 +1,7 @@
-"use import";
-
 import .Widget;
-from util.browser import $;
 import squill.models.DataSource as DataSource;
+
+from util.browser import $;
 
 var SelectBox = exports = Class(Widget, function(supr) {
 	this._def = {
@@ -29,16 +28,28 @@ var SelectBox = exports = Class(Widget, function(supr) {
 		}
 		
 		if (this._opts.items) {
-			this._dataSource.add(this._opts.items);
+			var uid = 1;
+			var items = this._opts.items.map(function (item) {
+				if (typeof item != 'object') {
+					return {id: typeof item == 'string' ? item : uid++, value: item};
+				} else {
+					return item;
+				}
+			});
+
+			this._dataSource.add(items);
 		}
 
-		
+		if ('value' in this._opts) {
+			this.setValue(this._opts.value);
+		}
+
 		this.initMouseEvents(this._el);
 		$.onEvent(this._el, 'change', this, '_onSelect');
 	}
 	
 	this._onSelect = function() {
-		this.publish('Change', this._dataSource.get(this.getValue()));
+		this.publish('change', this._dataSource.get(this.getValue()));
 	}
 
 	this.setDataSource = function(dataSource) {
