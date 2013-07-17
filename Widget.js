@@ -81,6 +81,8 @@ var Widget = exports = Class([Element, Events], function() {
 	this.init = function(opts) {
 		opts = opts || {};
 
+		this._id = opts.id;
+
 		this._children = [];
 
 		// ===
@@ -137,6 +139,10 @@ var Widget = exports = Class([Element, Events], function() {
 			this.build(opts.el);
 		}
 	};
+
+	this.getId = function () {
+		return this._id || (this._el && this._el.id);
+	}
 
 	this.build = function (el) {
 		if (!this._el || this._el != el) {
@@ -227,6 +233,8 @@ var Widget = exports = Class([Element, Events], function() {
 							break;
 
 						case 'select':
+							import .SelectBox;
+							el = new SelectBox(opts);
 							break;
 
 						default:
