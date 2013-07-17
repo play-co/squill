@@ -42,5 +42,5 @@ var CheckBox = exports = Class(Widget, function(supr) {
 	this.isChecked = function () { return this.checkbox.checked; }
 	this.setChecked = function (isChecked) { this.checkbox.checked = isChecked; }
 	
-	this.getValue = function () { return this.checkbox.value; }
+	this.getValue = function () { return this.isChecked() ? this.checkbox.value : null; }
 });
