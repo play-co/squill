@@ -1,5 +1,3 @@
-"use import";
-
 from util.browser import $;
 import .Element, .Events, .global;
 import .i18n;
@@ -176,6 +174,17 @@ var Widget = exports = Class([Element, Events], function() {
 
 	this.getChildren = function() {
 		return this._children;
+	};
+
+	this.forEachDescend = function (cb, ctx) {
+		var n = this._children.length;
+		for (var i = 0; i < n; ++i) {
+			var child = this._children[i];
+			cb.call(ctx, child);
+			if (child.forEachDescend) {
+				child.forEachDescend(cb, ctx);
+			}
+		}
 	};
 
 	this.getFirstChild = function() {

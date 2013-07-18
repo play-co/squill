@@ -25,7 +25,7 @@ var widgetNames = [
 	'SubmitButton',
 	'TextInput',
 	'PasswordInput',
-	'TextArea',		
+	'TextArea',
 	'TextLimitArea',
 	'Form'
 ]

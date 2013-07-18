@@ -49,7 +49,10 @@ var SelectBox = exports = Class(Widget, function(supr) {
 	}
 	
 	this._onSelect = function() {
-		this.publish('change', this._dataSource.get(this.getValue()));
+		var item = this._dataSource.get(this.getValue());
+		if (item) {
+			this.publish('change', item);
+		}
 	}
 
 	this.setDataSource = function(dataSource) {
