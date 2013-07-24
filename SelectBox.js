@@ -33,6 +33,12 @@ var SelectBox = exports = Class(Widget, function(supr) {
 				if (typeof item != 'object') {
 					return {id: typeof item == 'string' ? item : uid++, value: item};
 				} else {
+					if (!item.id) {
+						item.id =   'value' in item ? item.value :
+									'title' in item ? item.title :
+									(uid++);
+					}
+
 					return item;
 				}
 			});
@@ -70,7 +76,7 @@ var SelectBox = exports = Class(Widget, function(supr) {
 	
 	this.defaultRenderer = function(item) {
 		var key = this._dataSource.getKey();
-		return item.displayName || item.label || item.text || item[key];
+		return item.displayName || item.label || item.title || item.text || item[key];
 	}
 	
 	this.onUpdateItem = function(id, item) {
