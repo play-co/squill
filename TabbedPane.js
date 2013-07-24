@@ -103,7 +103,14 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 
 		return this;
 	}
-	
+
+	this.clear = function() {
+		this._panes.length = 0;
+		this._selectedTab = null;
+		this.tabContent.innerHTML = '';
+		this.tabContainer.innerHTML = '';
+	};
+
 	this.getTabs = function() {
 		return this._tabs;
 	};
