@@ -55,6 +55,7 @@ exports = Class(lib.PubSub, function() {
 
 	this.deselectAll = function() {
 		this._selection.deselectAll();
+		this._currentSelectionCount = 0;
 	};
 
 	this.get = function() { return this._selection.get(); };
