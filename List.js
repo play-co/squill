@@ -392,7 +392,7 @@ var List = exports = Class(Widget, function(supr) {
 
 	this.getOffsetParent = function() {
 		// the list might be contained in some other scrolling div
-		return this._opts.offsetParent || this._container.offsetParent || document.body;
+		return this._opts.offsetParent || (this._containSelf ? this._container : this._container.offsetParent) || document.body;
 	};
 
 	this.renderFixedHeight = function() {
