@@ -29,7 +29,7 @@ function gAddItem(item) {
 }
 
 function gRemoveItem(item) {
-	for (var i = 0, len = gCurrentDrag.length; i < len; ++i) {
+	for (var i = 0; i < gCurrentDrag.length; ++i) {
 		if (gCurrentDrag[i] == item) {
 			gCurrentDrag.splice(i, 1);
 			--i;
@@ -43,7 +43,7 @@ function onMove(e) {
 	if (!_active) { return; }
 	
 	resolveMouse(e);
-	for (var i = 0, len = gCurrentDrag.length; i < len; ++i) {
+	for (var i = 0; i < gCurrentDrag.length; ++i) {
 		gCurrentDrag[i].onMouseMove(e);
 	}
 	
@@ -52,7 +52,7 @@ function onMove(e) {
 function onUp(e) {
 	if (!_active) { return; }
 	
-	for (var i = 0, len = gCurrentDrag.length; i < len; ++i) {
+	for (var i = 0; i < gCurrentDrag.length; ++i) {
 		gCurrentDrag[i].onMouseUp(e);
 	}
 }
