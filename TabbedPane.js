@@ -63,10 +63,10 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 	this.getContainer = function() { return this._container || this._el; }
 	
 	this.addTabWidget = function(def, results) {
-		return this.addWidget(merge({parent: this.tabContainer}, def), results);
+		return this.addWidget(def, this.tabContainer, results);
 	};
 
-	this.addWidget = function(def, results) {
+	this.addWidget = function(def, parent, results) {
 		var el = supr(this, 'addWidget', arguments);
 		if (el instanceof exports.Pane) {
 			this._addPane(el);
@@ -82,7 +82,7 @@ var TabbedPane = exports = Class(Widget, function(supr) {
 	}
 
 	this.newPane = function(def, res) {
-		return this.addWidget(merge({type: exports.Pane}, def, {tabPaneClassName: this._opts.tabPaneClassName}), res);
+		return this.addWidget(merge({type: exports.Pane}, def, {tabPaneClassName: this._opts.tabPaneClassName}), null, res);
 	}
 	
 	this._addPane = function(pane) {

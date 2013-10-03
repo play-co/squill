@@ -40,19 +40,14 @@ var Widget = exports = Class([Element, Events], function() {
 	this._name = '';
 
 	this.__getDef__ = function () {
-		var protoDef = this.constructor.prototype._def;
 		var cls = this.constructor;
-		var def;
-		while ((cls = cls.prototype.__parentClass__)) {
-			if (cls.prototype.hasOwnProperty('_def')) {
-				if (!def) { def = protoDef || {}; }
+		var def = {};
 
+		do {
+			if (cls.prototype.hasOwnProperty('_def')) {
 				copyDef(def, cls.prototype._def);
 			}
-		}
-
-		// no parent classes were merged in?
-		if (!def) { def = protoDef || {}; }
+		} while ((cls = cls.prototype.__parentClass__));
 
 		// handle base _def
 		if (this.hasOwnProperty('_def')) {
@@ -65,8 +60,12 @@ var Widget = exports = Class([Element, Events], function() {
 					target[key] = merge(target[key], src[key]);
 				} if (key == 'className' && target.className) {
 					target.className = src.className + ' ' + target.className;
-				} else if (key == 'children' && target.children) {
-					target.children = src.children.concat(target.children);
+				} else if (key == 'children') {
+					if (target.children) {
+						target.children.unshift(src.children);
+					} else {
+						target.children = [src.children];
+					}
 				} else if (!target.hasOwnProperty(key)) {
 					target[key] = src[key];
 				}
@@ -118,22 +117,29 @@ var Widget = exports = Class([Element, Events], function() {
 		if (opts.delegate) { this.delegate = opts.delegate; }
 		if (opts.controller) { this.controller = opts.controller; }
 
+		var widgetParent;
+		var buildNow = false;
+		if (opts.widgetParent) {
+			widgetParent = opts.widgetParent;
+		}
+
 		if (opts.parent) {
 			var parent = this._parent = opts.parent;
-			var hasWidgetParent = parent instanceof Widget;
-			if (hasWidgetParent) {
-				var widgetParent = opts.parent;
+			var isWidgetParent = parent instanceof Widget;
+			if (isWidgetParent) {
+				if (!widgetParent) {
+					widgetParent = opts.parent;
+				}
+
 				opts.parent = parent.getContainer();
 			} else if (!parent.appendChild) {
 				delete opts.parent;
 			}
-			
-			this.build(opts.el);
-			
-			if (hasWidgetParent) {
-				widgetParent.addWidget(this);
-			}
-		} else if (opts.el) {
+		}
+
+		if (widgetParent) {
+			widgetParent.addWidget(this);
+		} else if (opts.parent || opts.el) {
 			this.build(opts.el);
 		}
 	};
@@ -158,10 +164,17 @@ var Widget = exports = Class([Element, Events], function() {
 	}
 
 	this.getParent = function() { return this._parent; };
+	this.getWidgetParent = function () { return this._widgetParent; }
+
+	this.setWidgetParent = function (parent) {
+		if (this._widgetParent != parent) {
+			this._widgetParent.addWidget(this);
+		}
+	}
 
 	this.setParent = function(parent) {
 		this._parent = parent;
-		var el = parent && (parent.getContainer && parent.getContainer() || parent.appendChild && parent || null);
+		var el = parent && (parent.getContainer && parent.getContainer() || parent.appendChild && parent);
 		if (el) {
 			if (!this._el) {
 				this._opts.parent = el;
@@ -199,13 +212,15 @@ var Widget = exports = Class([Element, Events], function() {
 		this._el.appendChild(el);
 	}
 
-	this.addWidget = function(def, result) {
+	this.addWidget = function(def, parent, result) {
 		if (!this._el) { this.build(); }
+
+		parent = parent || this.getContainer() || this._el;
 
 		// def is either a Widget or a definition for a Widget
 		if (!(def instanceof Widget)) {
 			// if it is not yet a widget, make it (or make a DOM node)
-			var opts = merge({}, def, {parent: this.getContainer(), __result: result});
+			var opts = merge({}, def, {parent: parent, __result: result});
 			if (opts.children) {
 				var children = opts.children;
 				delete opts.children;
@@ -246,6 +261,10 @@ var Widget = exports = Class([Element, Events], function() {
 							el = new SelectBox(opts);
 							break;
 
+						case 'widget':
+							el = new exports(opts);
+							break;
+
 						default:
 							el = $(opts);
 							break;
@@ -263,8 +282,19 @@ var Widget = exports = Class([Element, Events], function() {
 		}
 		
 		if (el instanceof Widget) {
-			if (!el.getParent()) { el.setParent(this); }
-			this._children.push(el);
+			if (el.getWidgetParent() != this) {
+				var prevParent = el.getWidgetParent();
+				if (prevParent) {
+					prevParent.removeWidget(this);
+				}
+
+				el._widgetParent = this;
+				this._children.push(el);
+			}
+
+			if (el.getParent() != parent) {
+				el.setParent(parent);
+			}
 		}
 
 		if (children) {
@@ -273,7 +303,7 @@ var Widget = exports = Class([Element, Events], function() {
 				el.buildChildren(children, result);
 			} else {
 				for (var i = 0, c; c = children[i]; ++i) {
-					this.addWidget(merge({parent: el}, c), result);
+					this.addWidget(c, el, result);
 				}
 			}
 		}
@@ -281,9 +311,16 @@ var Widget = exports = Class([Element, Events], function() {
 		return el;
 	};
 
-	this.getContainer = function() { return this._el; };
-	this.getName = function() { return this._name; };
-	this.setName = function(name) { this._name = name; };
+	this.removeWidget = function (widget) {
+		var index = this._children.indexOf(widget);
+		if (index >= 0) {
+			this._children.splice(index, 1);
+		}
+	}
+
+	this.getContainer = function () { return this._el; };
+	this.getName = function () { return this._name; };
+	this.setName = function (name) { this._name = name; };
 
 	this.buildContent = function() {
 		var opts = this._opts;
@@ -317,9 +354,15 @@ var Widget = exports = Class([Element, Events], function() {
 		this.buildWidget(this._el, result);
 	};
 
-	this.buildChildren = function(children, result) {
+	this.buildChildren = function (children, result) {
+		var parent = this.getContainer();
 		for (var i = 0, n = children.length; i < n; ++i) {
-			this.addWidget(children[i], result);
+			if (Array.isArray(children[i])) {
+				this.buildChildren(children[i], result);
+				parent = this.getContainer();
+			} else {
+				this.addWidget(children[i], parent, result);
+			}
 		}
 	};
 
@@ -392,7 +435,13 @@ var Widget = exports = Class([Element, Events], function() {
 
 	this.show = function() {
 		this.onBeforeShow();
-		$.show(this.getElement());
+
+		var style = this._opts && this._opts.style;
+		var display = style && style.display != 'none' && style.display || 'block';
+		if (this._el) {
+			this._el.style.display = display;
+		}
+
 		this.onShow();
 	};
 
