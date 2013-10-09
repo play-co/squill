@@ -15,15 +15,15 @@ var Cell = exports = Class(Widget, function(supr) {
 	}
 
 	this.isSelected = function() {
-		return this._parent.selection && this._parent.selection.isSelected(this._data);
+		return this._widgetParent.selection && this._widgetParent.selection.isSelected(this._data);
 	};
 
 	this.select = function() {
-		this._parent.selection && this._parent.selection.select(this._data);
+		this._widgetParent.selection && this._widgetParent.selection.select(this._data);
 	};
 
 	this.deselect = function() {
-		this._parent.selection && this._parent.selection.deselect(this._data);
+		this._widgetParent.selection && this._widgetParent.selection.deselect(this._data);
 	};
 
 	this.setData = function(data) {
@@ -37,9 +37,9 @@ var Cell = exports = Class(Widget, function(supr) {
 	this.render = function() {}
 
 	this.onClick = this.onSelect = function() {
-		if (!this._parent.selection) { return; }
+		if (!this._widgetParent.selection) { return; }
 
-		var type = this._parent.selection.getType();
+		var type = this._widgetParent.selection.getType();
 		if (type == 'toggle' || type == 'multi') {
 			if (this.isSelected()) {
 				this.deselect();
