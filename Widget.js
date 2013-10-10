@@ -215,7 +215,7 @@ var Widget = exports = Class([Element, Events], function() {
 	this.addWidget = function(def, parent, result) {
 		if (!this._el) { this.build(); }
 
-		parent = parent || this.getContainer() || this._el;
+		parent = def.parent || parent || this.getContainer() || this._el;
 
 		// def is either a Widget or a definition for a Widget
 		if (!(def instanceof Widget)) {
