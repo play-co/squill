@@ -13,6 +13,7 @@ var List = exports = Class(Widget, function(supr) {
 
 		this._cellResource = new Resource();
 		this._cells = {};
+
 		this._needsSort = true;
 		this._removed = {};
 		this._renderOpts = {margin: 0};
@@ -35,7 +36,7 @@ var List = exports = Class(Widget, function(supr) {
 		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
 		if (opts.sorter) { this.setSorter(opts.sorter); }
 
-		this._renderMargin = opts.renderMargin || 0;
+		this._renderMargin = ('renderMargin' in opts) && renderMargin || 0;
 		this._maxSelections = opts.maxSelections || 1;
 
 		if (opts.selectable) {
@@ -91,6 +92,8 @@ var List = exports = Class(Widget, function(supr) {
 
 	// just render all cells for now
 	this.render = function(viewport) {
+		if (!this._dataSource) { return; }
+		
 		if (this._needsSort) {
 			this._needsSort = null;
 			this._dataSource.sort();
@@ -112,28 +115,29 @@ var List = exports = Class(Widget, function(supr) {
 
 	// y is required for non-fixed-size lists.  Otherwise, y is ignored.
 	this._positionCell = function(cell, i, y) {
-		this._view.addCell(cell);
+		var view = this._view;
+		view.addCell(cell);
 
 		var r = this._renderOpts;
 		if (this._opts.isFixedSize) {
 			if (this._opts.isTiled) {
 				var x = i % r.numPerRow;
 				var y = (i / r.numPerRow) | 0;
-				cell.setPosition({
+				view.positionCell(cell, {
 					x: x * r.fullWidth,
 					y: y * r.fullHeight,
 					width: r.cellWidth,
 					height: r.cellHeight
 				});
 			} else {
-				cell.setPosition({
+				view.positionCell(cell, {
 					x: 0,
 					y: i * r.fullHeight || 0,
 					height: r.cellHeight
 				});
 			}
 		} else {
-			cell.setPosition({
+			view.positionCell(cell, {
 					x: 0,
 					y: y
 				});
