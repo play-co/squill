@@ -134,6 +134,7 @@ var TextInput = exports = Class(Widget, function(supr) {
 	this.checkValue = function() {
 		if (this._value != this._input.value) {
 			this._value = this._input.value;
+			this.publish('change', this._value);
 			this.publish('ValueChange', this._value);
 		}
 	}
