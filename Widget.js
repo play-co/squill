@@ -355,11 +355,11 @@ var Widget = exports = Class([Element, Events], function() {
 	};
 
 	this.buildChildren = function (children, result) {
-		var parent = this.getContainer();
+		var parent = this.getContainer() || this._el;
 		for (var i = 0, n = children.length; i < n; ++i) {
 			if (Array.isArray(children[i])) {
 				this.buildChildren(children[i], result);
-				parent = this.getContainer();
+				// parent = this.getContainer();
 			} else {
 				this.addWidget(children[i], parent, result);
 			}

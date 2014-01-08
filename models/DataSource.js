@@ -28,7 +28,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 		this._changeDataSave = false;
 		this._changeData = {
-			updated: [], 
+			updated: [],
 			updatedHash: {},
 			removed: [],
 			removedHash: {}
@@ -49,7 +49,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 			this._changeData[type].push(key);
 		}
 	};
-	
+
 	this.getFilteredDataSource = function(filterFn) {
 		var ds = new DataSource(this._opts);
 		this.forEach(function (item) {
@@ -93,7 +93,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	// NEVER CHANGE THE ID OF AN ITEM WITHOUT REMOVING IT FROM THE DATASOURCE FIRST.
 	// Love, Jeff Hubbard and Marcus Cavanaugh
 
-	this.updated = 
+	this.updated =
 	this.add = function(item) {
 		if (isArray(item)) {
 			for (var i = 0, len = item.length; i < len; ++i) {
@@ -145,7 +145,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 
 		return item;
 	};
-	
+
 	this.remove = function(id) {
 		if (typeof id == 'object') { id = id[this.key]; }
 		if (id == null) { return; }
@@ -198,6 +198,8 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		return this;
 	};
 
+	this.getIDs = function () { return Object.keys(this._byID); };
+
 	this.contains = function(id) {
 		return !!this._byID[id];
 	};
@@ -245,7 +247,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	this.beginChanges = function() {
 		this._changeDataSave = true;
 		this._changeData = {
-			updated: [], 
+			updated: [],
 			updatedHash: {},
 			removed: [],
 			removedHash: {}
