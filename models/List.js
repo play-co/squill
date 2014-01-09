@@ -35,8 +35,7 @@ var List = exports = Class(Widget, function(supr) {
 		if (opts.getCell) { this.setCellGetter(opts.getCell); }
 		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
 		if (opts.sorter) { this.setSorter(opts.sorter); }
-
-		this._renderMargin = ('renderMargin' in opts) && renderMargin || 0;
+		if ('renderMargin' in opts) { this._renderMargin = opts.renderMargin || 0; }
 		this._maxSelections = opts.maxSelections || 1;
 
 		if (opts.selectable) {
@@ -93,7 +92,7 @@ var List = exports = Class(Widget, function(supr) {
 	// just render all cells for now
 	this.render = function(viewport) {
 		if (!this._dataSource) { return; }
-		
+
 		if (this._needsSort) {
 			this._needsSort = null;
 			this._dataSource.sort();
