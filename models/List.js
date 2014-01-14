@@ -17,6 +17,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._needsSort = true;
 		this._removed = {};
 		this._renderOpts = {margin: 0};
+		this._renderMargin = 0;
 
 		this.isRecycleEnabled = opts.recycle;
 
