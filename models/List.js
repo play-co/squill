@@ -100,7 +100,7 @@ var List = exports = Class(Widget, function(supr) {
 		}
 
 		var count = this._dataSource.length;
-		if (this._opts.isFixedSize && count) {
+		if (this._opts.isFixedSize) {
 			this.renderFixed(viewport);
 		} else {
 			this._removeCells(); // remove the views that were deleted from the datasource
