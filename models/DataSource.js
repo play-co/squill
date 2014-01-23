@@ -96,9 +96,17 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 	this.updated =
 	this.add = function(item) {
 		if (isArray(item)) {
+			var res = [];
 			for (var i = 0, len = item.length; i < len; ++i) {
-				item[i] && this.add(item[i]);
+				if (item[i]) {
+					var obj = this.add(item[i]);
+					if (obj) {
+						res.push(obj);
+					}
+				}
 			}
+
+			return res;
 		} else {
 			var id = item[this.key];
 
