@@ -1,5 +1,3 @@
-"use import";
-
 from util.browser import $;
 import .Drag;
 import lib.PubSub;
@@ -14,7 +12,7 @@ exports = Class(lib.PubSub, function() {
 		var args = [this, handler].concat(SLICE.call(arguments, 3)),
 			handler = bind.apply(this, args),
 			events = this._eventEnabled;
-		
+
 		events[name] = true;
 		$.onEvent(el, name, function() {
 			if (events[name]) {
@@ -34,7 +32,7 @@ exports = Class(lib.PubSub, function() {
 			d.subscribe('Drag', this, 'onDrag');
 			d.subscribe('DragStop', this, 'onDragStop');
 		}
-		
+
 		var startDrag = bind(this.__drag, 'startDrag');
 		if (!el) { el = this._el; }
 		if (el.addEventListener) { el.addEventListener('touchstart', startDrag, true); }
@@ -43,7 +41,7 @@ exports = Class(lib.PubSub, function() {
 
 	this.initMouseEvents = function(el) {
 		el = el || this._el;
-		
+
 		if (isMobile) {
 			this.event(el, 'touchstart', '_onTouchStart');
 			this.event(el, 'touchend', '_onTouchEnd');
@@ -55,7 +53,7 @@ exports = Class(lib.PubSub, function() {
 			this.event(el, 'mouseup', 'onMouseUp');
 			this.event(el, 'click', 'onClick');
 		}
-		
+
 		return this;
 	};
 
@@ -73,7 +71,7 @@ exports = Class(lib.PubSub, function() {
 		this.event(el, 'keyup', 'onKeyUp');
 		return this;
 	}
-	
+
 	this._onTouchStart = function(e) {
 		this.onMouseOver(e);
 		this.onMouseDown(e);
@@ -86,13 +84,13 @@ exports = Class(lib.PubSub, function() {
 	};
 
 	this.onMouseOver = function(e) {
-		if (!this._enableMouseEvents) 
+		if (!this._enableMouseEvents)
 		this._isOver = true;
 		this.publish('Over', e);
 	};
 
 	this.onMouseMove = function(e) {
-		if (!this._enableMouseEvents) 
+		if (!this._enableMouseEvents)
 		this.publish('Move', e);
 	};
 

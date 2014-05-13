@@ -1,11 +1,12 @@
-"use import";
-
 import .Widget
 from util.browser import $;
 import .models.DataSource as DataSource;
 import .Selection;
 
 var List = exports = Class(Widget, function(supr) {
+
+	this._css = 'list';
+
 	this.init = function(opts) {
 		opts = merge(opts, {
 			containSelf: true,
@@ -19,7 +20,7 @@ var List = exports = Class(Widget, function(supr) {
 		});
 
 		this.needsRender = delay(this.render);
-		
+
 		if (opts.cellCtor) { this.setCellCtor(opts.cellCtor); }
 		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
 		if (opts.sorter) { this.setSorter(opts.sorter); }
@@ -81,7 +82,7 @@ var List = exports = Class(Widget, function(supr) {
 	};
 
 	this.buildWidget = function() {
-		
+
 		this._container = $({parent: this._el, className: this._opts.containerClassName, tag: this._containerTag || 'div'});
 		if (this._containSelf && !this._applyNodeOrder) {
 			this._container.style.position = 'relative';
@@ -117,7 +118,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._cellCtor = cellCtor;
 		this.clear();
 	}
-	
+
 	this.clear = function() {
 		for (var id in this._cellsByID) {
 			var cell = this._cellsByID[id];
@@ -169,7 +170,7 @@ var List = exports = Class(Widget, function(supr) {
 					match = false;
 				}
 			}
-			
+
 			if (match) {
 				ds.add(item);
 			} else {
@@ -207,7 +208,7 @@ var List = exports = Class(Widget, function(supr) {
 
 	this.getCellDim = function() {
 		if (this._cellDim) { return this._cellDim; }
-		
+
 		if (this._opts.isFixedHeight) {
 			var item = this._dataSource.getItemForIndex(0);
 			if (!item) { return false; }
@@ -215,13 +216,13 @@ var List = exports = Class(Widget, function(supr) {
 				cell = this._cellsByID[key] || (this._cellsByID[key] = this._createCell(item)),
 				dim = $.size(cell.getElement());
 			if (dim.width == 0 || dim.height == 0) { return null; }
-			
+
 			var margin = this._opts.margin;
 			if (margin) {
 				dim.width += margin;
 				dim.height += margin;
 			}
-			
+
 			this._cellDim = dim;
 			return dim;
 		} else {
@@ -237,7 +238,7 @@ var List = exports = Class(Widget, function(supr) {
 				key: key,
 				data: item
 			});
-		
+
 		cell.getElement().setAttribute('squill-data-id', item[key]);
 		cell.render();
 		return cell;
@@ -281,7 +282,7 @@ var List = exports = Class(Widget, function(supr) {
 		function renderOne() {
 			var item = src.getItemForIndex(i);
 			if (!item) { return false; }
-			
+
 			var id = item[src.getKey()];
 			var cell = this._cellsByID[id];
 			if (!cell) {
@@ -303,7 +304,7 @@ var List = exports = Class(Widget, function(supr) {
 					return;
 				}
 			}
-			
+
 			setTimeout(bind(this, renderMany), 100);
 		}
 
@@ -408,7 +409,7 @@ var List = exports = Class(Widget, function(supr) {
 		var src = this._renderedDataSource,
 			key = src.getKey(),
 			n = src.length;
-		
+
 		if (n && !this.updateRenderOpts()) { return; }
 
 		// swap lists

@@ -5,7 +5,7 @@ import lib.PubSub;
 /**
  * The Selection class connects a selection storage to a UI element.
  *
- * A selection storage is very simple class that maintains the data layer of 
+ * A selection storage is very simple class that maintains the data layer of
  * a selection. It is entirely based on item ID, exposing the methods:
  *   isSelected(id) -> bool
  *   select(id)
@@ -13,7 +13,7 @@ import lib.PubSub;
  * You may, for example, want to implement a selection store that persists
  * the current selection over a network. The base implementation of a selection
  * storage is exports.LocalStore, which simply wraps an in-memory object.
- * 
+ *
  * The Selection class handles logic such as how many items can be selected
  * at once, and provides the API that UI widgets can interact with.  For example,
  * the squill.List class contains a public proprty .selection that is an
@@ -63,14 +63,15 @@ exports = Class(lib.PubSub, function() {
 	this.getSelectionCount = function() {
 		return this._currentSelectionCount;
 	};
-	
+
 	this._setSelected = function(item, isSelected) {
 		if (!item) { return; }
-		
+
 		var dataSource = this._parent.getDataSource(),
 			key = dataSource.key;
 		if (typeof item == 'string') {
 			item = dataSource.get(item);
+			if (!item) { return; }
 		}
 		var id = item[key];
 
@@ -100,7 +101,7 @@ exports.LocalStore = Class(function() {
 	this.init = function() {
 		this._store = {};
 	}
-	
+
 	this.get = function() {
 		return merge({}, this._store);
 	}
@@ -108,15 +109,15 @@ exports.LocalStore = Class(function() {
 	this.select = function(id) {
 		this._store[id] = true;
 	}
-	
+
 	this.deselect = function(id) {
 		delete this._store[id];
 	}
-	
+
 	this.deselectAll = function(id) {
 		this._store = {};
 	}
-	
+
 	this.isSelected = function(id) {
 		if (id !== undefined) {
 			return !!this._store[id];

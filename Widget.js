@@ -99,7 +99,7 @@ var Widget = exports = Class([Element, Events], function() {
 		if (def.style) {
 			opts.style = merge(opts.style, def.style);
 		}
-		
+
 		// opts take precedence over def
 		this._opts = opts;
 		for (var name in def) {
@@ -152,14 +152,14 @@ var Widget = exports = Class([Element, Events], function() {
 		if (!this._el || this._el != el) {
 			var opts = this._opts;
 			var children = opts.children;
-			
+
 			if (children) { delete opts.children; }
 			this._el = $.create(this._opts);
 			if (children) { opts.children = children; }
 
 			this.buildContent();
 		}
-		
+
 		return this;
 	}
 
@@ -230,7 +230,7 @@ var Widget = exports = Class([Element, Events], function() {
 			if ('type' in opts && !opts.type) {
 				logger.warn('Did you forget to provide a type?', opts);
 			}
-			
+
 			if (!opts.type || typeof opts.type == 'string') {
 				if (WIDGET_CLASSES[opts.type]) {
 					var Constructor = jsio('import ' + WIDGET_CLASSES[opts.type]);
@@ -273,14 +273,14 @@ var Widget = exports = Class([Element, Events], function() {
 			} else {
 				el = new opts.type(opts);
 			}
-			
+
 			if (result && opts.id && !result.hasWidget(opts.id)) {
 				result.addWidget(opts.id, el);
 			}
 		} else {
 			el = def;
 		}
-		
+
 		if (el instanceof Widget) {
 			if (el.getWidgetParent() != this) {
 				var prevParent = el.getWidgetParent();
@@ -396,7 +396,7 @@ var Widget = exports = Class([Element, Events], function() {
 		var src = key in this._opts
 			? this._opts
 			: i18n.get(id || this._opts.id);
-		
+
 		return src && src[key] || '';
 	};
 
@@ -449,6 +449,7 @@ var Widget = exports = Class([Element, Events], function() {
 		this.onBeforeHide();
 		$.hide(this.getElement());
 		this.onHide();
+		return this;
 	};
 
 	this.remove = function() {
@@ -459,11 +460,11 @@ var Widget = exports = Class([Element, Events], function() {
 
 	this.putHere = function() {
 		if(!this._el) { this.build(); }
-		
+
 		var id = 'jsioWidgetId' + (++uid);
 		global.getTargetDocument().write('<div id="'+id+'"></div>');
 		setTimeout(bind(this, _replaceNode, id), 0);
-		
+
 		return this;
 	};
 
