@@ -58,7 +58,13 @@ exports = Class(lib.PubSub, function() {
 		this._currentSelectionCount = 0;
 	};
 
-	this.get = function() { return this._selection.get(); };
+	this.get = function() {
+		if (this._maxSelections == 1) {
+			return Object.keys(this._selection.get())[0];
+		} else {
+			return Object.keys(this._selection.get());
+		}
+	};
 
 	this.getSelectionCount = function() {
 		return this._currentSelectionCount;

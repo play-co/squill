@@ -10,17 +10,19 @@ exports = Class(Widget, function (supr) {
 	this.getContainer = function () { return this.contents; }
 
 	this.buildChildren = function (children, result) {
-		for (var i = 0, n = children.length; i < n; ++i) {
-			if (Array.isArray(children[i])) {
+		if (Array.isArray(children[0])) {
+			var gridChildren = [];
+			for (var i = 0, n = children.length; i < n; ++i) {
 				var rows = children[i];
 				var numRows = rows.length;
-				children[i] = {tag: 'tr', children: []};
+				gridChildren[i] = {tag: 'tr', children: []};
 				for (var j = 0; j < numRows; ++j) {
-					children[i].children[j] = {tag: 'td', children: rows[j]};
+					gridChildren[i].children[j] = {tag: 'td', children: rows[j]};
 				}
 			}
+			return supr(this, 'buildChildren', [gridChildren, result]);
+		} else {
+			return supr(this, 'buildChildren', arguments);
 		}
-
-		return supr(this, 'buildChildren', arguments);
 	}
 });

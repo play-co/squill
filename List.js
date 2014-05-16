@@ -95,6 +95,18 @@ var List = exports = Class(Widget, function(supr) {
 		this.render();
 	};
 
+	this.setValue = function (value) {
+		if (this.selection) {
+			this.selection.select(value);
+		}
+	}
+
+	this.getValue = function () {
+		if (this.selection) {
+			return this.selection.get();
+		}
+	}
+
 	this.setSelectable = function(selectable) {
 		this.selection = new Selection({
 			parent: this,

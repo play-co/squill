@@ -104,6 +104,12 @@ var Dialog = exports = Class(Widget, function(supr) {
 	}
 
 	this.show = function () {
+
+		var el = this.getElement();
+		if (!el.parentNode) {
+			document.body.appendChild(el);
+		}
+
 		var ret = supr(this, 'show', arguments);
 
 		if (this._isModal) {

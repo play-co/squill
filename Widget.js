@@ -39,35 +39,37 @@ var Widget = exports = Class([Element, Events], function() {
 	this._css = 'widget';
 	this._name = '';
 
+	var CHECK_PARENT = {};
+
 	this.__getDef__ = function () {
 		var cls = this.constructor;
 		var def = {};
 
 		do {
 			if (cls.prototype.hasOwnProperty('_def')) {
-				copyDef(def, cls.prototype._def);
+				copyDef(cls.prototype._def);
 			}
 		} while ((cls = cls.prototype.__parentClass__));
 
 		// handle base _def
 		if (this.hasOwnProperty('_def')) {
-			copyDef(def, this._def);
+			copyDef(this._def);
 		}
 
-		function copyDef (target, src) {
+		function copyDef (src) {
 			for (var key in src) {
 				if (key == 'attrs' || key == 'style') {
-					target[key] = merge(target[key], src[key]);
-				} if (key == 'className' && target.className) {
-					target.className = src.className + ' ' + target.className;
+					def[key] = merge(def[key], src[key]);
+				} else if (key == 'className' && def.className) {
+					def.className = src.className + ' ' + def.className;
 				} else if (key == 'children') {
-					if (target.children) {
-						target.children.unshift(src.children);
+					if (!def.children) {
+						def.children = [src.children];
 					} else {
-						target.children = [src.children];
+						def.children.push(src.children);
 					}
-				} else if (!target.hasOwnProperty(key)) {
-					target[key] = src[key];
+				} else if (!def.hasOwnProperty(key)) {
+					def[key] = src[key];
 				}
 			}
 		}
@@ -143,6 +145,8 @@ var Widget = exports = Class([Element, Events], function() {
 			this.build(opts.el);
 		}
 	};
+
+	this.getOpts = function () { return this._opts; }
 
 	this.getId = function () {
 		return this._id || (this._el && this._el.id);
@@ -336,15 +340,20 @@ var Widget = exports = Class([Element, Events], function() {
 			this._errorLabel = $.create({html: opts.errorLabel, className: global.getWidgetPrefix() + 'textInputErrorLabel', parent: this._el});
 		}
 
+		// def items always go on the widget
 		var def = this._def;
 
-		// def items always go on the widget
-		if (def && def.children) {
+		// build each set of children separately so the parent container can
+		// be checked/recomputed after each set
+		if (def.children) {
 			var localRes = new WidgetSet(this);
-			this.buildChildren(def.children, localRes);
+			for (var i = def.children.length - 1; i >= 0; --i) {
+				this.buildChildren(def.children[i], localRes);
+			}
 		}
 
-		var result = opts.__result || new WidgetSet(this);
+		// primary target for opts children is the result passed in
+		var result = opts.__result || localRes || new WidgetSet(this);
 
 		// opts items sometimes go on the widget
 		if (opts.children) {
@@ -357,9 +366,8 @@ var Widget = exports = Class([Element, Events], function() {
 	this.buildChildren = function (children, result) {
 		var parent = this.getContainer() || this._el;
 		for (var i = 0, n = children.length; i < n; ++i) {
-			if (Array.isArray(children[i])) {
-				this.buildChildren(children[i], result);
-				// parent = this.getContainer();
+			if (children[i] == CHECK_PARENT) {
+				parent = this.getContainer() || this._el;
 			} else {
 				this.addWidget(children[i], parent, result);
 			}

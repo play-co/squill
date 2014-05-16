@@ -69,6 +69,8 @@ var SelectBox = exports = Class(Widget, function(supr) {
 		}
 	}
 
+	this.getDataSource = function () { return this._dataSource; }
+
 	this.setDataSource = function(dataSource) {
 		if (this._dataSource) {
 			this._dataSource.unsubscribe('Update', this);
