@@ -121,6 +121,10 @@ var List = exports = Class(Widget, function(supr) {
 	this._onSelected = function(isSelected, item, id) {
 		if (this._cellsByID[id] !== undefined) {
 			this._cellsByID[id].updateSelected();
+
+            if (isSelected) {
+                this.publish('change', id);
+            }
 		}
 	};
 
