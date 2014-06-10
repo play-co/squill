@@ -1,0 +1,10 @@
+{
+	"name": "squill",
+	"author": "Game Closure",
+	"version": "0.0.1",
+	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "http://github.com/gameclosure/squill/squill.git"
+	}
+}
