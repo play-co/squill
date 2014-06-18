@@ -62,14 +62,11 @@ function registerDocument(doc) {
 	body.addEventListener("dragover", function(e) {
 		var d = _activeDocuments.add(doc);
 		clearTimeout(d.timeout);
-		console.log("DRAG OVER BODY");
 		return cancelEvent(e);
 	}, false);
 
 	body.addEventListener("dragleave", function(e) {
-		console.log("DRAG LEAVE BODY");
 		_activeDocuments.add(doc).timeout = setTimeout(function () {
-			console.log("DRAG LEAVE BODY > REMOVE CLASS");
 			_activeDocuments.remove(doc);
 		})
 
@@ -95,13 +92,11 @@ exports = Class(Widget, function (supr) {
 
 		var el = this._el;
 		el.addEventListener("dragenter", bind(this, function(e) {
-			console.log("DRAG ENTER TARGET");
 			this.emit('dropenter');
 			_activeDocuments.clearTimeouts();
 			return cancelEvent(e);
 		}), false);
 		el.addEventListener("dragleave", bind(this, function(e) {
-			console.log("DRAG LEAVE TARGET");
 			$.removeClass(el, this._hoverClass);
 			this.emit('dropleave');
 			return cancelEvent(e);
@@ -109,7 +104,6 @@ exports = Class(Widget, function (supr) {
 
 		//modify the styles
 		el.addEventListener("dragover", bind(this, function(e) {
-			console.log("DRAG OVER TARGET");
 			$.addClass(el, this._hoverClass);
 			_activeDocuments.clearTimeouts();
 			this.emit('dropover');
@@ -118,10 +112,12 @@ exports = Class(Widget, function (supr) {
 
 		el.addEventListener("dragend", bind(this, function (e) {
 			_activeDocuments.clear();
+			$.removeClass(el, this._hoverClass);
 		}));
 
 		el.addEventListener("drop", bind(this, function (e) {
 			_activeDocuments.clear();
+			$.removeClass(el, this._hoverClass);
 
 			var files = e.dataTransfer && e.dataTransfer.files;
 			var count = files && files.length || 0;
