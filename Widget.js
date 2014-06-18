@@ -30,7 +30,9 @@ var WidgetSet = Class(function () {
 
 	this.addSubscription  = function(widget, signal /* ... args */) {
 		if (this._target.dispatchEvent) {
-			widget.subscribe.apply(widget, [signal, this._target, 'dispatchEvent'].concat(Array.prototype.slice.call(arguments, 2)));
+			widget.subscribe.apply(widget, [signal, this._target,
+				'dispatchEvent', widget.getId()]
+					.concat(Array.prototype.slice.call(arguments, 2)));
 		}
 	}
 });
@@ -80,14 +82,14 @@ var Widget = exports = Class([Element, Events], function() {
 	this.init = function(opts) {
 		opts = opts || {};
 
-		this._id = opts.id;
-
 		this._children = [];
 
 		// ===
 		// merge this._def and opts
 
 		var def = this._def = this.__getDef__();
+
+		this._id = def.id;
 
 		// className merges
 		if (def.className) {
@@ -208,8 +210,8 @@ var Widget = exports = Class([Element, Events], function() {
 		return (this._children && this._children.length) ? this._children[0] : null;
 	};
 
-	this.dispatchEvent = function(target, evt) {
-		this.delegate.call(this, target, evt);
+	this.dispatchEvent = function (id, evt) {
+		this.delegate.call(this, id, evt);
 	};
 
 	this.addElement = function (el) {
@@ -256,7 +258,7 @@ var Widget = exports = Class([Element, Events], function() {
 							}
 							el = new TextButton(opts);
 							if (result) {
-								result.addSubscription(el, 'Select', opts.id);
+								result.addSubscription(el, 'Select');
 							}
 							break;
 

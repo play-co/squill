@@ -43,6 +43,11 @@ var List = exports = Class(Widget, function(supr) {
 		}, 100);
 
 		supr(this, 'init', [opts]);
+
+		if (opts.__result) {
+			opts.__result.addSubscription(this, 'change');
+		}
+
 	};
 
 	// cells go in _container
