@@ -18,6 +18,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._removed = {};
 		this._renderOpts = {margin: 0};
 		this._renderMargin = 0;
+		this._updatedCells = {};
 
 		this.isRecycleEnabled = opts.recycle;
 
@@ -65,13 +66,16 @@ var List = exports = Class(Widget, function(supr) {
 			this._dataSource.unsubscribe('Remove', this, '_onRemove');
 		}
 		this._dataSource = dataSource;
-		this._dataSource.subscribe('Update', this, '_onUpdate');
-		this._dataSource.subscribe('Remove', this, '_onRemove');
+		if (dataSource) {
+			this._dataSource.subscribe('Update', this, '_onUpdate');
+			this._dataSource.subscribe('Remove', this, '_onRemove');
+			this.needsSort();
+		}
 	}
 
 	this._onUpdate = function(id, item) {
 		var cell = this._cells[id];
-		if (cell) { cell.setData(item, id); }
+		if (cell) { this._updatedCells[id] = item; }
 		this.needsSort();
 	}
 
@@ -97,6 +101,10 @@ var List = exports = Class(Widget, function(supr) {
 		if (this._needsSort) {
 			this._needsSort = null;
 			this._dataSource.sort();
+			for (var id in this._updatedCells) {
+				this._cells[id].setData(this._updatedCells[id], id);
+				delete this._updatedCells[id];
+			}
 		}
 
 		var count = this._dataSource.length;
