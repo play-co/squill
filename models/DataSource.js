@@ -220,6 +220,10 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		return this._byID[id] || null;
 	};
 
+	this.indexOf = function (item) {
+		return this._byIndex.indexOf(item);
+	};
+
 	this.getItemForIndex = function(index) {
 		return this._byIndex[index];
 	};
