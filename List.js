@@ -10,7 +10,7 @@ var List = exports = Class(Widget, function(supr) {
 	this.init = function(opts) {
 		opts = merge(opts, {
 			containSelf: true,
-			margin: 0,
+			cellSpacing: 0,
 			isTiled: false,
 			preserveCells: false,
 			renderAll: true,
@@ -34,7 +34,7 @@ var List = exports = Class(Widget, function(supr) {
 		this._applyNodeOrder = opts.applyNodeOrder;
 
 		this._renderOpts = {
-			margin: opts.margin || 0
+			cellSpacing: opts.cellSpacing || 0
 		};
 
 		this.updateFilter = delay(function() {
@@ -238,10 +238,10 @@ var List = exports = Class(Widget, function(supr) {
 				dim = $.size(cell.getElement());
 			if (dim.width == 0 || dim.height == 0) { return null; }
 
-			var margin = this._opts.margin;
-			if (margin) {
-				dim.width += margin;
-				dim.height += margin;
+			var cellSpacing = this._opts.cellSpacing;
+			if (cellSpacing) {
+				dim.width += cellSpacing;
+				dim.height += cellSpacing;
 			}
 
 			this._cellDim = dim;

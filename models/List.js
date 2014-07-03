@@ -16,7 +16,7 @@ var List = exports = Class(Widget, function(supr) {
 
 		this._needsSort = true;
 		this._removed = {};
-		this._renderOpts = {margin: 0};
+		this._renderOpts = {cellSpacing: 0};
 		this._renderMargin = 0;
 		this._updatedCells = {};
 
@@ -242,8 +242,8 @@ var List = exports = Class(Widget, function(supr) {
 				r.fullHeight = r.cellHeight = cell.getHeight();
 				if ((this._opts.isTiled && !r.cellWidth) || !r.cellHeight) { return null; }
 
-				var margin = this._opts.margin || 0;
-				if (margin) { r.fullWidth += margin; r.fullHeight += margin; }
+				var cellSpacing = this._opts.cellSpacing || 0;
+				if (cellSpacing) { r.fullWidth += cellSpacing; r.fullHeight += cellSpacing; }
 			}
 
 			if (this._opts.isTiled) {
