@@ -54,6 +54,11 @@ exports = Class(lib.PubSub, function() {
 			this.event(el, 'click', 'onClick');
 		}
 
+		var opts = this._opts;
+		if (opts && opts.__result) {
+			opts.__result.addSubscription(this, 'Select');
+		}
+
 		return this;
 	};
 
