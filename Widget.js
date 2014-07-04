@@ -119,13 +119,14 @@ var Widget = exports = Class([Element, Events], function() {
 
 		if (opts.name) { this._name = opts.name; }
 		if (opts.delegate) { this.delegate = opts.delegate; }
-		if (opts.controller) { this.controller = opts.controller; }
 
 		var widgetParent;
 		var buildNow = false;
 		if (opts.widgetParent) {
 			widgetParent = opts.widgetParent;
 		}
+
+		this.controller = opts.controller || widgetParent;
 
 		if (opts.parent) {
 			var parent = this._parent = opts.parent;
@@ -174,7 +175,9 @@ var Widget = exports = Class([Element, Events], function() {
 
 	this.setWidgetParent = function (parent) {
 		if (this._widgetParent != parent) {
-			this._widgetParent.addWidget(this);
+			this._widgetParent.removeWidget(this);
+			parent.addWidget(this);
+			this._widgetParent = parent;
 		}
 	}
 
@@ -242,39 +245,10 @@ var Widget = exports = Class([Element, Events], function() {
 					var Constructor = jsio('import ' + WIDGET_CLASSES[opts.type]);
 					el = new Constructor(opts);
 				} else {
-					switch (opts.type) {
-						case 'checkbox':
-							import .CheckBox;
-							el = new CheckBox(opts);
-							break;
-
-						case 'image':
-							el = $(merge({tag: 'img'}, opts));
-							break;
-
-						case 'button':
-							if (typeof TextButton == 'undefined') {
-								import .TextButton;
-							}
-							el = new TextButton(opts);
-							if (result) {
-								result.addSubscription(el, 'Select');
-							}
-							break;
-
-						case 'select':
-							import .SelectBox;
-							el = new SelectBox(opts);
-							break;
-
-						case 'widget':
-							el = new exports(opts);
-							break;
-
-						default:
-							el = $(opts);
-							break;
+					if (opts.type == 'image') {
+						opts = merge({tag: 'img'}, opts);
 					}
+					el = $(opts);
 				}
 			} else {
 				el = new opts.type(opts);
@@ -295,6 +269,10 @@ var Widget = exports = Class([Element, Events], function() {
 				}
 
 				el._widgetParent = this;
+				if (!el.controller) {
+					el.controller = this;
+				}
+
 				this._children.push(el);
 			}
 
