@@ -1,4 +1,5 @@
-import .Widget
+import .Window;
+import .Widget;
 from util.browser import $;
 import .models.DataSource as DataSource;
 import .Selection;
@@ -48,6 +49,7 @@ var List = exports = Class(Widget, function(supr) {
 			opts.__result.addSubscription(this, 'change');
 		}
 
+		Window.get().on('ViewportChange', bind(this, 'needsRender'));
 	};
 
 	// cells go in _container
