@@ -31,6 +31,8 @@ var Dialog = exports = Class(Widget, function(supr) {
 		]
 	};
 
+	this._css = 'dialog';
+
 	this.getContainer = function () { return this._container; }
 
 	this.buildWidget = function (el, result) {
