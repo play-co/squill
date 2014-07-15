@@ -393,6 +393,23 @@ var Widget = exports = Class([Element, Events], function() {
 		return this._el;
 	};
 
+	this.addClass = function (cls) { $.addClass(this._el, cls); }
+	this.removeClass = function (cls) { $.removeClass(this._el, cls); }
+	this.hasClass = function (cls) {
+		return (' ' + this._el.className + ' ').indexOf(cls) >= 0;
+	}
+	this.toggleClass = function (cls, isToggled) {
+		if (isToggled === undefined) {
+			isToggled = !this.hasClass(cls);
+		}
+
+		if (isToggled) {
+			this.addClass(cls);
+		} else {
+			this.removeClass(cls);
+		}
+	}
+
 	this.onBeforeShow = function() {
 		for (var i = 0, child; child = this._children[i]; ++i) {
 			child.onBeforeShow.apply(child, arguments);
