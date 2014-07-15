@@ -95,8 +95,8 @@ var List = exports = Class(Widget, function(supr) {
 			this._container.style.position = 'relative';
 		}
 
-		if (this._opts.selectable) {
-			this.setSelectable(this._opts.selectable);
+		if (this._opts.selection || this._opts.selectable) {
+			this.setSelectable(this._opts.selection || this._opts.selectable);
 		}
 
 		this.render();
@@ -156,6 +156,10 @@ var List = exports = Class(Widget, function(supr) {
 	this.getCellById = function(id) {
 		return this._cellsByID[id];
 	};
+
+	this.setCellForId = function (id, cell) {
+		this._cellsByID[id] = cell;
+	}
 
 	this.getCells = function() {
 		return this._cellsByID;
