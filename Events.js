@@ -118,6 +118,7 @@ exports = Class(lib.PubSub, function() {
 
 	this.onClick = function(e) {
 		this.publish('Select', e);
+		this.emit('click', e);
 		return false;
 	};
 
