@@ -1,5 +1,3 @@
-"use import";
-
 from util.browser import $;
 import .Widget;
 
@@ -89,12 +87,15 @@ var Button = exports = Class(Widget, function(supr) {
 	this.onKeyUp = function(e) {
 		if (e.keyCode == 13) { $.stopEvent(e); this.onMouseUp(); this.onClick(e); }
 	};
-	
+
 	this.show = function() {
 		this.onBeforeShow();
 		this.getElement().style.display = 'inline-block';
 		this.onShow();
 	};
+
+	this.blur = function () { this._el && this._el.blur(); }
+	this.focus = function () { this._el && this._el.focus(); }
 
 	this.setEnabled = function(isEnabled) {
 		if (this._isEnabled != isEnabled) {
