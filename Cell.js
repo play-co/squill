@@ -1,15 +1,16 @@
-"use import";
-
 import .Widget;
 from util.browser import $;
 
 var Cell = exports = Class(Widget, function(supr) {
-	this.init = function(opts) {
-		supr(this, 'init', [opts]);
-		
+
+	this._css = 'cell';
+
+	this.init = function (opts) {
+		supr(this, 'init', arguments);
+
 		if (opts.data) { this.setData(opts.data); }
 	}
-	
+
 	this.buildWidget = function(el) {
 		this.initMouseEvents();
 	}
