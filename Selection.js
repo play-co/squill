@@ -53,6 +53,7 @@ exports = Class(lib.PubSub, function() {
 		this._setSelected(item, false);
 	};
 
+	this.clear =
 	this.deselectAll = function() {
 		this._selection.deselectAll();
 		this._currentSelectionCount = 0;
