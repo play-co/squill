@@ -10,7 +10,8 @@ var Dialog = exports = Class(Widget, function(supr) {
 		draggable: true,
 		closeable: true,
 		style: {
-			position: 'absolute'
+			position: 'absolute',
+			display: 'flex'
 		},
 		children: [
 			{
@@ -22,12 +23,9 @@ var Dialog = exports = Class(Widget, function(supr) {
 					{id: '_titlebarText'}
 				]
 			},
-			{
-				id: '_container'
-			},
-			{
-				id: '_footer'
-			}
+			{id: '_header'},
+			{id: '_container'},
+			{id: '_footer'}
 		]
 	};
 
@@ -37,7 +35,7 @@ var Dialog = exports = Class(Widget, function(supr) {
 
 	this.buildWidget = function (el, result) {
 		if (this._opts.title) {
-			this.setTitle(this._def.title);
+			this.setTitle(this._opts.title);
 		}
 
 		if (this._opts.footer) {
