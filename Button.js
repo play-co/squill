@@ -19,16 +19,16 @@ var Button = exports = Class(Widget, function(supr) {
 				whiteSpace: 'nowrap',
 				display: 'block'
 			});
-		
+
 		supr(this, 'create', arguments);
 	};
 
 	this.buildWidget = function() {
 		var el = this._el;
-		
+
 		this.initMouseEvents(el);
 		this.initKeyEvents(el);
-		
+
 		el.style.userSelect = 'none';
 		el.style.MozUserSelect = 'none'; // Mozilla
 		el.style.KhtmlUserSelect = 'none'; // Safari
@@ -71,7 +71,7 @@ var Button = exports = Class(Widget, function(supr) {
 		if (this._opts.onClick) {
 			this._opts.onClick(e, this);
 		}
-		
+
 		supr(this, 'onClick', arguments);
 	};
 

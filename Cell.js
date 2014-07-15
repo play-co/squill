@@ -51,7 +51,7 @@ var Cell = exports = Class(Widget, function(supr) {
 			this.select();
 		}
 	}
-	
+
 	this.updateSelected = function() {
 		var isSelected = this.isSelected();
 		if (isSelected) {
