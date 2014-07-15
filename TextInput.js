@@ -82,6 +82,9 @@ var TextInput = exports = Class(Widget, function(supr) {
 		this.initKeyEvents(this._input);
 	}
 
+	this.focus = function () { this._input.focus(); }
+	this.blur = function () { this._input.blur(); }
+
 	this.getInputElement = function () { return this._input; }
 
 	this.setName = function(name) {
@@ -90,7 +93,12 @@ var TextInput = exports = Class(Widget, function(supr) {
 		if (this._input) { this._input.name = name; }
 	}
 
-	this.setValue = function(value) { this._value = this._input.value = value; }
+	this.setValue = function(value) {
+		this.saveSelection();
+		this._value = this._input.value = value;
+		this.restoreSelection();
+	}
+
 	this.getValue = function() { return this._input.value; }
 
 	this.onKeyDown = function() {
@@ -147,9 +155,29 @@ var TextInput = exports = Class(Widget, function(supr) {
 		$.removeClass(this._el, 'invalid');
 		if (this._value != value) {
 			this._value = value;
-			this._input.value = value;
+			var input = this._input;
+			if (value != input.value) {
+				this.saveSelection();
+				input.value = value;
+				this.restoreSelection();
+			}
 			this.publish('change', this._value);
 			this.publish('ValueChange', this._value);
+		}
+	}
+
+	this.saveSelection = function () {
+		this._selection = {
+			start: this._input.selectionStart,
+			end: this._input.selectionEnd
+		};
+	}
+
+	this.restoreSelection = function () {
+		var input = this._input;
+		if (this._isFocused) {
+			input.selectionStart = this._selection.start;
+			input.selectionEnd = this._selection.end;
 		}
 	}
 
@@ -164,6 +192,20 @@ var TextInput = exports = Class(Widget, function(supr) {
 
 		//setTimeout(bind(this._input, 'focus'), 100);
 	}
+
+	this.setEnabled = function (isEnabled) {
+		this._isEnabled = isEnabled;
+		if (isEnabled) {
+			delete this._input.disabled;
+			this.removeClass('disabled');
+		} else {
+			this._input.disabled = true;
+			this.addClass('disabled');
+		}
+	}
+
+	this.disable = function () { this.setEnabled(false); }
+	this.enable = function () { this.setEnabled(true); }
 });
 
 var INVALID_VALUE = exports.INVALID_VALUE = {};
