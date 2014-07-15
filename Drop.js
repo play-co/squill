@@ -75,6 +75,7 @@ function registerDocument(doc) {
 
 	body.addEventListener("drop", function(e) {
 		$.removeClass(body, 'squill-drop-hover');
+		return cancelEvent(e);
 	}, false);
 
 	body.addEventListener("dragend", function(e) {
