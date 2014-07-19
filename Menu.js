@@ -43,25 +43,39 @@ var Menu = exports = Class(Widget, function(supr) {
     this._isShowing = true;
 
     var menuEl = this._el;
-    var mouseHandler = bind(this, function (e) {
+    var eventHandler = bind(this, function (e) {
       var el = e.target;
       while (el) {
         if (el == menuEl) {
-          return;
+          return true;
         }
 
         el = el.parentNode;
       }
 
       // close menu
-      this.hide();
-      e.preventDefault();
-      e.stopPropagation();
-
-      document.body.removeEventListener('mousedown', mouseHandler, true);
+      e.preventDefault && e.preventDefault();
+      e.stopImmediatePropagation && e.stopImmediatePropagation();
+      e.stopPropagation && e.stopPropagation();
+      e.cancelBubble = true;
+      return false;
     });
 
-    document.body.addEventListener('mousedown', mouseHandler, true);
+    var clickHandler = bind(this, function (e) {
+      if (!eventHandler(e)) {
+        this.hide();
+
+        untrapIframes();
+        document.body.removeEventListener('mousedown', eventHandler, true);
+        document.body.removeEventListener('mouseup', eventHandler, true);
+        document.body.removeEventListener('click', clickHandler, true);
+      }
+    });
+
+    trapIframes();
+    document.body.addEventListener('mousedown', eventHandler, true);
+    document.body.addEventListener('mouseup', eventHandler, true);
+    document.body.addEventListener('click', clickHandler, true);
 
     $.show(menuEl);
 
@@ -83,3 +97,31 @@ var subs = new lib.PubSub();
 Menu.emit = bind(subs, 'emit');
 Menu.on = bind(subs, 'on');
 Menu.removeListener = bind(subs, 'removeListener');
+
+var _trappedFrames = [];
+function trapIframes() {
+  if (_trappedFrames.length) {
+    untrapIframes();
+  }
+
+  _trappedFrames = Array.prototype.map.call(document.getElementsByTagName('iframe'), function (el) {
+    var retVal = {
+        el: el,
+        set: el.style.pointerEvents
+      };
+
+    el.style.pointerEvents = 'none';
+
+    return retVal;
+  });
+}
+
+function untrapIframes() {
+  _trappedFrames.forEach(function (item) {
+    if (item.set) {
+      item.el.style.pointerEvents = item.set;
+    } else {
+      item.el.style.pointerEvents = void(0);
+    }
+  });
+}
