@@ -206,7 +206,11 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
 		return this;
 	};
 
-	this.getIDs = function () { return Object.keys(this._byID); };
+	this.getIDs = function () {
+		return this._byIndex.map(function (item) {
+			return item[this.key];
+		}, this);
+	};
 
 	this.contains = function(id) {
 		return !!this._byID[id];
