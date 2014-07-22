@@ -244,6 +244,8 @@ var Widget = exports = Class([Element, Events], function() {
 				if (WIDGET_CLASSES[opts.type]) {
 					var Constructor = jsio('import ' + WIDGET_CLASSES[opts.type]);
 					el = new Constructor(opts);
+				} else if (!result) {
+					el = new Widget(opts);
 				} else {
 					if (opts.type == 'image') {
 						opts = merge({tag: 'img'}, opts);
@@ -456,6 +458,10 @@ var Widget = exports = Class([Element, Events], function() {
 		this.onHide();
 		return this;
 	};
+
+	this.removeChildren = function () {
+		this._children.forEach(function (child) { child.remove(); });
+	}
 
 	this.remove = function() {
 		this.onBeforeHide();
