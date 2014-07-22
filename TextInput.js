@@ -9,14 +9,13 @@ var TextInput = exports = Class(Widget, function(supr) {
 		opts = merge(opts, {
 			name: '',
 			value: '',
-			type: 'text',
 			multiline: false
 		});
 
 		this._def = {
 			children: [
 				{tag: opts.multiline ? 'textarea' : 'input', id: '_input', attrs: {
-					type: opts.type,
+					type: 'text',
 					value: opts.value,
 					name: opts.name
 				}, style: merge(opts.textStyle, {
