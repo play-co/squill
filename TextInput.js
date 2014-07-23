@@ -1,5 +1,6 @@
 from util.browser import $;
 import .Widget;
+import squill.models.bindings as bindings;
 
 var TextInput = exports = Class(Widget, function(supr) {
 	this._type = 'text';
@@ -60,10 +61,11 @@ var TextInput = exports = Class(Widget, function(supr) {
 			}), true);
 		}
 
-		if (!this._opts.prefixLabel || this._opts.placeholder) {
+		var opts = this._opts
+		if (!opts.prefixLabel || opts.placeholder) {
 			var label = this.getI18n('label');
 			if (this._input.getAttribute('placeholder') === null) {
-				this._input.setAttribute('placeholder', this._opts.placeholder || label);
+				this._input.setAttribute('placeholder', opts.placeholder || label);
 			} else {
 				this._placeholder = $.create({
 					tag: 'button',
@@ -200,6 +202,8 @@ var TextInput = exports = Class(Widget, function(supr) {
 			this.addClass('disabled');
 		}
 	}
+
+	this.isEnabled = function () { return this._isEnabled; }
 
 	this.disable = function () { this.setEnabled(false); }
 	this.enable = function () { this.setEnabled(true); }

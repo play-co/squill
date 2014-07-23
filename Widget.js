@@ -2,6 +2,9 @@ from util.browser import $;
 import .Element, .Events, .global;
 import .i18n;
 import .Delegate;
+import .models.Model as Model;
+import .models.bindings as bindings;
+
 from .__imports__ import classes as WIDGET_CLASSES;
 
 var uid = 0;
@@ -21,6 +24,8 @@ var WidgetSet = Class(function () {
 		this._target = target;
 		this.events = [];
 	}
+
+	this.getTarget = function () { return this._target; }
 
 	this.hasWidget = function (id) { return !!this._target[id]; };
 
@@ -88,6 +93,8 @@ var Widget = exports = Class([Element, Events], function() {
 		var def = this._def = this.__getDef__();
 
 		this._id = def.id;
+
+		this.__model = new Model(def.model);
 
 		// className merges
 		if (def.className) {
