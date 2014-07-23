@@ -472,6 +472,10 @@ var Widget = exports = Class([Element, Events], function() {
 		$.remove(this.getElement());
 	};
 
+	this.getModel = function () {
+		return this.__model;
+	}
+
 	this.putHere = function() {
 		if(!this._el) { this.build(); }
 
