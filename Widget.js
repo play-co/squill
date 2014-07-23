@@ -41,8 +41,6 @@ var Widget = exports = Class([Element, Events], function() {
 	this._css = 'widget';
 	this._name = '';
 
-	var CHECK_PARENT = {};
-
 	this.__getDef__ = function () {
 		var cls = this.constructor;
 		var def = {};
@@ -286,7 +284,7 @@ var Widget = exports = Class([Element, Events], function() {
 		if (children) {
 			if (el.buildChildren) {
 				if (!result) { result = new WidgetSet(el); }
-				el.buildChildren(children, result);
+				el.buildChildren(children, null, result);
 			} else {
 				for (var i = 0, c; c = children[i]; ++i) {
 					this.addWidget(c, el, result);
@@ -330,7 +328,7 @@ var Widget = exports = Class([Element, Events], function() {
 		if (def.children) {
 			var localRes = new WidgetSet(this);
 			for (var i = def.children.length - 1; i >= 0; --i) {
-				this.buildChildren(def.children[i], localRes);
+				this.buildChildren(def.children[i], null, localRes);
 			}
 		}
 
@@ -339,20 +337,19 @@ var Widget = exports = Class([Element, Events], function() {
 
 		// opts items sometimes go on the widget
 		if (opts.children) {
-			this.buildChildren(opts.children, result);
+			this.buildChildren(opts.children, null, result);
 		}
+
+		if (opts.data && this.setValue) { bindings.parseData(this, opts.data); }
 
 		this.buildWidget(this._el, result);
 	};
 
-	this.buildChildren = function (children, result) {
-		var parent = this.getContainer() || this._el;
+	this.buildChildren = function (children, parent, result) {
+		if (!parent) { parent = this.getContainer() || this._el; }
+
 		for (var i = 0, n = children.length; i < n; ++i) {
-			if (children[i] == CHECK_PARENT) {
-				parent = this.getContainer() || this._el;
-			} else {
-				this.addWidget(children[i], parent, result);
-			}
+			this.addWidget(children[i], parent, result);
 		}
 	};
 
@@ -464,9 +461,8 @@ var Widget = exports = Class([Element, Events], function() {
 	}
 
 	this.remove = function() {
-		this.onBeforeHide();
+		this.hide();
 		$.remove(this.getElement());
-		this.onHide();
 	};
 
 	this.putHere = function() {
@@ -493,8 +489,6 @@ var Widget = exports = Class([Element, Events], function() {
 		}
 		return this;
 	};
-
-	this.onclick = function(f) { $.onEvent(this._el, 'click', f); return this; };
 });
 
 var map = {};

@@ -33,13 +33,17 @@ var Dialog = exports = Class(Widget, function(supr) {
 
 	this.getContainer = function () { return this._container; }
 
-	this.buildWidget = function (el, result) {
+	this.buildWidget = function (el, scope) {
 		if (this._opts.title) {
 			this.setTitle(this._opts.title);
 		}
 
 		if (this._opts.footer) {
-			this.buildFooter(this._opts.footer, result);
+			this.buildChildren(this._opts.footer, this._footer, scope);
+		}
+
+		if (this._opts.header) {
+			this.buildChildren(this._opts.header, this._header, scope);
 		}
 
 		this._isModal = !!this._opts.isModal;
@@ -53,12 +57,6 @@ var Dialog = exports = Class(Widget, function(supr) {
 
 		this.initDragEvents(this._titlebar);
 	}
-
-	this.buildFooter = function (children, result) {
-		for (var i = 0, n = children.length; i < n; ++i) {
-			this.addWidget(children[i], this._footer, result);
-		}
-	};
 
 	this.setTitle = function (title) { $.setText(this._titlebarText, title); }
 

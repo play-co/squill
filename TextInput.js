@@ -19,8 +19,6 @@ var TextInput = exports = Class(Widget, function(supr) {
 					value: opts.value,
 					name: opts.name
 				}, style: merge(opts.textStyle, {
-					// width: '100%',
-					// height: '100%',
 					MozBoxSizing: 'border-box',
 					WebkitBoxSizing: 'border-box',
 					MsBoxSizing: 'border-box',
