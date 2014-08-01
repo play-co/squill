@@ -468,8 +468,9 @@ var Widget = exports = Class([Element, Events], function() {
 	}
 
 	this.remove = function() {
-		this.hide();
+		this.onBeforeHide();
 		$.remove(this.getElement());
+		this.onHide();
 	};
 
 	this.getModel = function () {
