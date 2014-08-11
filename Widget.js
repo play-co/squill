@@ -134,7 +134,7 @@ var Widget = exports = Class([Element, Events], function() {
 		this.controller = opts.controller || widgetParent;
 
 		if (opts.parent) {
-			var parent = this._parent = opts.parent;
+			var parent = opts.parent;
 			var isWidgetParent = parent instanceof Widget;
 			if (isWidgetParent) {
 				if (!widgetParent) {
@@ -175,7 +175,7 @@ var Widget = exports = Class([Element, Events], function() {
 		return this;
 	}
 
-	this.getParent = function() { return this._parent; };
+	this.getParent = function() { return this._el.parentNode; };
 	this.getWidgetParent = function () { return this._widgetParent; }
 
 	this.setWidgetParent = function (parent) {
@@ -185,19 +185,6 @@ var Widget = exports = Class([Element, Events], function() {
 			this._widgetParent = parent;
 		}
 	}
-
-	this.setParent = function(parent) {
-		this._parent = parent;
-		var el = parent && (parent.getContainer && parent.getContainer() || parent.appendChild && parent);
-		if (el) {
-			if (!this._el) {
-				this._opts.parent = el;
-				this.build();
-			} else {
-				el.appendChild(this._el);
-			}
-		}
-	};
 
 	this.getChildren = function() {
 		return this._children;
@@ -470,7 +457,6 @@ var Widget = exports = Class([Element, Events], function() {
 	this.remove = function() {
 		this.onBeforeHide();
 		$.remove(this.getElement());
-		this._parent = null;
 		this.onHide();
 	};
 
@@ -494,12 +480,22 @@ var Widget = exports = Class([Element, Events], function() {
 		el.parentNode.removeChild(el);
 	};
 
-	this.appendTo = function(parent) {
-		if(parent) {
-			var parent = $.id(parent);
-			if(!this._el) { this.build(); }
-			parent.appendChild(this._el);
+	this.appendTo =
+	this.setParent = function(parent) {
+		var el = parent
+			&& (parent.getContainer && parent.getContainer()
+					|| parent.appendChild && parent
+					|| $.id(parent));
+
+		if (el) {
+			if (!this._el) {
+				this._opts.parent = el;
+				this.build();
+			} else {
+				el.appendChild(this._el);
+			}
 		}
+
 		return this;
 	};
 });
