@@ -470,6 +470,7 @@ var Widget = exports = Class([Element, Events], function() {
 	this.remove = function() {
 		this.onBeforeHide();
 		$.remove(this.getElement());
+		this._parent = null;
 		this.onHide();
 	};
 
