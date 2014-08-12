@@ -175,7 +175,7 @@ var Widget = exports = Class([Element, Events], function() {
 		return this;
 	}
 
-	this.getParent = function() { return this._el.parentNode; };
+	this.getParent = function() { return this._el && this._el.parentNode; };
 	this.getWidgetParent = function () { return this._widgetParent; }
 
 	this.setWidgetParent = function (parent) {
