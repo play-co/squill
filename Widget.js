@@ -334,7 +334,7 @@ var Widget = exports = Class([Element, Events], function() {
 			this.buildChildren(opts.children, null, result);
 		}
 
-		if (opts.data && this.setValue) { bindings.parseData(this, opts.data); }
+		if (opts.data && this.setData) { bindings.parseData(this, opts.data); }
 
 		this.buildWidget(this._el, result);
 	};
@@ -462,6 +462,14 @@ var Widget = exports = Class([Element, Events], function() {
 
 	this.getModel = function () {
 		return this.__model;
+	}
+
+	this.setModel = function (path, value) {
+		if (arguments.length == 1) {
+			this.__model.setObject(path);
+		} else {
+			this.__model.set(path, value);
+		}
 	}
 
 	this.putHere = function() {

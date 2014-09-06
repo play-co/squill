@@ -39,6 +39,8 @@ var CheckBox = exports = Class(Widget, function(supr) {
 
 	this.setLabel = function (label) { $.setText(this.label, label); }
 	this.setName = function (name) { this.checkbox.name = name; }
+
+	this.setData =
 	this.setValue = function (value) { this.checkbox.checked = !!value; }
 
 	this.isChecked = function () { return this.checkbox.checked; }

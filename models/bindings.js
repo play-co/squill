@@ -15,6 +15,7 @@ exports.parseFormat = function (widget, format) {
     });
   });
 
+  subs.reverse();
   new Binding(widget, null, format, subs);
 }
 
@@ -80,11 +81,11 @@ var Binding = Class(function () {
       str = str.substring(0, sub.index) + sub.value + str.substring(sub.endIndex);
     }, this);
 
-    this._widget.setValue(str);
+    this._widget.setData(str);
   }
 
   this._updateKey = function (value) {
-    this._widget.setValue(value);
+    this._widget.setData(value);
   }
 
   this._updateModel = function (value) {

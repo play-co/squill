@@ -92,7 +92,9 @@ var TextInput = exports = Class(Widget, function(supr) {
 		if (this._input) { this._input.name = name; }
 	}
 
-	this.setValue = function(value) {
+	this.setValue = function (value) {
+		if (value === undefined) { value = ""; }
+
 		this.saveSelection();
 		this._value = this._input.value = value;
 		this.restoreSelection();

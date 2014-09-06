@@ -26,7 +26,8 @@ var List = exports = Class(Widget, function(supr) {
 		if (opts.dataSource) { this.setDataSource(opts.dataSource); }
 		if (opts.sorter) { this.setSorter(opts.sorter); }
 
-		this._lastFilter = -1;
+		this._lastFilter = null;
+
 		this._filter = opts.filter;
 		this._cellsByID = {};
 		this._removed = {};
@@ -39,14 +40,14 @@ var List = exports = Class(Widget, function(supr) {
 		};
 
 		this.updateFilter = delay(function() {
-			this._lastFilter = -1;
+			this._lastFilter = null;
 			this.needsRender();
 		}, 100);
 
 		supr(this, 'init', [opts]);
 
 		if (opts.__result) {
-			opts.__result.addSubscription(this, 'change');
+			opts.__result.addSubscription(this, 'select');
 		}
 
 		Window.get().on('ViewportChange', bind(this, 'needsRender'));
@@ -59,6 +60,37 @@ var List = exports = Class(Widget, function(supr) {
 
 	this.getDataSource = function() {
 		return this._dataSource;
+	};
+
+	this.setModel = function (path, value) {
+		if (arguments.length == 1) {
+			this.setDataSource(arguments[0]);
+		} else {
+			return supr(this, 'setModel', arguments);
+		}
+	};
+
+	this.setData = function (data) {
+		if (!this._dataSource) {
+			this.setDataSource(new DataSource({sorter: this._sorter}));
+		} else {
+			this._dataSource.clear();
+		}
+
+		if (data) {
+			var items;
+			if (Array.isArray(data)) {
+				items = data.map(function (data, index) { return {id: index, data: data}; });
+			} else {
+				items = Object.keys(data).map(function (key) {
+					return {id: key, data: data[key]};
+				});
+			}
+
+			this._dataSource.add(items);
+		}
+
+		this.needsRender();
 	};
 
 	this.setDataSource = function(dataSource) {
@@ -79,7 +111,7 @@ var List = exports = Class(Widget, function(supr) {
 
 	this.onUpdateItem = function(id, item) {
 		var cell = this._cellsByID[id];
-		if (cell && cell.getData() != item) { cell.setData(item); }
+		if (cell && cell.getItem() != item) { cell.setItem(item); }
 		this.updateFilter();
 	};
 
@@ -129,9 +161,9 @@ var List = exports = Class(Widget, function(supr) {
 		if (this._cellsByID[id] !== undefined) {
 			this._cellsByID[id].updateSelected();
 
-            if (isSelected) {
-                this.publish('change', id);
-            }
+			if (isSelected) {
+				this.publish('select', id);
+			}
 		}
 	};
 
@@ -167,6 +199,9 @@ var List = exports = Class(Widget, function(supr) {
 
 	this.setSorter = function(sorter) {
 		this._sorter = sorter;
+		if (this._renderedDataSource) {
+			this._renderedDataSource.setSorter(sorter);
+		}
 	};
 
 	// Filter moved to DataSource...
@@ -179,30 +214,25 @@ var List = exports = Class(Widget, function(supr) {
 		this._opts.isFixedHeight = isFixedHeight;
 	};
 
-	// Filter moved to DataSource...
-	this._applyFilter = function() {
-		var filter = this._filter;
-		var ds = this._renderedDataSource = new DataSource({key: this._dataSource.getKey()});
-		var src = this._dataSource;
-		for (var i = 0, n = src.length; i < n; ++i) {
-			var item = src.getItemForIndex(i);
-			var match = true;
-			for (var key in filter) {
-				if (filter[key] instanceof RegExp) {
-					if (!item[key].match(filter[key])) {
-						match = false;
-					}
-				} else if (typeof item[key] == 'string'
-						&& item[key].toLowerCase().indexOf(filter[key]) == -1) {
-					match = false;
-				}
-			}
+	this._applyDataSource = function() {
+		if (this._filter != this._lastFilter) {
+			this._lastFilter = this._filter;
+			this._renderedDataSource = this._dataSource.getFilteredDataSource(bind(this, this._filter));
 
-			if (match) {
-				ds.add(item);
+			this._lastSorter = this._sorter;
+			this._renderedDataSource.setSorter(this._sorter);
+		} else if (this._sorter != this._lastSorter) {
+			if (!this._renderedDataSource || this._renderedDataSource == this._dataSource) {
+				this._filter = function () { return true; };
+				return this._applyDataSource();
 			} else {
-				this._removed[item[ds.key]] = true;
+				this._lastSorter = this._sorter;
+				this._renderedDataSource.setSorter(this._sorter);
 			}
+		}
+
+		if (!this._renderedDataSource) {
+			this._renderedDataSource = this._dataSource;
 		}
 	};
 
@@ -211,12 +241,8 @@ var List = exports = Class(Widget, function(supr) {
 	// just render all cells for now
 	this.render = function() {
 		if (!this._dataSource) { return; }
-		this._dataSource.sort();
-
-		if (this._filter != this._lastFilter || !this._renderedDataSource) {
-			this._lastFilter = this._filter;
-			this._applyFilter();
-		}
+		this._applyDataSource();
+		this._renderedDataSource.sort();
 
 		if (this._opts.renderAll) {
 			this.renderAllDelayed();
@@ -237,9 +263,9 @@ var List = exports = Class(Widget, function(supr) {
 		if (this._cellDim) { return this._cellDim; }
 
 		if (this._opts.isFixedHeight) {
-			var item = this._dataSource.getItemForIndex(0);
+			var item = this._renderedDataSource.getItemForIndex(0);
 			if (!item) { return false; }
-			var key = item[this._dataSource.getKey()],
+			var key = item[this._renderedDataSource.getKey()],
 				cell = this._cellsByID[key] || (this._cellsByID[key] = this._createCell(item)),
 				dim = $.size(cell.getElement());
 			if (dim.width == 0 || dim.height == 0) { return null; }
@@ -263,7 +289,7 @@ var List = exports = Class(Widget, function(supr) {
 				parent: this,
 				controller: this,
 				key: key,
-				data: item
+				item: item
 			});
 
 		cell.getElement().setAttribute('squill-data-id', item[key]);

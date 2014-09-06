@@ -8,7 +8,7 @@ var Cell = exports = Class(Widget, function(supr) {
 	this.init = function (opts) {
 		supr(this, 'init', arguments);
 
-		if (opts.data) { this.setData(opts.data); }
+		if (opts.item) { this.setItem(opts.item); }
 	}
 
 	this.buildWidget = function(el) {
@@ -27,13 +27,12 @@ var Cell = exports = Class(Widget, function(supr) {
 		this._widgetParent.selection && this._widgetParent.selection.deselect(this._data);
 	};
 
-	this.setData = function(data) {
-		this._data = data; this.updateSelected();
+	this.setItem = function(item) {
+		this._item = this._data = item; this.updateSelected();
 	};
 
-	this.getData = function() {
-		return this._data;
-	};
+	this.getItem = function () { return this._item; };
+	this.getData = function() { return this._item; };
 
 	this.render = function() {}
 

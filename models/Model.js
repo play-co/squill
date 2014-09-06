@@ -40,8 +40,9 @@ var Model = exports = Class(lib.PubSub, function (supr) {
 
   this.setObject = function (obj) {
     this._data = obj;
-
+    this.emit();
     this.persist();
+    return this;
   }
 
   this.toObject = function () {
@@ -106,21 +107,28 @@ var Model = exports = Class(lib.PubSub, function (supr) {
     }
 
     this.persist();
+    return this;
   }
 
   this.emit = function (path, value) {
-    supr(this, 'emit', arguments);
+    if (path) {
+      supr(this, 'emit', arguments);
+    }
 
-    Object.keys(this._subscribers).forEach(function (key) {
-      if (key != path && matchPath(key, path)) {
-        supr(this, 'emit', [key, this.get(key)]);
-      }
-    }, this);
+    if (this._subscribers) {
+      Object.keys(this._subscribers).forEach(function (key) {
+        if (!path || key != path && matchPath(key, path)) {
+          supr(this, 'emit', [key, this.get(key)]);
+        }
+      }, this);
+    }
+    return this;
   }
 
   this.persist = function () {
     if (this._storageKey) {
       localStorage.setItem(this._storageKey, JSON.stringify(this._data));
     }
+    return this;
   }
 });
