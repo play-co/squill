@@ -50,6 +50,10 @@ var Menu = exports = Class(Widget, function(supr) {
           return true;
         }
 
+        if (/squill-checkbox/.test(el.className)) {
+          return false;
+        }
+
         el = el.parentNode;
       }
 
@@ -58,11 +62,11 @@ var Menu = exports = Class(Widget, function(supr) {
       e.stopImmediatePropagation && e.stopImmediatePropagation();
       e.stopPropagation && e.stopPropagation();
       e.cancelBubble = true;
-      return false;
+      return true;
     });
 
     var clickHandler = bind(this, function (e) {
-      if (!eventHandler(e)) {
+      if (eventHandler(e)) {
         this.hide();
 
         untrapIframes();
@@ -118,10 +122,6 @@ function trapIframes() {
 
 function untrapIframes() {
   _trappedFrames.forEach(function (item) {
-    if (item.set) {
-      item.el.style.pointerEvents = item.set;
-    } else {
-      item.el.style.pointerEvents = void(0);
-    }
+    item.el.style.pointerEvents = item.set;
   });
 }
