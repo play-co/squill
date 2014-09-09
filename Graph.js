@@ -1,5 +1,3 @@
-"use import";
-
 from util.browser import $;
 import .Widget;
 
@@ -8,7 +6,7 @@ import .hint as hint;
 var Graph = exports = Class(Widget, function(supr) {
 	this._css = 'cnvs';
 	this._type = 'canvas';
-	
+
 	this.init = function(opts) {
 		params = merge(opts, {tag: 'canvas'});
 		supr(this, 'init', arguments);
@@ -36,7 +34,7 @@ var Graph = exports = Class(Widget, function(supr) {
 			if ((evt.offsetX >= rectangle.x1) && (evt.offsetY >= rectangle.y1) &&
 				(evt.offsetX <= rectangle.x2) && (evt.offsetY <= rectangle.y2)) {
 				found = true;
-				break;	
+				break;
 			}
 		}
 

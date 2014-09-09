@@ -1,7 +1,6 @@
 /*jsio('import lib.PubSub as PubSub');
 jsio('from util.browser import $');
 jsio('from util.underscore import _');
-jsio('import std.js as JS');
 
 function shallowCopy(p) {
 	var o = {};

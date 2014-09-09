@@ -1,5 +1,3 @@
-"use import";
-
 import lib.PubSub as PubSub;
 
 var BasicDataSource = exports = Class(PubSub, function(supr) {

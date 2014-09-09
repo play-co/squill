@@ -1,12 +1,10 @@
-"use import";
-
 from util.browser import $;
 
 import .Widget;
 
 var elementIDPrefix = 0;
 
-var TreeList = exports = Class(Widget, function(supr) {	
+var TreeList = exports = Class(Widget, function(supr) {
 	var defaults = {
 		key: 'id',
 		label: 'title',
@@ -310,7 +308,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 		var treeItem = this._itemByKey[key];
 		var lastChild;
 		var treeParent;
-		
+
 		if (treeItem) {
 			lastChild = (treeItem.parent.children.length <= 1);
 			treeParent = item[this._dataSource.parentKey];

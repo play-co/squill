@@ -1,10 +1,8 @@
-"use import";
-
 /**
  * A remark about the implementation of this persistence handler:
  *
  * All data which is initially loaded here is kept and updated, which is
- * actually a duplicate function of the dataSource. This is done to make the 
+ * actually a duplicate function of the dataSource. This is done to make the
  * saving to the server as a single chunk of data easy. The commit sends all
  * data to the server.
  *
@@ -85,7 +83,7 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 					if (err) {
 						errorMessage = err;
 					}
-					
+
 					if (!errorMessage) {
 						try {
 							receivedData = JSON.parse(response);

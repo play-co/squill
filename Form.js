@@ -1,21 +1,20 @@
-jsio('import std.js as JS');
-jsio('import .Element');
-jsio('import .Widget');
+import .Element;
+import .Widget;
 
 exports = Class(Widget, function(supr) {
-	
+
 	this.isValid = true;
 
 	this.init = function(opts) {
-		opts = JS.merge(opts, {});
+		opts = merge(opts, {});
 		supr(this, 'init', [opts]);
-		
+
 		this._items = [];
 		if (opts.items) {
 			this.addItems(opts.items);
 		}
 	}
-	
+
 	this.buildContent = function() {
 		this.each(bind(this, function(item) {
 			if ($.isElement(item)) {
@@ -36,13 +35,13 @@ exports = Class(Widget, function(supr) {
 		}));
 		return this.isValid;
 	}
-	
+
 	this.each = function(cb) {
  		for(var i = 0, w; w = this._items[i]; ++i ){
 			cb(w);
 		}
 	}
-		
+
 
 	this.addItems = function(items) {
 		for(var i = 0, len = items.length; i < len; ++i) {
@@ -50,7 +49,7 @@ exports = Class(Widget, function(supr) {
 			this.add(def);
 		}
 	}
-	
+
 	this.add = function(item) {
 		if ($.isElement(item)) {
 			if (this._el) {
@@ -70,11 +69,11 @@ exports = Class(Widget, function(supr) {
 			logger.warn('unknown item could not be added to form');
 			return;
 		}
-		
+
 		this._items.push(item);
 	}
-	
+
 	this.removeByName = function(name) {
-		
+
 	}
 });

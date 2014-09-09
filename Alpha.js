@@ -1,5 +1,3 @@
-"use import";
-
 from util.browser import $;
 import .Widget;
 

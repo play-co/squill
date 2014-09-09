@@ -1,5 +1,3 @@
-"use import";
-
 import lib.Callback;
 
 var _cache = {};
@@ -19,21 +17,21 @@ exports.getGroups = function() { return _groups; }
 
 // The callback is called for each image in the group with the image
 // source that loaded and whether there was an error.
-// 
+//
 // function callback(lastSrc, error, isComplete, numCompleted, numTotal)
 //    where error is true or false and isComplete is true when numCompleted == numTotal
 //
 exports.load = function(groupName, cb) {
 	var group = _groups[groupName];
 	if (!group || !group.length) { return logger.error('unknown group', groupName); }
-	
+
 	var i = 0;
 	var load = function() {
 		var src = group[i];
 		var img = exports.get(src, false, true);
 		var n = group.length;
 		++i;
-		
+
 		var next = function(failed) {
 			img.onload = img.onerror = null;
 			cb && cb(src, failed, i == n, i, n);
@@ -43,7 +41,7 @@ exports.load = function(groupName, cb) {
 				callback.fire(groupName);
 			}
 		};
-		
+
 		if (img.complete && i < n) {
 			next(img.failed);
 		} else {
@@ -51,7 +49,7 @@ exports.load = function(groupName, cb) {
 			img.onerror = function() { img.failed = true; next(true); };
 		}
 	};
-	
+
 	var callback = new lib.Callback();
 	setTimeout(load, 0);
 	return callback;
@@ -59,16 +57,16 @@ exports.load = function(groupName, cb) {
 
 exports.get = function(src, copy, noWarn) {
 	if (!copy && _cache[src]) { return _cache[src]; }
-	
+
 	var img = new Image();
 	if (Image.get) { var b64 = Image.get(src); }
-	
+
 	if (b64) {
 		img.src = b64;
 	} else {
 		if (!noWarn) { logger.warn(src, 'may not be properly cached!'); }
 		img.src = src;
 	}
-	
+
 	return (_cache[src] = img);
 }

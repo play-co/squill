@@ -1,5 +1,3 @@
-"use import";
-
 import lib.PubSub;
 
 exports = Class(lib.PubSub, function() {

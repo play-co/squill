@@ -1,5 +1,3 @@
-"use import";
-
 from util.browser import $;
 
 import .Widget;
@@ -112,7 +110,7 @@ function showMenu(menu, x, y) {
 				text: option.title,
 				className: className
 			});
-			
+
 			element.onclick = clickOption;
 			element.optionIndex = i;
 		}

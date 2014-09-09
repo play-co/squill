@@ -1,5 +1,3 @@
-"use import";
-
 from util.browser import $;
 
 var vendor = (/webkit/i).test(navigator.appVersion) ? 'webkit' :
@@ -14,7 +12,7 @@ if (hasTransform) {
 	exports.setLeft = function(el, left) {
 		el.style[vendor + 'Transform'] = translateStart + left + 'px,0' + translateEnd;
 	}
-	
+
 	exports.setTop = function(el, top) {
 		el.style[vendor + 'Transform'] = translateStart + '0,' + top + 'px' + translateEnd;
 	}
@@ -22,7 +20,7 @@ if (hasTransform) {
 	exports.setLeft = function(el, left) {
 		el.style.left = left + 'px';
 	}
-	
+
 	exports.setTop = function(el, top) {
 		el.style.top = top + 'px';
 	}
@@ -38,7 +36,7 @@ exports.onTransitionEnd = function(el, cb) {
 		}
 		cb();
 	}
-	
+
 	var evts = [
 		$.onEvent(el, 'webkitTransitionEnd', finished),
 		$.onEvent(el, 'transitionend', finished),
@@ -62,9 +60,9 @@ exports.setTransition = function(el, transition, cb) {
 exports.rotate = function(el, rotation, transition, cb) {
 	if (!hasTransform) { cb && cb(); return; }
 	exports.setTransition(el, transition, cb);
-	
+
 	el.style[vendor + 'Transform'] = 'rotate(' + rotation + ')';
-	
+
 	if (cb && !transition) { cb(); }
 }
 

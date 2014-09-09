@@ -1,5 +1,3 @@
-"use import";
-
 from util.browser import $;
 import .Widget;
 
@@ -155,11 +153,11 @@ var Slider = exports = Class(Widget, function(supr) {
 		this._mouseDown = true;
 		this._checkMouse(evt);
 	};
-	
+
 	this._onMouseUp = function(evt) {
 		this._mouseDown = false;
 	};
-	
+
 	this._onMouseMove = function(evt) {
 		this._checkMouse(evt);
 	};

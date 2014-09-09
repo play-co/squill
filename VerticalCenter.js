@@ -1,5 +1,3 @@
-"use import";
-
 import .Widget;
 from util.browser import $;
 
@@ -16,6 +14,6 @@ exports = Class(Widget, function() {
 			]})
 		]
 	};
-	
+
 	this.addElement = function() { this.contentPane.appendChild(el); }
 });

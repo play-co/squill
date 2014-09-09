@@ -1,8 +1,6 @@
-"use import";
-
 import lib.PubSub as PubSub;
 
-var BasicPersistanceHandler = exports = Class(PubSub, function(supr) {	
+var BasicPersistanceHandler = exports = Class(PubSub, function(supr) {
 	this.init = function(opts) {
 		supr(this, 'init', arguments);
 

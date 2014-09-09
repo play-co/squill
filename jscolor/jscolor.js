@@ -1,5 +1,3 @@
-"use import";
-
 /**
  * jscolor, JavaScript Color Picker
  *

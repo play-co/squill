@@ -1,11 +1,9 @@
-"use import";
-
 import .BasicPersistenceHandler as BasicPersistenceHandler;
 
-var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(supr) {	
+var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function(supr) {
 	this.init = function(opts) {
 		supr(this, 'init', arguments);
-		
+
 		this._storageKey = opts.storageKey;
 	}
 

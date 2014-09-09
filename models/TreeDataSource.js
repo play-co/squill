@@ -1,5 +1,3 @@
-"use import";
-
 import .BasicDataSource as BasicDataSource;
 
 var TreeDataSourceNode = Class(function() {
@@ -306,7 +304,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 			parentKey: 'parent',
 			items: [
 				{id: 1, parent: null, title: 'Example item 0', test: 'A'},
-		
+
 				{id: 2, parent: 1, title: 'Example item 1', test: 'B'},
 				{id: 3, parent: 1, title: 'Example item 2', test: 'C'},
 
@@ -358,7 +356,7 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
 	this.beginChanges = function() {
 		this._changeDataSave = true;
 		this._changeData = {
-			updated: [], 
+			updated: [],
 			updatedHash: {},
 			removed: [],
 			removedHash: {}

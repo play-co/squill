@@ -1,5 +1,3 @@
-"use import";
-
 import lib.Callback;
 import .BasicDataSource as BasicDataSource;
 
