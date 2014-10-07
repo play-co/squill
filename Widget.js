@@ -94,7 +94,7 @@ var Widget = exports = Class([Element, Events], function() {
 
 		this._id = def.id;
 
-		this.__model = new Model(def.model);
+		this.__model = new Model(opts.model || def.model);
 
 		// className merges
 		if (def.className) {
@@ -206,7 +206,7 @@ var Widget = exports = Class([Element, Events], function() {
 	};
 
 	this.dispatchEvent = function (id, evt) {
-		this.delegate.call(this, id, evt);
+		this.delegate.apply(this, arguments);
 	};
 
 	this.addElement = function (el) {
@@ -470,6 +470,8 @@ var Widget = exports = Class([Element, Events], function() {
 		} else {
 			this.__model.set(path, value);
 		}
+
+		return this;
 	}
 
 	this.putHere = function() {

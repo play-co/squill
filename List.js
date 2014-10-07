@@ -162,7 +162,7 @@ var List = exports = Class(Widget, function(supr) {
 			this._cellsByID[id].updateSelected();
 
 			if (isSelected) {
-				this.publish('select', id);
+				this.publish('select', id, item);
 			}
 		}
 	};

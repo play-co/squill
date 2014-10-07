@@ -5,15 +5,27 @@ var Model = exports = Class(lib.PubSub, function (supr) {
   this.init = function (opts) {
     var obj;
 
+    if (opts instanceof Model) {
+      var cloneFrom = opts;
+      opts = {
+        localStorage: cloneFrom._storageKey
+      };
+
+      obj = cloneFrom._data;
+    }
+
     this._data = {};
 
     if (opts && opts.localStorage) {
       this._storageKey = opts.localStorage;
-      var raw = localStorage.getItem(this._storageKey);
-      if (raw) {
-        try {
-          obj = JSON.parse(raw);
-        } catch (e) {}
+
+      if (obj === undefined) {
+        var raw = localStorage.getItem(this._storageKey);
+        if (raw) {
+          try {
+            obj = JSON.parse(raw);
+          } catch (e) {}
+        }
       }
     }
 
