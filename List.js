@@ -185,10 +185,12 @@ var List = exports = Class(Widget, function(supr) {
 		this._cellDim = null;
 	};
 
+	this.getCell =
 	this.getCellById = function(id) {
 		return this._cellsByID[id];
 	};
 
+	this.setCell =
 	this.setCellForId = function (id, cell) {
 		this._cellsByID[id] = cell;
 	}
