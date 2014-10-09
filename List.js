@@ -351,6 +351,11 @@ var List = exports = Class(Widget, function(supr) {
 		}
 
 		function renderMany() {
+			if (this._renderManyTimeout) {
+				clearTimeout(this._renderManyTimeout);
+				this._renderManyTimeout = void 0;
+			}
+
 			var THRESHOLD = 50; // ms to render
 			var n = 0, t = +new Date();
 			while (n++ < 10 || +new Date() - t < THRESHOLD) {
@@ -360,7 +365,7 @@ var List = exports = Class(Widget, function(supr) {
 				}
 			}
 
-			setTimeout(bind(this, renderMany), 100);
+			this._renderManyTimeout = setTimeout(bind(this, renderMany), 100);
 		}
 
 		var removed = this._removed;
