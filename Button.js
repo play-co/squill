@@ -92,6 +92,7 @@ var Button = exports = Class(Widget, function(supr) {
 		this.onBeforeShow();
 		this.getElement().style.display = 'inline-block';
 		this.onShow();
+		return this;
 	};
 
 	this.blur = function () { this._el && this._el.blur(); }

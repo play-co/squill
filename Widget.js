@@ -441,6 +441,7 @@ var Widget = exports = Class([Element, Events], function() {
 		}
 
 		this.onShow();
+		return this;
 	};
 
 	this.hide = function() {
