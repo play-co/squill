@@ -75,6 +75,8 @@ exports = Class(lib.PubSub, function(supr) {
 	this.init = function(params) {
 		this._isActive = false;
 	}
+	
+	this.isDragging = function () { return this._isActive; }
 
 	// data is an optional object that will be added to dragEvt.data.
 	// This allows the caller of startDrag to pass along arbitrary objects
