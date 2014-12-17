@@ -62,7 +62,7 @@ var Alpha = exports = Class(Widget, function(supr) {
 			$.onEvent(alphaGradient, 'mouseout', this, '_onMouseOut');
 
 			alphaIndicator = document.createElement('img');
-			alphaIndicator.src = 'img/colorpicker/arrow.gif';
+			alphaIndicator.src = 'images/colorpicker/arrow.gif';
 			alphaSelect.appendChild(alphaIndicator);
 
 			$.style(
