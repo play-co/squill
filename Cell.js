@@ -1,4 +1,6 @@
 import .Widget;
+import .models.DataItem as DataItem;
+
 from util.browser import $;
 
 var Cell = exports = Class(Widget, function(supr) {
@@ -8,7 +10,13 @@ var Cell = exports = Class(Widget, function(supr) {
 	this.init = function (opts) {
 		supr(this, 'init', arguments);
 
-		if (opts.item) { this.setItem(opts.item); }
+		if (opts.item) {
+			if (opts.item instanceof DataItem) {
+				this.setItem(opts.item.data, opts.item);
+			} else {
+				this.setItem(opts.item);
+			}
+		}
 	}
 
 	this.buildWidget = function(el) {
@@ -16,23 +24,26 @@ var Cell = exports = Class(Widget, function(supr) {
 	}
 
 	this.isSelected = function() {
-		return this._widgetParent.selection && this._widgetParent.selection.isSelected(this._data);
+		return this._widgetParent.selection && this._widgetParent.selection.isSelected(this._item);
 	};
 
 	this.select = function() {
-		this._widgetParent.selection && this._widgetParent.selection.select(this._data);
+		this._widgetParent.selection && this._widgetParent.selection.select(this._item);
 	};
 
 	this.deselect = function() {
-		this._widgetParent.selection && this._widgetParent.selection.deselect(this._data);
+		this._widgetParent.selection && this._widgetParent.selection.deselect(this._item);
 	};
 
-	this.setItem = function(item) {
-		this._item = this._data = item; this.updateSelected();
+	this.setItem = function(data, item) {
+		this.setModel(data);
+		this._data = data;
+		this._item = item || data;
+		this.updateSelected();
 	};
 
+	this.getData = function () { return this._data; };
 	this.getItem = function () { return this._item; };
-	this.getData = function() { return this._item; };
 
 	this.render = function() {}
 

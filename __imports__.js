@@ -16,7 +16,8 @@ exports.classes = {
 	treelist: '.TreeList',
 	graph: '.Graph',
 	select: '.SelectBox',
-	widget: '.Widget'
+	widget: '.Widget',
+	image: '.Image'
 };
 
 
@@ -30,4 +31,4 @@ exports.resolve = function(env, opts) {
 	}
 
 	return imports;
-}
+};

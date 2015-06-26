@@ -13,15 +13,29 @@ _activeDocuments.add = function (doc) {
 	$.addClass(doc.body, 'squill-drop-hover');
 
 	var n = this.length;
+	var docWrapper;
 	for (var i = 0; i < n; ++i) {
 		if (this[i].doc == doc) {
-			return this[i];
+			docWrapper = this[i];
+			break;
 		}
 	}
 
-	obj = {doc: doc};
-	this.push(obj);
-	return obj;
+	if (!docWrapper) {
+		docWrapper = {doc: doc};
+		this.push(docWrapper);
+	}
+
+	if (!docWrapper.handler) {
+		docWrapper.handler = $.onEvent(doc.body, 'mousedown', function () {
+			if (docWrapper.handler) {
+				docWrapper.handler();
+				docWrapper.handler = null;
+			}
+		});
+	}
+
+	return docWrapper;
 };
 
 _activeDocuments.remove = function (doc) {
@@ -57,7 +71,6 @@ _activeDocuments.clearTimeouts = function () {
 
 function registerDocument(doc) {
 	var body = doc.body;
-	var _timeout;
 	body.addEventListener("dragenter", cancelEvent, false);
 	body.addEventListener("dragover", function(e) {
 		var d = _activeDocuments.add(doc);
@@ -68,7 +81,7 @@ function registerDocument(doc) {
 	body.addEventListener("dragleave", function(e) {
 		_activeDocuments.add(doc).timeout = setTimeout(function () {
 			_activeDocuments.remove(doc);
-		})
+		});
 
 		return cancelEvent(e);
 	}, false);

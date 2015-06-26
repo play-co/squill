@@ -4,6 +4,7 @@ import .i18n;
 import .Delegate;
 import .models.Model as Model;
 import .models.bindings as bindings;
+import .transitions;
 
 from .__imports__ import classes as WIDGET_CLASSES;
 
@@ -213,6 +214,7 @@ var Widget = exports = Class([Element, Events], function() {
 		this._el.appendChild(el);
 	}
 
+	this.addChild =
 	this.addWidget = function(def, parent, result) {
 		if (!this._el) { this.build(); }
 
@@ -287,6 +289,14 @@ var Widget = exports = Class([Element, Events], function() {
 		}
 
 		return el;
+	};
+
+	this.removeChild = function (widget) {
+		if (widget.remove) {
+			widget.remove();
+		}
+
+		this.removeWidget(widget);
 	};
 
 	this.removeWidget = function (widget) {
@@ -432,23 +442,31 @@ var Widget = exports = Class([Element, Events], function() {
 	this.isShowing = function() { return this._isShowing; }
 
 	this.show = function() {
-		this.onBeforeShow();
+		var el = this.getElement();
+		var transition = new (this._opts.hideTransition || transitions.CSSTransition)({target: el});
+		this.onBeforeShow && transition.on('start', bind(this, 'onBeforeShow'));
+		transition.on('start', bind(this, function () {
+			var style = this._opts && this._opts.style;
+			var display = style && style.display != 'none' && style.display || '';
+			if (this._el) {
+				this._el.style.display = display;
+				if (getComputedStyle(this._el, 'display') == 'none') {
+					this._el.style.display = 'block';
+				}
+			}
+		}));
 
-		var style = this._opts && this._opts.style;
-		var display = style && style.display != 'none' && style.display || 'block';
-		if (this._el) {
-			this._el.style.display = display;
-		}
-
-		this.onShow();
-		return this;
+		this.onShow && transition.on('end', bind(this, 'onShow'));
+		return transition;
 	};
 
 	this.hide = function() {
-		this.onBeforeHide();
-		$.hide(this.getElement());
-		this.onHide();
-		return this;
+		var el = this.getElement();
+		var transition = new (this._opts.hideTransition || transitions.CSSTransition)({target: el});
+		this.onBeforeHide && transition.on('start', bind(this, 'onBeforeHide'));
+		transition.on('end', bind(this, function () { $.remove(el); }));
+		this.onHide && transition.on('end', bind(this, 'onHide'));
+		return transition;
 	};
 
 	this.removeChildren = function () {

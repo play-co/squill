@@ -23,6 +23,6 @@ exports = Class(squill.Widget, function() {
 	this.setData =
 	this.setValue =
 	this.setLabel =
-	this.setText = function(text) { if (/object/i.test(text)) debugger; $.setText(this._labelSpan, text); }
+	this.setText = function(text) { $.setText(this._labelSpan, text); }
 	this.setHTML = function(html) { this._labelSpan.innerHTML = html; }
 });

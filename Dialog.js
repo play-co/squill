@@ -1,10 +1,10 @@
 import .Widget;
-import .Events;
 import math.geom.Point as Point;
 from util.browser import $;
 import .Window;
+import .transitions;
 
-var Dialog = exports = Class(Widget, function(supr) {
+module.exports = Class(Widget, function(supr) {
 
 	this._def = {
 		draggable: true,
@@ -79,27 +79,22 @@ var Dialog = exports = Class(Widget, function(supr) {
 		}
 	}
 
-	this.fadeOut = function() {
-		var onFinish = bind(this, function() {
-			this.onHide();
-		});
-
-		this.onBeforeHide();
-		new Animation({
-			duration: 250,
-			subject: function(t) {
-				$.style(el, {opacity: 1 - t});
-			},
-			onFinish: onFinish
-		}).seekTo(1);
-	}
-
 	this.setIsModal = function (isModal) {
 		this._isModal = isModal;
 		if (this.isShowing()) {
 			this.showUnderlay();
 		}
 	}
+
+	this.center = function () {
+		var el = this.getElement();
+		var parent = el.parentNode;
+		if (!parent) { return; }
+
+		var container = parent.getBoundingClientRect();
+		el.style.left = Math.max(0, (container.width - el.offsetWidth) / 2) + 'px';
+		el.style.top = Math.max(0, (container.height - el.offsetHeight) / 2) + 'px';
+	};
 
 	this.show = function () {
 
@@ -114,38 +109,48 @@ var Dialog = exports = Class(Widget, function(supr) {
 			this.showUnderlay();
 		}
 
+		this.center();
+
 		return ret;
-	}
+	};
 
 	this.hide = function () {
-		var ret = supr(this, 'hide', arguments);
-
-		this.hideUnderlay();
-
-		return ret;
-	}
+		var transition = supr(this, 'hide', arguments);
+		transition.on('start', bind(this, 'hideUnderlay'));
+		return transition;
+	};
 
 	this.showUnderlay = function () {
-		if (!this._underlay) {
-			this._underlay = $({style: {
-				parent: document.body,
-				position: 'fixed',
-				top: '0px',
-				right: '0px',
-				bottom: '0px',
-				left: '0px',
-				background: 'rgba(0, 0, 0, 0.85)'
-			}});
+		var underlay = this._underlay;
+		if (!underlay) {
+			underlay = this._underlay = $({
+				className: 'squill-dialog-underlay',
+				style: {
+					parent: document.body,
+					position: 'fixed',
+					top: '0px',
+					right: '0px',
+					bottom: '0px',
+					left: '0px',
+					background: this._opts.underlayColor || 'rgba(0, 0, 0, 0.85)'
+				}
+			});
+
+			underlay.addEventListener('click', bind(this, 'hide'));
 		}
 
+		underlay.style.opacity = 0;
+		underlay.style.zIndex = getComputedStyle(this._el).zIndex - 1;
+		underlay.style.display = 'block';
 		this._el.parentNode.appendChild(this._underlay);
-		this._underlay.style.zIndex = getComputedStyle(this._el).zIndex - 1;
-		this._underlay.style.display = 'block';
-	}
+
+		transitions.cssFadeIn(underlay);
+	};
 
 	this.hideUnderlay = function () {
-		if (this._underlay) {
-			this._underlay.style.display = 'none';
+		var underlay = this._underlay;
+		if (underlay) {
+			transitions.cssFadeOut(underlay);
 		}
-	}
+	};
 });

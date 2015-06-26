@@ -26,8 +26,9 @@ var widgetNames = [
 	'PasswordInput',
 	'TextArea',
 	'TextLimitArea',
-	'Form'
-]
+	'Form',
+	'Image'
+];
 
 for (var i = 0, name; name = widgetNames[i]; ++i) {
 	logger.info('import .' + name);

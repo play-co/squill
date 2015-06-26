@@ -206,10 +206,11 @@ var TextInput = exports = Class(Widget, function(supr) {
 		}
 	}
 
-	this.isEnabled = function () { return this._isEnabled; }
+	this.isFocused = function () { return this._isFocused; };
+	this.isEnabled = function () { return this._isEnabled; };
 
-	this.disable = function () { this.setEnabled(false); }
-	this.enable = function () { this.setEnabled(true); }
+	this.disable = function () { this.setEnabled(false); };
+	this.enable = function () { this.setEnabled(true); };
 });
 
 var INVALID_VALUE = exports.INVALID_VALUE = {};

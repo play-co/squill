@@ -2,9 +2,10 @@ import .Window;
 import .Widget;
 from util.browser import $;
 import .models.DataSource as DataSource;
+import .models.DataItem as DataItem;
 import .Selection;
 
-var List = exports = Class(Widget, function(supr) {
+var List = module.exports = Class(Widget, function(supr) {
 
 	this._css = 'list';
 
@@ -28,7 +29,6 @@ var List = exports = Class(Widget, function(supr) {
 
 		this._lastFilter = null;
 
-		this._filter = opts.filter;
 		this._cellsByID = {};
 		this._removed = {};
 		this._containSelf = opts.containSelf;
@@ -39,6 +39,7 @@ var List = exports = Class(Widget, function(supr) {
 			cellSpacing: opts.cellSpacing || 0
 		};
 
+		this.setFilter(opts.filter);
 		this.updateFilter = delay(function() {
 			this._lastFilter = null;
 			this.needsRender();
@@ -80,10 +81,12 @@ var List = exports = Class(Widget, function(supr) {
 		if (data) {
 			var items;
 			if (Array.isArray(data)) {
-				items = data.map(function (data, index) { return {id: index, data: data}; });
+				items = data.map(function (data, index) {
+					return new DataItem(index, data);
+				});
 			} else {
 				items = Object.keys(data).map(function (key) {
-					return {id: key, data: data[key]};
+					return new DataItem(key, data[key]);
 				});
 			}
 
@@ -111,7 +114,17 @@ var List = exports = Class(Widget, function(supr) {
 
 	this.onUpdateItem = function(id, item) {
 		var cell = this._cellsByID[id];
-		if (cell && cell.getItem() != item) { cell.setItem(item); }
+		if (cell) {
+			var prevData = cell.getItem();
+			if (item instanceof DataItem) {
+				if (prevData !== item.data) {
+					cell.setItem(item.data, item);
+				}
+			} else if (prevData !== item) {
+				cell.setItem(item);
+			}
+		}
+
 		this.updateFilter();
 	};
 
@@ -162,7 +175,11 @@ var List = exports = Class(Widget, function(supr) {
 			this._cellsByID[id].updateSelected();
 
 			if (isSelected) {
-				this.publish('select', id, item);
+				if (item instanceof DataItem) {
+					this.emit('select', id, item.data);
+				} else {
+					this.emit('select', id, item);
+				}
 			}
 		}
 	};
@@ -200,7 +217,13 @@ var List = exports = Class(Widget, function(supr) {
 	};
 
 	this.setSorter = function(sorter) {
-		this._sorter = sorter;
+		if (sorter != this._rawSorter) {
+			this._rawSorter = sorter;
+			this._sorter = function (item) {
+				return sorter(item instanceof DataItem ? item.data : item);
+			};
+		}
+
 		if (this._renderedDataSource) {
 			this._renderedDataSource.setSorter(sorter);
 		}
@@ -208,7 +231,13 @@ var List = exports = Class(Widget, function(supr) {
 
 	// Filter moved to DataSource...
 	this.setFilter = function(filter) {
-		this._filter = filter;
+		if (filter != this._rawFilter) {
+			this._rawFilter = filter;
+			this._filter = function (item) {
+				return filter(item instanceof DataItem ? item.data : item);
+			};
+		}
+
 		this.needsRender();
 	};
 
@@ -219,7 +248,7 @@ var List = exports = Class(Widget, function(supr) {
 	this._applyDataSource = function() {
 		if (this._filter != this._lastFilter) {
 			this._lastFilter = this._filter;
-			this._renderedDataSource = this._dataSource.getFilteredDataSource(bind(this, this._filter));
+			this._renderedDataSource = this._dataSource.getFilteredDataSource(this._filter);
 
 			this._lastSorter = this._sorter;
 			this._renderedDataSource.setSorter(this._sorter);
@@ -286,8 +315,8 @@ var List = exports = Class(Widget, function(supr) {
 	};
 
 	this._createCell = function(item) {
-		var key = this._dataSource.getKey(),
-			cell = new this._cellCtor({
+		var key = this._dataSource.getKey();
+		var cell = new this._cellCtor({
 				parent: this,
 				controller: this,
 				key: key,
@@ -331,8 +360,8 @@ var List = exports = Class(Widget, function(supr) {
 	this.renderAllDelayed = function() {
 		var src = this._renderedDataSource;
 		if (!src) { return; }
+		if (!this.updateRenderOpts()) { return; }
 
-		this.updateRenderOpts();
 		var i = 0;
 		function renderOne() {
 			var item = src.getItemForIndex(i);
