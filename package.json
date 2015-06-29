@@ -1,7 +1,7 @@
 {
 	"name": "squill",
 	"author": "Game Closure",
-	"version": "0.0.3-beta-2",
+	"version": "0.0.3-beta-3",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/gameclosure/squill"
