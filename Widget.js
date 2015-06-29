@@ -464,7 +464,6 @@ var Widget = exports = Class([Element, Events], function() {
 		var el = this.getElement();
 		var transition = new (this._opts.hideTransition || transitions.CSSTransition)({target: el});
 		this.onBeforeHide && transition.on('start', bind(this, 'onBeforeHide'));
-		transition.on('end', bind(this, function () { $.remove(el); }));
 		this.onHide && transition.on('end', bind(this, 'onHide'));
 		return transition;
 	};
