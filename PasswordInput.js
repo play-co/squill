@@ -1,7 +1,7 @@
 jsio('import .TextInput, .Widget');
 
 var PasswordInput = exports = Class(TextInput, function(supr) {
-	this._type = 'password';
+  this._type = 'password';
 });
 
 
