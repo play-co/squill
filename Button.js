@@ -15,9 +15,9 @@ var Button = exports = Class(Widget, function(supr) {
   };
 
   this.create = function() {
-    this._opts.style = JS.merge(this._opts.style, {
+    this._opts.style = merge(this._opts.style, {
         whiteSpace: 'nowrap',
-        display: 'block'
+        display: 'inline-block'
       });
 
     supr(this, 'create', arguments);
@@ -86,13 +86,6 @@ var Button = exports = Class(Widget, function(supr) {
 
   this.onKeyUp = function(e) {
     if (e.keyCode == 13) { $.stopEvent(e); this.onMouseUp(); this.onClick(e); }
-  };
-
-  this.show = function() {
-    this.onBeforeShow();
-    this.getElement().style.display = 'inline-block';
-    this.onShow();
-    return this;
   };
 
   this.blur = function () { this._el && this._el.blur(); }

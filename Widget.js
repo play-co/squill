@@ -24,7 +24,7 @@ var WidgetSet = Class(function () {
   this.init = function (target) {
     this._target = target;
     this.events = [];
-  }
+  };
 
   this.getTarget = function () { return this._target; }
 
@@ -439,20 +439,25 @@ var Widget = exports = Class([Element, Events], function() {
     }
   };
 
-  this.isShowing = function() { return this._isShowing; }
+  this.isShowing = function() {
+    return this._visibleState == 'beforeVisible' || this._visibleState == 'visible';
+  };
 
   this.show = function() {
+    this._visibleState = 'beforeVisible';
+
     var el = this.getElement();
     var transition = new (this._opts.hideTransition || transitions.CSSTransition)({target: el});
     this.onBeforeShow && transition.on('start', bind(this, 'onBeforeShow'));
     transition.on('start', bind(this, function () {
       var style = this._opts && this._opts.style;
       var display = style && style.display != 'none' && style.display || '';
-      if (this._el) {
+      if (this._el && this._visibleState == 'beforeVisible') {
         this._el.style.display = display;
         if (getComputedStyle(this._el, 'display') == 'none') {
           this._el.style.display = 'block';
         }
+        this._visibleState = 'visible';
       }
     }));
 
@@ -461,10 +466,17 @@ var Widget = exports = Class([Element, Events], function() {
   };
 
   this.hide = function() {
+    this._visibleState = 'beforeHidden';
+
     var el = this.getElement();
     var transition = new (this._opts.hideTransition || transitions.CSSTransition)({target: el});
     this.onBeforeHide && transition.on('start', bind(this, 'onBeforeHide'));
-    transition.on('end', bind(this, function () { $.hide(el); }));
+    transition.on('end', bind(this, function () {
+      if (this._visibleState == 'beforeHidden') {
+        $.hide(el);
+      }
+    }));
+
     this.onHide && transition.on('end', bind(this, 'onHide'));
     return transition;
   };
