@@ -1,11 +1,11 @@
 jsio('import .Widget');
 jsio('from util.browser import $');
 
-var PillButtons = exports = Class(Widget, function(supr) {
+var defaults = {
+  className: 'pillButtons',
+};
 
-  var defaults = {
-    className: 'pillButtons',
-  };
+var PillButtons = exports = Class(Widget, function(supr) {
 
   this.init = function (opts) {
     opts = merge(opts, defaults);

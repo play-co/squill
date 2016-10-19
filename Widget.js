@@ -43,7 +43,15 @@ var WidgetSet = Class(function () {
   }
 });
 
-var Widget = exports = Class([Element, Events], function() {
+
+function _replaceNode(id) {
+  var el = $.id(id);
+  el.parentNode.insertBefore(this._el, el);
+  el.parentNode.removeChild(el);
+};
+
+
+var Widget = exports = Class(Element, function() {
   this._css = 'widget';
   this._name = '';
 
@@ -236,7 +244,8 @@ var Widget = exports = Class([Element, Events], function() {
 
       if (!opts.type || typeof opts.type == 'string') {
         if (WIDGET_CLASSES[opts.type]) {
-          var Constructor = jsio('import ' + WIDGET_CLASSES[opts.type]);
+          // var Constructor = jsio('import ' + WIDGET_CLASSES[opts.type]);
+          var Constructor = WIDGET_CLASSES[opts.type];
           el = new Constructor(opts);
         } else if (!result) {
           el = new Widget(opts);
@@ -515,12 +524,6 @@ var Widget = exports = Class([Element, Events], function() {
     return this;
   };
 
-  function _replaceNode(id) {
-    var el = $.id(id);
-    el.parentNode.insertBefore(this._el, el);
-    el.parentNode.removeChild(el);
-  };
-
   this.appendTo =
   this.setParent = function(parent) {
     var el = parent
@@ -540,6 +543,12 @@ var Widget = exports = Class([Element, Events], function() {
     return this;
   };
 });
+
+// Mix in Events
+// TODO: is this correct?
+for (let k in Events) {
+  Widget.prototype[k] = Events.prototype[k];
+}
 
 var map = {};
 var lowerCaseMap = {}

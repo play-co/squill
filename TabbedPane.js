@@ -143,9 +143,10 @@ var TabbedPane = exports = Class(Widget, function(supr) {
   };
 });
 
-exports.Pane = Class(Widget, function(supr) {
-  var sortID = 0;
 
+var sortID = 0;
+
+exports.Pane = Class(Widget, function(supr) {
   this.getTitle = function() { return this._opts.title; };
   this.init = function(opts) {
     this._sortIndex = ++sortID;

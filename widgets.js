@@ -16,24 +16,26 @@ function shallowCopy(p) {
 
 // for backwards compatibility'
 
-var widgetNames = [
-  'Widget',
-  'CheckBox',
-  'Button',
-  'TextButton',
-  'SubmitButton',
-  'TextInput',
-  'PasswordInput',
-  'TextArea',
-  'TextLimitArea',
-  'Form',
-  'Image'
-];
+throw new Error('Import squill widgets directly');
 
-for (var i = 0, name; name = widgetNames[i]; ++i) {
-  logger.info('import .' + name);
-  jsio('import .' + name, { context: exports });
-}
+// var widgetNames = [
+//   'Widget',
+//   'CheckBox',
+//   'Button',
+//   'TextButton',
+//   'SubmitButton',
+//   'TextInput',
+//   'PasswordInput',
+//   'TextArea',
+//   'TextLimitArea',
+//   'Form',
+//   'Image'
+// ];
 
-jsio('from .global import *', { context: exports })
-logger.info('exports!', exports);
+// for (var i = 0, name; name = widgetNames[i]; ++i) {
+//   logger.info('import .' + name);
+//   jsio('import .' + name, { context: exports });
+// }
+
+// jsio('from .global import *', { context: exports })
+// logger.info('exports!', exports);

@@ -1,16 +1,21 @@
 import lib.Callback;
 import .BasicDataSource as BasicDataSource;
 
+
+var defaults = {
+  key: 'id'
+};
+
+var toStringSort = function() {
+  return this._sortKey;
+};
+
+
 var DataSource = exports = Class(BasicDataSource, function(supr) {
-
-  var defaults = {
-    key: 'id'
-  };
-
   this.init = function(opts) {
-    this._opts = opts = merge(opts, defaults);
-
+    opts = merge(opts, defaults);
     supr(this, 'init', [opts]);
+    this._opts = opts;
 
     this._byIndex = [];
     this._byID = {};
@@ -85,9 +90,6 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
     }
   };
 
-  var toStringSort = function() {
-    return this._sortKey;
-  };
   // NEVER CHANGE THE ID OF AN ITEM WITHOUT REMOVING IT FROM THE DATASOURCE FIRST.
   // Love, Jeff Hubbard and Marcus Cavanaugh
 

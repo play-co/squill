@@ -4,14 +4,15 @@ import .Widget;
 
 var elementIDPrefix = 0;
 
-var TreeList = exports = Class(Widget, function(supr) {
-  var defaults = {
-    key: 'id',
-    label: 'title',
-    wrapperId: 'browser',
-    contentId: 'contentWrapper'
-  };
+var defaults = {
+  key: 'id',
+  label: 'title',
+  wrapperId: 'browser',
+  contentId: 'contentWrapper'
+};
 
+
+var TreeList = exports = Class(Widget, function(supr) {
   this.init = function(opts) {
     opts = opts || {};
     opts = merge(opts, defaults);

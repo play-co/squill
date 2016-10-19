@@ -158,12 +158,18 @@ var TreeDataSourceNode = Class(function() {
   };
 });
 
-var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
-  var defaults = {
-    key: 'id',
-    parentKey: 'parent'
-  };
 
+var defaults = {
+  key: 'id',
+  parentKey: 'parent'
+};
+
+var toStringSort = function() {
+  return this._sortKey;
+};
+
+
+var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
   this.init = function(opts) {
     opts = opts || {};
     opts = merge(opts, defaults);
@@ -206,10 +212,6 @@ var TreeDataSource = exports = Class(BasicDataSource, function(supr) {
         delete(this._nodeByKey[keyValue]);
         break;
     }
-  };
-
-  var toStringSort = function() {
-    return this._sortKey;
   };
 
   this.add = function(node) {

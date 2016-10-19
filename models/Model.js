@@ -1,5 +1,22 @@
 import lib.PubSub;
 
+
+function copy(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+var PATH_SEP = /[\[.,]/;
+function parsePath(path) {
+  return path.split(PATH_SEP).map(function (piece) {
+    return piece[piece.length - 1] == ']' ? parseInt(piece) : piece;
+  });
+}
+
+function matchPath(p1, p2) {
+  return p1.indexOf(p2) == 0 || p2.indexOf(p1) == 0;
+}
+
+
 var Model = exports = Class(lib.PubSub, function (supr) {
 
   this.init = function (opts) {
@@ -61,23 +78,8 @@ var Model = exports = Class(lib.PubSub, function (supr) {
     return copy(this._data);
   }
 
-  function copy(obj) {
-    return JSON.parse(JSON.stringify(obj));
-  }
-
   this.clone = function () {
     return new Model(this.getObject());
-  }
-
-  var PATH_SEP = /[\[.,]/;
-  function parsePath(path) {
-    return path.split(PATH_SEP).map(function (piece) {
-      return piece[piece.length - 1] == ']' ? parseInt(piece) : piece;
-    });
-  }
-
-  function matchPath(p1, p2) {
-    return p1.indexOf(p2) == 0 || p2.indexOf(p1) == 0;
   }
 
   this.has = function (path) { return this.get(path) !== undefined; }

@@ -1,6 +1,17 @@
 jsio('import lib.PubSub');
 
-exports.Poller = new (Class(lib.PubSub, function() {
+function pollHash() {
+  try {
+    var i = window.location.href.indexOf('#');
+    var tag = i > 0 ? window.location.href.substring(i + 1).toLowerCase() : '';
+    if(tag && tag !== this._lastTag) {
+      this.publish('Change', tag, this._lastTag);
+      this._lastTag = tag;
+    }
+  } catch(e) {}
+}
+
+var Poller = Class(lib.PubSub, function() {
   
   this._lastTag = null;
   
@@ -11,18 +22,9 @@ exports.Poller = new (Class(lib.PubSub, function() {
   }
   
   this.getPrev = function() { return this._lastTag; }
-  
-  function pollHash() {
-    try {
-      var i = window.location.href.indexOf('#');
-      var tag = i > 0 ? window.location.href.substring(i + 1).toLowerCase() : '';
-      if(tag && tag !== this._lastTag) {
-        this.publish('Change', tag, this._lastTag);
-        this._lastTag = tag;
-      }
-    } catch(e) {}
-  }
-}));
+});
+
+exports.Poller = new Poller;
 
 exports.BasicPager = Class(function() {
   this.init = function(prefix) {

@@ -2,10 +2,10 @@ from util.browser import $;
 import .Drag;
 import lib.PubSub;
 
-exports = Class(lib.PubSub, function() {
-  var SLICE = Array.prototype.slice;
+var SLICE = Array.prototype.slice;
+var isMobile = /(iPod|iPhone|iPad|Android)/i.test(navigator.userAgent);
 
-  var isMobile = /(iPod|iPhone|iPad|Android)/i.test(navigator.userAgent);
+exports = Class(lib.PubSub, function() {
 
   this.event = function(el, name, handler) {
     if (!this._eventEnabled) { this._eventEnabled = {}; }

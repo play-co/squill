@@ -20,9 +20,10 @@ exports = Class(squill.Widget, function() {
     }
   }
 
-  this.setData =
-  this.setValue =
-  this.setLabel =
   this.setText = function(text) { $.setText(this._labelSpan, text); }
   this.setHTML = function(html) { this._labelSpan.innerHTML = html; }
 });
+
+exports.prototype.setData = exports.prototype.setText;
+exports.prototype.setValue = exports.prototype.setText;
+exports.prototype.setLabel = exports.prototype.setText;
