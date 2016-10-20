@@ -1,17 +1,17 @@
-from util.browser import $;
-import squill.Widget;
-import squill.models.bindings as bindings;
+jsio('from util.browser import $');
+jsio('import squill.Widget');
+jsio('import squill.models.bindings as bindings');
 
-exports = Class(squill.Widget, function() {
+exports = Class(squill.Widget, function () {
   this._css = 'label';
   this._def = {
     children: [{
-      id: '_labelSpan',
-      tag: 'span'
-    }]
-  }
+        id: '_labelSpan',
+        tag: 'span'
+      }]
+  };
 
-  this.buildWidget = function() {
+  this.buildWidget = function () {
     this.setLabel(this.getI18n('label'));
 
     var opts = this._opts;
@@ -19,9 +19,14 @@ exports = Class(squill.Widget, function() {
       bindings.parseFormat(this, opts.format);
     }
   }
+;
 
-  this.setText = function(text) { $.setText(this._labelSpan, text); }
-  this.setHTML = function(html) { this._labelSpan.innerHTML = html; }
+  this.setText = function (text) {
+    $.setText(this._labelSpan, text);
+  };
+  this.setHTML = function (html) {
+    this._labelSpan.innerHTML = html;
+  };
 });
 
 exports.prototype.setData = exports.prototype.setText;

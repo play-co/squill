@@ -21,7 +21,7 @@ exports.classes = {
 };
 
 
-exports.resolve = function(env, opts) {
+exports.resolve = function (env, opts) {
   var imports = [];
 
   if (env == 'browser') {
@@ -29,6 +29,7 @@ exports.resolve = function(env, opts) {
       imports.push(exports.classes[key]);
     }
   }
+
 
   return imports;
 };

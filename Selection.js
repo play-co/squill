@@ -1,4 +1,4 @@
-import lib.PubSub;
+jsio('import lib.PubSub');
 
 /**
  * The Selection class connects a selection storage to a UI element.
@@ -17,9 +17,8 @@ import lib.PubSub;
  * the squill.List class contains a public proprty .selection that is an
  * instance of a Selection instance.
  */
-exports = Class(lib.PubSub, function() {
-
-  this.init = function(opts) {
+exports = Class(lib.PubSub, function () {
+  this.init = function (opts) {
     this._parent = opts.parent;
     this._type = opts.type || false;
     this._selection = opts.selectionStore || new exports.LocalStore();
@@ -28,36 +27,37 @@ exports = Class(lib.PubSub, function() {
     this._lastSelected = null;
   };
 
-  this.getType = function() { return this._type; };
+  this.getType = function () {
+    return this._type;
+  };
 
-  this.isSelected = function(id) {
+  this.isSelected = function (id) {
     if (typeof id == 'object') {
       id = id[this._parent.getDataSource().key];
     }
     return this._selection.isSelected(id);
   };
 
-  this.toggle = function(item) {
+  this.toggle = function (item) {
     this._setSelected(item, !this.isSelected(item[this._parent.getDataSource().key]));
   };
 
-  this.select = function(item) {
-    if((this._currentSelectionCount < this._maxSelections) || this._type == 'single') {
+  this.select = function (item) {
+    if (this._currentSelectionCount < this._maxSelections || this._type == 'single') {
       this._setSelected(item, true);
     }
   };
 
-  this.deselect = function(item) {
+  this.deselect = function (item) {
     this._setSelected(item, false);
   };
 
-  this.clear =
-  this.deselectAll = function() {
+  this.clear = this.deselectAll = function () {
     this._selection.deselectAll();
     this._currentSelectionCount = 0;
   };
 
-  this.get = function() {
+  this.get = function () {
     if (this._maxSelections == 1) {
       return Object.keys(this._selection.get())[0];
     } else {
@@ -65,18 +65,22 @@ exports = Class(lib.PubSub, function() {
     }
   };
 
-  this.getSelectionCount = function() {
+  this.getSelectionCount = function () {
     return this._currentSelectionCount;
   };
 
-  this._setSelected = function(item, isSelected) {
-    if (!item) { return; }
+  this._setSelected = function (item, isSelected) {
+    if (!item) {
+      return;
+    }
 
-    var dataSource = this._parent.getDataSource(),
-      key = dataSource.key;
+
+    var dataSource = this._parent.getDataSource(), key = dataSource.key;
     if (typeof item == 'string') {
       item = dataSource.get(item);
-      if (!item) { return; }
+      if (!item) {
+        return;
+      }
     }
     var id = item[key];
 
@@ -89,6 +93,7 @@ exports = Class(lib.PubSub, function() {
           this.publish('Deselect', this._lastSelected, lastID);
         }
 
+
         this._lastSelected = item;
         this._selection.select(id);
         this._currentSelectionCount++;
@@ -97,33 +102,39 @@ exports = Class(lib.PubSub, function() {
         this._currentSelectionCount--;
       }
 
+
       this.publish(isSelected ? 'Select' : 'Deselect', item, id);
     }
   };
 });
 
-exports.LocalStore = Class(function() {
-  this.init = function() {
+exports.LocalStore = Class(function () {
+  this.init = function () {
     this._store = {};
   }
+;
 
-  this.get = function() {
+  this.get = function () {
     return merge({}, this._store);
   }
+;
 
-  this.select = function(id) {
+  this.select = function (id) {
     this._store[id] = true;
   }
+;
 
-  this.deselect = function(id) {
+  this.deselect = function (id) {
     delete this._store[id];
   }
+;
 
-  this.deselectAll = function(id) {
+  this.deselectAll = function (id) {
     this._store = {};
   }
+;
 
-  this.isSelected = function(id) {
+  this.isSelected = function (id) {
     if (id !== undefined) {
       return !!this._store[id];
     } else {
@@ -132,6 +143,6 @@ exports.LocalStore = Class(function() {
       }
       return false;
     }
-  }
+  };
 });
 

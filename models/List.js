@@ -1,9 +1,9 @@
-import .Resource;
-import .Widget;
-import ..Selection;
+jsio('import .Resource');
+jsio('import .Widget');
+jsio('import ..Selection');
 
-var List = exports = Class(Widget, function(supr) {
-  this.init = function(opts) {
+var List = exports = Class(Widget, function (supr) {
+  this.init = function (opts) {
     opts = merge(opts, {
       isFixedSize: true,
       recycle: true
@@ -16,7 +16,7 @@ var List = exports = Class(Widget, function(supr) {
 
     this._needsSort = true;
     this._removed = {};
-    this._renderOpts = {cellSpacing: 0};
+    this._renderOpts = { cellSpacing: 0 };
     this._renderMargin = 0;
     this._updatedCells = {};
 
@@ -24,6 +24,7 @@ var List = exports = Class(Widget, function(supr) {
 
     this.updateOpts(opts);
   }
+;
 
   this.updateOpts = function (opts) {
     if (this._opts) {
@@ -34,33 +35,48 @@ var List = exports = Class(Widget, function(supr) {
       this._opts = opts;
     }
 
-    if (opts.getCell) { this.setCellGetter(opts.getCell); }
-    if (opts.dataSource) { this.setDataSource(opts.dataSource); }
-    if (opts.sorter) { this.setSorter(opts.sorter); }
-    if ('renderMargin' in opts) { this._renderMargin = opts.renderMargin || 0; }
+
+    if (opts.getCell) {
+      this.setCellGetter(opts.getCell);
+    }
+    if (opts.dataSource) {
+      this.setDataSource(opts.dataSource);
+    }
+    if (opts.sorter) {
+      this.setSorter(opts.sorter);
+    }
+    if ('renderMargin' in opts) {
+      this._renderMargin = opts.renderMargin || 0;
+    }
     this._maxSelections = opts.maxSelections || 1;
 
     if (opts.selectable) {
-      this.selection = new Selection({parent: this, type: opts.selectable, maxSelections: opts.maxSelections});
-      this.selection.subscribe('Select',   this, this._onSelect);
+      this.selection = new Selection({
+        parent: this,
+        type: opts.selectable,
+        maxSelections: opts.maxSelections
+      });
+      this.selection.subscribe('Select', this, this._onSelect);
       this.selection.subscribe('Deselect', this, this._onDeselect);
       if (opts.selections) {
         this.setSelections(opts.selections);
       }
     }
 
+
     return this._opts;
   }
+;
 
-  this.setSelections = function(selections) {
+  this.setSelections = function (selections) {
     selections.forEach(bind(this, 'select'));
   };
 
-  this.getDataSource = function() {
+  this.getDataSource = function () {
     return this._dataSource;
   };
 
-  this.setDataSource = function(dataSource) {
+  this.setDataSource = function (dataSource) {
     if (this._dataSource) {
       this._dataSource.unsubscribe('Update', this, '_onUpdate');
       this._dataSource.unsubscribe('Remove', this, '_onRemove');
@@ -72,31 +88,56 @@ var List = exports = Class(Widget, function(supr) {
       this.needsSort();
     }
   }
+;
 
-  this._onUpdate = function(id, item) {
+  this._onUpdate = function (id, item) {
     var cell = this._cells[id];
-    if (cell) { this._updatedCells[id] = item; }
+    if (cell) {
+      this._updatedCells[id] = item;
+    }
     this.needsSort();
   }
+;
 
-  this._onRemove = function(id, item) {
+  this._onRemove = function (id, item) {
     this._removed[id] = true;
     this.needsSort();
   }
+;
 
-  this.needsSort = function() { this._needsSort = true; this._view.needsRepaint(); }
+  this.needsSort = function () {
+    this._needsSort = true;
+    this._view.needsRepaint();
+  }
+;
 
-  this.setSelected = function(data) { this._selected = data; }
-  this.getSelected = function() { return this._selected; }
+  this.setSelected = function (data) {
+    this._selected = data;
+  };
+  this.getSelected = function () {
+    return this._selected;
+  }
+;
 
-  this.setCellGetter = function(getCell) { this._getCell = getCell; }
-  this.getCellById = function(id) { return this._cells[id]; }
+  this.setCellGetter = function (getCell) {
+    this._getCell = getCell;
+  };
+  this.getCellById = function (id) {
+    return this._cells[id];
+  }
+;
 
-  this.setSorter = function(sorter) { this._sorter = sorter; }
+  this.setSorter = function (sorter) {
+    this._sorter = sorter;
+  }
+;
 
   // just render all cells for now
-  this.render = function(viewport) {
-    if (!this._dataSource) { return; }
+  this.render = function (viewport) {
+    if (!this._dataSource) {
+      return;
+    }
+
 
     if (this._needsSort) {
       this._needsSort = null;
@@ -107,22 +148,28 @@ var List = exports = Class(Widget, function(supr) {
       }
     }
 
+
     var count = this._dataSource.length;
     if (this._opts.isFixedSize) {
       this.renderFixed(viewport);
     } else {
-      this._removeCells(); // remove the views that were deleted from the datasource
+      this._removeCells();
 
+      // remove the views that were deleted from the datasource
       if (count) {
         this.renderVariable(viewport);
       }
     }
   }
+;
 
-  this.getRenderOpts = function() { return this._renderOpts; }
+  this.getRenderOpts = function () {
+    return this._renderOpts;
+  }
+;
 
   // y is required for non-fixed-size lists.  Otherwise, y is ignored.
-  this._positionCell = function(cell, i, y) {
+  this._positionCell = function (cell, i, y) {
     var view = this._view;
     view.addCell(cell);
 
@@ -130,7 +177,7 @@ var List = exports = Class(Widget, function(supr) {
     if (this._opts.isFixedSize) {
       if (this._opts.isTiled) {
         var x = i % r.numPerRow;
-        var y = (i / r.numPerRow) | 0;
+        var y = i / r.numPerRow | 0;
         view.positionCell(cell, {
           x: x * r.fullWidth,
           y: y * r.fullHeight,
@@ -146,15 +193,21 @@ var List = exports = Class(Widget, function(supr) {
       }
     } else {
       view.positionCell(cell, {
-          x: 0,
-          y: y
-        });
+        x: 0,
+        y: y
+      });
     }
   }
+;
 
-  this.renderVariable = function(viewport) {
-    if (!this._dataSource) { return; }
-    if (!this._updateRenderOpts(viewport)) { return; }
+  this.renderVariable = function (viewport) {
+    if (!this._dataSource) {
+      return;
+    }
+    if (!this._updateRenderOpts(viewport)) {
+      return;
+    }
+
 
     var i = 0;
     var y = 0;
@@ -164,6 +217,7 @@ var List = exports = Class(Widget, function(supr) {
         this._view.setMaxY(y);
         return false;
       }
+
 
       var id = item[this._dataSource.key];
       var cell = this._createCell(item);
@@ -175,18 +229,25 @@ var List = exports = Class(Widget, function(supr) {
       return true;
     }
 
+
     function renderMany() {
-      var THRESHOLD = 50; // ms to render
+      var THRESHOLD = 50;
+      // ms to render
       var n = 0, t = +new Date();
       while (n++ < 10 || +new Date() - t < THRESHOLD) {
-        if (!renderOne.call(this)) { return; }
+        if (!renderOne.call(this)) {
+          return;
+        }
       }
+
 
       setTimeout(bind(this, renderMany), 100);
     }
 
+
     renderMany.call(this);
   }
+;
 
   this._removeCells = function () {
     var removed = this._removed;
@@ -201,9 +262,9 @@ var List = exports = Class(Widget, function(supr) {
       }
     }
   }
+;
 
-  this._createCell = function(item) {
-
+  this._createCell = function (item) {
     var id = item[this._dataSource.key];
     var cell = this._cells[id];
     if (!cell) {
@@ -211,9 +272,11 @@ var List = exports = Class(Widget, function(supr) {
         cell = this._cellResource.get();
       }
 
+
       if (!cell) {
         cell = this._getCell(item, this._cellResource);
       }
+
 
       this._cells[id] = cell;
       cell.setController(this);
@@ -221,10 +284,12 @@ var List = exports = Class(Widget, function(supr) {
       cell.model.setResource(this._cellResource);
     }
 
+
     return cell;
   }
+;
 
-  this._updateRenderOpts = function(viewport) {
+  this._updateRenderOpts = function (viewport) {
     var r = this._renderOpts;
     r.top = viewport.y - this._renderMargin;
     r.height = viewport.height + 2 * this._renderMargin;
@@ -234,17 +299,27 @@ var List = exports = Class(Widget, function(supr) {
     if (this._opts.isFixedSize) {
       if (!r.cellWidth || !r.cellHeight) {
         var item = this._dataSource.getItemForIndex(0);
-        if (!item) { return false; }
+        if (!item) {
+          return false;
+        }
+
 
         var key = item[this._dataSource.key];
         var cell = this._cells[key] || (this._cells[key] = this._createCell(item));
         r.fullWidth = r.cellWidth = cell.getWidth();
         r.fullHeight = r.cellHeight = cell.getHeight();
-        if ((this._opts.isTiled && !r.cellWidth) || !r.cellHeight) { return null; }
+        if (this._opts.isTiled && !r.cellWidth || !r.cellHeight) {
+          return null;
+        }
+
 
         var cellSpacing = this._opts.cellSpacing || 0;
-        if (cellSpacing) { r.fullWidth += cellSpacing; r.fullHeight += cellSpacing; }
+        if (cellSpacing) {
+          r.fullWidth += cellSpacing;
+          r.fullHeight += cellSpacing;
+        }
       }
+
 
       if (this._opts.isTiled) {
         r.maxWidth = viewport.width;
@@ -254,17 +329,23 @@ var List = exports = Class(Widget, function(supr) {
         r.end = Math.ceil(r.bottom / r.fullHeight) * r.numPerRow;
       } else {
         r.start = Math.max(0, r.top / r.fullHeight | 0);
-        r.end = (r.bottom / r.fullHeight + 1) | 0;
+        r.end = r.bottom / r.fullHeight + 1 | 0;
       }
+
 
       this._view.setMaxY(r.numRows * r.fullHeight);
     }
 
+
     return true;
   }
+;
 
-  this.renderFixed = function(viewport) {
-    if (!(this._updateRenderOpts(viewport))) { return; }
+  this.renderFixed = function (viewport) {
+    if (!this._updateRenderOpts(viewport)) {
+      return;
+    }
+
 
     var r = this._renderOpts;
     var i = 0;
@@ -291,6 +372,7 @@ var List = exports = Class(Widget, function(supr) {
       }
     }
 
+
     for (var id in cells) {
       var cell = cells[id];
 
@@ -300,34 +382,36 @@ var List = exports = Class(Widget, function(supr) {
       }
     }
 
+
     this._cells = newCells;
   };
 
-  this._onSelect = function(dataItem, id) {
+  this._onSelect = function (dataItem, id) {
     this.publish('Select', dataItem, id);
   };
 
-  this._onDeselect = function(dataItem, id) {
+  this._onDeselect = function (dataItem, id) {
     this.publish('Deselect', dataItem, id);
   };
 
-  this.isSelected = function(dataItem) {
+  this.isSelected = function (dataItem) {
     return this.selection && this.selection.isSelected(dataItem);
   };
 
-  this.toggle = function(dataItem) {
+  this.toggle = function (dataItem) {
     this.selection && this.selection.toggle(dataItem);
   }
+;
 
-  this.select = function(dataItem) {
+  this.select = function (dataItem) {
     this.selection && this.selection.select(dataItem);
   };
 
-  this.deselect = function(dataItem) {
+  this.deselect = function (dataItem) {
     this.selection && this.selection.deselect(dataItem);
   };
 
-  this.deselectAll = function() {
+  this.deselectAll = function () {
     if (this.selection) {
       var selection = this.selection.get();
       for (var id in selection) {
@@ -338,20 +422,18 @@ var List = exports = Class(Widget, function(supr) {
     }
   };
 
-  this.getSelections = function() {
+  this.getSelections = function () {
     var selectionIDMap = this.selection.get();
     var dataSource = this.getDataSource();
     var key = dataSource.getKey();
 
-    return dataSource.getFilteredDataSource(
-        function(item){
-          var itemKey = item[key];
-          return !!selectionIDMap[itemKey];
-        }
-      );
+    return dataSource.getFilteredDataSource(function (item) {
+      var itemKey = item[key];
+      return !!selectionIDMap[itemKey];
+    });
   };
 
-  this.getSelectionCount = function() {
+  this.getSelectionCount = function () {
     return this.selection && this.selection.getSelectionCount();
   };
 });

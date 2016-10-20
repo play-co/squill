@@ -1,11 +1,10 @@
-import .Widget;
-import math.geom.Point as Point;
-from util.browser import $;
-import .Window;
-import .transitions;
+jsio('import .Widget');
+jsio('import math.geom.Point as Point');
+jsio('from util.browser import $');
+jsio('import .Window');
+jsio('import .transitions');
 
-module.exports = Class(Widget, function(supr) {
-
+module.exports = Class(Widget, function (supr) {
   this._def = {
     draggable: true,
     closeable: true,
@@ -17,34 +16,41 @@ module.exports = Class(Widget, function(supr) {
       {
         id: '_titlebar',
         children: [
-          {id: '_closeBtn', children: [{
-            id: '_closeBtnIcon'
-          }]},
-          {id: '_titlebarText'}
+          {
+            id: '_closeBtn',
+            children: [{ id: '_closeBtnIcon' }]
+          },
+          { id: '_titlebarText' }
         ]
       },
-      {id: '_header'},
-      {id: '_container'},
-      {id: '_footer'}
+      { id: '_header' },
+      { id: '_container' },
+      { id: '_footer' }
     ]
   };
 
   this._css = 'dialog';
 
-  this.getContainer = function () { return this._container; }
+  this.getContainer = function () {
+    return this._container;
+  }
+;
 
   this.buildWidget = function (el, scope) {
     if (this._opts.title) {
       this.setTitle(this._opts.title);
     }
 
+
     if (this._opts.footer) {
       this.buildChildren(this._opts.footer, this._footer, scope);
     }
 
+
     if (this._opts.header) {
       this.buildChildren(this._opts.header, this._header, scope);
     }
+
 
     this._isModal = !!this._opts.isModal;
 
@@ -52,32 +58,39 @@ module.exports = Class(Widget, function(supr) {
       $.hide(this._closeBtn);
     }
 
+
     $.onEvent(this._closeBtn, 'click', this, 'hide', null);
     $.onEvent(this._closeBtn, 'touchend', this, 'hide', null);
 
     this.initDragEvents(this._titlebar);
   }
+;
 
-  this.setTitle = function (title) { $.setText(this._titlebarText, title); }
+  this.setTitle = function (title) {
+    $.setText(this._titlebarText, title);
+  }
+;
 
-  this.onDrag = function(dragEvt, moveEvt, delta) {
+  this.onDrag = function (dragEvt, moveEvt, delta) {
     if (!dragEvt.data) {
       dragEvt.data = new Point(parseInt(this._el.style.left), parseInt(this._el.style.top));
     }
 
-    var pos = Point.add(dragEvt.data, Point.subtract(dragEvt.currPt, dragEvt.srcPt)),
-      dim = Window.get().getViewport();
+
+    var pos = Point.add(dragEvt.data, Point.subtract(dragEvt.currPt, dragEvt.srcPt)), dim = Window.get().getViewport();
 
     this._el.style.left = Math.max(0, pos.x) + 'px';
     this._el.style.top = Math.max(0, pos.y) + 'px';
   }
+;
 
   // override
-  this.dispatchButton = function(target, evt) {
+  this.dispatchButton = function (target, evt) {
     if (this.delegate && this.delegate.call(this, target) !== false) {
       this.hide(target);
     }
   }
+;
 
   this.setIsModal = function (isModal) {
     this._isModal = isModal;
@@ -85,11 +98,15 @@ module.exports = Class(Widget, function(supr) {
       this.showUnderlay();
     }
   }
+;
 
   this.center = function () {
     var el = this.getElement();
     var parent = el.parentNode;
-    if (!parent) { return; }
+    if (!parent) {
+      return;
+    }
+
 
     var container = parent.getBoundingClientRect();
     el.style.left = Math.max(0, (container.width - el.offsetWidth) / 2) + 'px';
@@ -97,17 +114,18 @@ module.exports = Class(Widget, function(supr) {
   };
 
   this.show = function () {
-
     var el = this.getElement();
     if (!el.parentNode) {
       document.body.appendChild(el);
     }
+
 
     var ret = supr(this, 'show', arguments);
 
     if (this._isModal) {
       this.showUnderlay();
     }
+
 
     this.center();
 
@@ -138,6 +156,7 @@ module.exports = Class(Widget, function(supr) {
 
       underlay.addEventListener('click', bind(this, 'hide'));
     }
+
 
     underlay.style.opacity = 0;
     underlay.style.zIndex = getComputedStyle(this._el).zIndex - 1;

@@ -1,11 +1,11 @@
-from util.browser import $;
-import .Widget;
+jsio('from util.browser import $');
+jsio('import .Widget');
 
-var Slider = exports = Class(Widget, function(supr) {
+var Slider = exports = Class(Widget, function (supr) {
   this._css = 'rng';
   this._type = 'range';
 
-  this.init = function(params) {
+  this.init = function (params) {
     this._width = params.width || 100;
     this._padding = 12;
     this._hover = false;
@@ -13,24 +13,21 @@ var Slider = exports = Class(Widget, function(supr) {
     this._lineColor = params.lineColor || '#FFFFFF';
 
     this._def = {
-      children: [
-        {
+      children: [{
           id: params.id + 'Canvas',
           tag: 'canvas',
-          attrs: {width: this._width, height: this._padding * 2}
-        }
-      ]
+          attrs: {
+            width: this._width,
+            height: this._padding * 2
+          }
+        }]
     };
 
     supr(this, 'init', [params]);
   };
 
-  this._render = function() {
-    var width = this._width,
-      padding = this._padding,
-      ctx = this._ctx,
-      radialGradient,
-      v;
+  this._render = function () {
+    var width = this._width, padding = this._padding, ctx = this._ctx, radialGradient, v;
 
     ctx.clearRect(0, 0, width, padding * 2);
 
@@ -56,6 +53,7 @@ var Slider = exports = Class(Widget, function(supr) {
       ctx.shadowColor = '#0099FF';
     }
 
+
     v = ~~((width - padding * 2) * (this.value - this.min) / (this.max - this.min));
 
     ctx.beginPath();
@@ -72,9 +70,9 @@ var Slider = exports = Class(Widget, function(supr) {
     ctx.restore();
   };
 
-  this.buildWidget = function() {
+  this.buildWidget = function () {
     var el = this._el;
-      canvas = el.firstChild;
+    canvas = el.firstChild;
 
     el.slider = this;
 
@@ -94,16 +92,16 @@ var Slider = exports = Class(Widget, function(supr) {
     this._render();
   };
 
-  this.setValue = function(value) {
+  this.setValue = function (value) {
     this.value = value;
     this._render();
   };
 
-  this._onChange = function() {
+  this._onChange = function () {
     this.publish('Change', this.value);
   };
 
-  this._checkRange = function() {
+  this._checkRange = function () {
     if (this.value < this.min) {
       this.value = this.min;
     }
@@ -112,16 +110,11 @@ var Slider = exports = Class(Widget, function(supr) {
     }
   };
 
-  this._checkMouse = function(evt) {
-    var mouseX = evt.offsetX,
-      mouseY = evt.offsetY,
-      width = this._width,
-      padding = this._padding,
-      hover = this._hover,
-      value;
+  this._checkMouse = function (evt) {
+    var mouseX = evt.offsetX, mouseY = evt.offsetY, width = this._width, padding = this._padding, hover = this._hover, value;
 
     if (this._mouseDown) {
-      if ((mouseX > padding) && (mouseY > padding - 5) && (mouseX < width - padding) && (mouseY < padding + 5)) {
+      if (mouseX > padding && mouseY > padding - 5 && mouseX < width - padding && mouseY < padding + 5) {
         value = (evt.offsetX - padding) / (width - padding * 2) * (this.max - this.min);
         value = this.min + Math.round(value / this.step) * this.step;
         this.value = value;
@@ -130,12 +123,13 @@ var Slider = exports = Class(Widget, function(supr) {
         this._onChange();
       }
     } else {
-      if ((mouseY > padding - 5) && (mouseY < padding + 5)) {
+      if (mouseY > padding - 5 && mouseY < padding + 5) {
         v = padding + ~~((width - padding * 2) * (this.value - this.min) / (this.max - this.min));
-        this._hover = (mouseX > v - 5) && (mouseY < v + 5);
+        this._hover = mouseX > v - 5 && mouseY < v + 5;
       } else {
         this._hover = false;
       }
+
 
       if (this._hover !== hover) {
         this._render();
@@ -143,22 +137,22 @@ var Slider = exports = Class(Widget, function(supr) {
     }
   };
 
-  this._onMouseOut = function(evt) {
+  this._onMouseOut = function (evt) {
     this._mouseDown = false;
     this._hover = false;
     this._render();
   };
 
-  this._onMouseDown = function(evt) {
+  this._onMouseDown = function (evt) {
     this._mouseDown = true;
     this._checkMouse(evt);
   };
 
-  this._onMouseUp = function(evt) {
+  this._onMouseUp = function (evt) {
     this._mouseDown = false;
   };
 
-  this._onMouseMove = function(evt) {
+  this._onMouseMove = function (evt) {
     this._checkMouse(evt);
   };
 });

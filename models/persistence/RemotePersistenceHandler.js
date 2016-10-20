@@ -8,30 +8,31 @@
  *
  * The final version should only send the updates to the server.
 **/
+jsio('import util.ajax');
 
-import util.ajax;
+jsio('import .BasicPersistenceHandler as BasicPersistenceHandler');
 
-import .BasicPersistenceHandler as BasicPersistenceHandler;
-
-var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function(supr) {
-  this.init = function(opts) {
+var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function (supr) {
+  this.init = function (opts) {
     supr(this, 'init', arguments);
 
     this._loadURL = opts && opts.loadURL;
     this._saveURL = opts && opts.saveURL;
   }
+;
 
-  this._checkChangeData = function() {
+  this._checkChangeData = function () {
     if (!this._updateList) {
       this._updateList = [];
     }
+
 
     if (!this._removeList) {
       this._removeList = [];
     }
   };
 
-  this.update = function(data) {
+  this.update = function (data) {
     var i, j;
 
     if (isArray(data)) {
@@ -46,7 +47,7 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
     }
   };
 
-  this.remove = function(data) {
+  this.remove = function (data) {
     var i, j;
 
     if (isArray(data)) {
@@ -57,120 +58,111 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
       this._checkChangeData();
       this._removeList.push(data);
 
-      delete(this._data[data]);
+      delete this._data[data];
     }
   };
 
-  this.load = function(dataSource, cb) {
+  this.load = function (dataSource, cb) {
     if (this._loadURL === null) {
-      cb && cb({NoURL: 'Loading URL is not set.'});
+      cb && cb({ NoURL: 'Loading URL is not set.' });
       return;
     }
 
-    util.ajax.post(
-      {
-        url: this._loadURL,
-        data: this._params
-      },
-      bind(
-        this,
-        function(err, response) {
-          var errorMessage = false,
-            receivedData = {},
-            data = [],
-            i;
 
-          if (err) {
-            errorMessage = err;
-          }
+    util.ajax.post({
+      url: this._loadURL,
+      data: this._params
+    }, bind(this, function (err, response) {
+      var errorMessage = false, receivedData = {}, data = [], i;
 
-          if (!errorMessage) {
-            try {
-              receivedData = JSON.parse(response);
-            } catch (e) {
-              errorMessage = 'Something went wrong decoding the JSON data.';
-            }
-          }
+      if (err) {
+        errorMessage = err;
+      }
 
-          if (receivedData.error !== false) {
-            errorMessage = 'The server reported a problem fetching the data: ' + receivedData.message;
-          }
-          if (!errorMessage && (receivedData.data === undefined)) {
-            errorMessage = 'Data missing';
-          }
 
-          if (!errorMessage) {
-            receivedData = receivedData.data;
+      if (!errorMessage) {
+        try {
+          receivedData = JSON.parse(response);
+        } catch (e) {
+          errorMessage = 'Something went wrong decoding the JSON data.';
+        }
+      }
 
-            delete(receivedData.update);
-            delete(receivedData.remove);
 
-            for (i in receivedData) {
-              if (receivedData.hasOwnProperty(i)) {
-                data.push(receivedData[i]);
-              }
-            }
-            // Keep the original...
-            this._data = JSON.parse(response).data;
-          }
+      if (receivedData.error !== false) {
+        errorMessage = 'The server reported a problem fetching the data: ' + receivedData.message;
+      }
+      if (!errorMessage && receivedData.data === undefined) {
+        errorMessage = 'Data missing';
+      }
 
-          if (errorMessage) {
-            cb && cb({LoadingError: 'Loading error: ' + errorMessage});
-          } else {
-            dataSource.fromJSON({
-                key: this._key,
-                items: data
-              });
-            cb && cb();
+
+      if (!errorMessage) {
+        receivedData = receivedData.data;
+
+        delete receivedData.update;
+        delete receivedData.remove;
+
+        for (i in receivedData) {
+          if (receivedData.hasOwnProperty(i)) {
+            data.push(receivedData[i]);
           }
         }
-      )
-    );
+        // Keep the original...
+        this._data = JSON.parse(response).data;
+      }
+
+
+      if (errorMessage) {
+        cb && cb({ LoadingError: 'Loading error: ' + errorMessage });
+      } else {
+        dataSource.fromJSON({
+          key: this._key,
+          items: data
+        });
+        cb && cb();
+      }
+    }));
   };
 
-  this.commit = function() {
+  this.commit = function () {
     if (this._saveURL === null) {
       return;
     }
 
-    var data = {},
-      i, j;
+
+    var data = {}, i, j;
 
     for (i in this._data) {
-      if (this._data.hasOwnProperty(i) && (this._data[i][this._key] !== undefined)) {
+      if (this._data.hasOwnProperty(i) && this._data[i][this._key] !== undefined) {
         data[this._data[i][this._key]] = this._data[i];
       }
     }
+
 
     this._checkChangeData();
 
     data.remove = this._removeList;
     data.update = this._updateList;
 
-    data = merge({data: data}, this._params);
+    data = merge({ data: data }, this._params);
 
-    util.ajax.post(
-      {
-        url: this._saveURL,
-        data: data
-      },
-      bind(
-        this,
-        function(err, response) {
-          this._removeList = [];
-          this._updateList = [];
-          this.publish('CommitFinished');
-        }
-      )
-    );
+    util.ajax.post({
+      url: this._saveURL,
+      data: data
+    }, bind(this, function (err, response) {
+      this._removeList = [];
+      this._updateList = [];
+      this.publish('CommitFinished');
+    }));
   };
 
 
-  this.setLoadURL = function(loadURL) {
+  this.setLoadURL = function (loadURL) {
     this._loadURL = loadURL;
   };
 
-  this.setSaveURL = function(saveURL) {
+  this.setSaveURL = function (saveURL) {
     this._saveURL = saveURL;
   };
 });

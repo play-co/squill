@@ -1,10 +1,9 @@
-import .Widget;
-import .models.DataItem as DataItem;
+jsio('import .Widget');
+jsio('import .models.DataItem as DataItem');
 
-from util.browser import $;
+jsio('from util.browser import $');
 
-var Cell = exports = Class(Widget, function(supr) {
-
+var Cell = exports = Class(Widget, function (supr) {
   this._css = 'cell';
 
   this.init = function (opts) {
@@ -18,37 +17,48 @@ var Cell = exports = Class(Widget, function(supr) {
       }
     }
   }
+;
 
-  this.buildWidget = function(el) {
+  this.buildWidget = function (el) {
     this.initMouseEvents();
   }
+;
 
-  this.isSelected = function() {
+  this.isSelected = function () {
     return this._widgetParent.selection && this._widgetParent.selection.isSelected(this._item);
   };
 
-  this.select = function() {
+  this.select = function () {
     this._widgetParent.selection && this._widgetParent.selection.select(this._item);
   };
 
-  this.deselect = function() {
+  this.deselect = function () {
     this._widgetParent.selection && this._widgetParent.selection.deselect(this._item);
   };
 
-  this.setItem = function(data, item) {
+  this.setItem = function (data, item) {
     this.setModel(data);
     this._data = data;
     this._item = item || data;
     this.updateSelected();
   };
 
-  this.getData = function () { return this._data; };
-  this.getItem = function () { return this._item; };
+  this.getData = function () {
+    return this._data;
+  };
+  this.getItem = function () {
+    return this._item;
+  };
 
-  this.render = function() {}
+  this.render = function () {
+  }
+;
 
-  this.onClick = this.onSelect = function() {
-    if (!this._widgetParent.selection) { return; }
+  this.onClick = this.onSelect = function () {
+    if (!this._widgetParent.selection) {
+      return;
+    }
+
 
     var type = this._widgetParent.selection.getType();
     if (type == 'toggle' || type == 'multi') {
@@ -61,8 +71,9 @@ var Cell = exports = Class(Widget, function(supr) {
       this.select();
     }
   }
+;
 
-  this.updateSelected = function() {
+  this.updateSelected = function () {
     var isSelected = this.isSelected();
     if (isSelected) {
       $.addClass(this._el, 'selected');
@@ -70,7 +81,7 @@ var Cell = exports = Class(Widget, function(supr) {
       $.removeClass(this._el, 'selected');
     }
     return isSelected;
-  }
+  };
 });
 
 exports.Selectable = exports;

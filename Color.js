@@ -1,21 +1,21 @@
-from util.browser import $;
-import .Widget;
+jsio('from util.browser import $');
+jsio('import .Widget');
 
-import .jscolor.jscolor as jscolor;
+jsio('import .jscolor.jscolor as jscolor');
 
-var Color = exports = Class(Widget, function(supr) {
+var Color = exports = Class(Widget, function (supr) {
   this._css = 'clr';
   this._type = 'text';
 
-  this.init = function(params) {
-    params = merge(params, {tag: 'input'});
+  this.init = function (params) {
+    params = merge(params, { tag: 'input' });
     this._isEnabled = params.isEnabled;
 
     supr(this, 'init', [params]);
 
   };
 
-  this.buildWidget = function() {
+  this.buildWidget = function () {
     var el = this._el;
 
     $.addClass(el, 'squill-color');
@@ -28,7 +28,7 @@ var Color = exports = Class(Widget, function(supr) {
     jscolor.bind(el);
   };
 
-  this.setValue = function(value) {
+  this.setValue = function (value) {
     if (value) {
       if (value[0] !== '#') {
         value = '#' + value;
@@ -40,11 +40,11 @@ var Color = exports = Class(Widget, function(supr) {
     this._el.value = value;
   };
 
-  this.getValue = function() {
+  this.getValue = function () {
     return this._el.value;
   };
 
-  this._onChange = function() {
+  this._onChange = function () {
     this.publish('Change', this._el.value);
   };
 });

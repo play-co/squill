@@ -1,6 +1,6 @@
-from util.browser import $;
+jsio('from util.browser import $');
 
-import .Widget;
+jsio('import .Widget');
 
 var elementIDPrefix = 0;
 
@@ -12,8 +12,8 @@ var defaults = {
 };
 
 
-var TreeList = exports = Class(Widget, function(supr) {
-  this.init = function(opts) {
+var TreeList = exports = Class(Widget, function (supr) {
+  this.init = function (opts) {
     opts = opts || {};
     opts = merge(opts, defaults);
 
@@ -34,9 +34,16 @@ var TreeList = exports = Class(Widget, function(supr) {
       this._dataSource = null;
     }
 
-    this._def = {id: this._wrapperId, className: 'browser', children: [
-            {id: this._contentId, className: 'contentWrapper', children: []}
-          ]};
+
+    this._def = {
+      id: this._wrapperId,
+      className: 'browser',
+      children: [{
+          id: this._contentId,
+          className: 'contentWrapper',
+          children: []
+        }]
+    };
 
     this._root = null;
     this._itemByKey = {};
@@ -44,21 +51,21 @@ var TreeList = exports = Class(Widget, function(supr) {
     supr(this, 'init', arguments);
   };
 
-  this._initClasses = function(opts) {
+  this._initClasses = function (opts) {
     this._classNames = {
       nodeWrapper: opts.nodeWrapper || 'browserNodeWrapper',
       nodeWrapperHidden: opts.nodeWrapperHidden || 'browserNodeWrapperHidden',
       node: opts.node || 'browserNode',
-      nodeChildren: opts.nodeChildren || 'children', // Node has children...
-      nodeActive: opts.nodeActive || 'active', // Selected node...
+      nodeChildren: opts.nodeChildren || 'children',
+      // Node has children...
+      nodeActive: opts.nodeActive || 'active',
+      // Selected node...
       nodeActiveChild: opts.nodeActiveChild || 'browserNodeActiveChild'
     };
   };
 
-  this._clearItem = function(item) {
-    var parent,
-      children,
-      i, j;
+  this._clearItem = function (item) {
+    var parent, children, i, j;
 
     if (item.children) {
       children = item.children;
@@ -66,6 +73,7 @@ var TreeList = exports = Class(Widget, function(supr) {
         this._clearItem(children.pop());
       }
     }
+
 
     if (item.parent) {
       parent = item.parent;
@@ -79,15 +87,16 @@ var TreeList = exports = Class(Widget, function(supr) {
       if (!children.length && parent.group) {
         $.remove(parent.group.parentNode);
         $.remove(parent.group);
-        delete(parent.group);
+        delete parent.group;
       }
     }
+
 
     $.remove(item.node);
     item.group && $.remove(item.group);
   };
 
-  this._createMenuId = function(inc) {
+  this._createMenuId = function (inc) {
     var menuId = this._menuId;
     if (inc) {
       this._menuId++;
@@ -95,29 +104,33 @@ var TreeList = exports = Class(Widget, function(supr) {
     return this._elementIDPrefix + menuId;
   };
 
-  this._createGroup = function(visible) {
-    var menuId = this._createMenuId(true),
-      node = $({
-          parent: $({
-                parent: $.id(this._contentId),
-                id: menuId,
-                className: visible ? this._classNames.nodeWrapper : this._classNames.nodeWrapperHidden
-              }),
-          className: this._classNames.node
-        });
+  this._createGroup = function (visible) {
+    var menuId = this._createMenuId(true), node = $({
+        parent: $({
+          parent: $.id(this._contentId),
+          id: menuId,
+          className: visible ? this._classNames.nodeWrapper : this._classNames.nodeWrapperHidden
+        }),
+        className: this._classNames.node
+      });
 
     node.menuId = menuId;
     return node;
   };
 
-  this._createItem = function(item, group) {
+  this._createItem = function (item, group) {
     var id = this._createMenuId(true);
 
-    item.node = $({parent: group, id: id, tag: 'a', text: item[this._label]});
+    item.node = $({
+      parent: group,
+      id: id,
+      tag: 'a',
+      text: item[this._label]
+    });
     $.onEvent(id, 'click', this, 'onClick', item);
   };
 
-  this.buildWidget = function() {
+  this.buildWidget = function () {
     this._menuId = 0;
     this._menuById = [];
     this._menuStack = [];
@@ -128,11 +141,10 @@ var TreeList = exports = Class(Widget, function(supr) {
     }
   };
 
-  this._removeFromStack = function(depth) {
-    var menuStack = this._menuStack,
-      info = null;
+  this._removeFromStack = function (depth) {
+    var menuStack = this._menuStack, info = null;
 
-    while (menuStack.length && (menuStack[menuStack.length - 1].depth >= depth)) {
+    while (menuStack.length && menuStack[menuStack.length - 1].depth >= depth) {
       info = menuStack.pop();
 
       $.removeClass(info.node.id, this._classNames.nodeActive);
@@ -144,14 +156,15 @@ var TreeList = exports = Class(Widget, function(supr) {
       }
     }
 
+
     return info;
   };
 
-  this.applyNodeStyle = function(item) {
+  this.applyNodeStyle = function (item) {
     if (item.children && item.children.length) {
       $.addClass(item.node, this._classNames.nodeChildren);
     } else {
-      $.removeClass(item.node, this._classNames.nodeChildren)
+      $.removeClass(item.node, this._classNames.nodeChildren);
     }
     if (item === this._menuActiveItem) {
       $.addClass(item.node, this._classNames.nodeActive);
@@ -159,23 +172,23 @@ var TreeList = exports = Class(Widget, function(supr) {
       $.removeClass(item.node, this._classNames.nodeActive);
     }
 
-    if ((item.removeCustomClass !== undefined) && item.removeCustomClass) {
+
+    if (item.removeCustomClass !== undefined && item.removeCustomClass) {
       $.removeClass(item.node, item.removeCustomClass);
     }
-    if ((item.customClass !== undefined) && item.customClass) {
+    if (item.customClass !== undefined && item.customClass) {
       $.removeClass(item.node, item.customClass);
       $.addClass(item.node, item.customClass);
     }
   };
 
-  this._addToStack = function(item) {
+  this._addToStack = function (item) {
     this._menuStack.push(item);
     this.applyNodeStyle(item);
 
     if (item.children && item.children.length) {
       if (!item.group) {
-        var child,
-          i, j;
+        var child, i, j;
 
         item.children.sort();
 
@@ -194,7 +207,7 @@ var TreeList = exports = Class(Widget, function(supr) {
     }
   };
 
-  this.onClick = function(item) {
+  this.onClick = function (item) {
     var menuStack = this._menuStack;
     var lastItem = null;
     var id;
@@ -209,12 +222,14 @@ var TreeList = exports = Class(Widget, function(supr) {
       lastItem = null;
     }
 
-    if (menuStack.length && (item.depth <= menuStack[menuStack.length - 1].depth)) {
+
+    if (menuStack.length && item.depth <= menuStack[menuStack.length - 1].depth) {
       lastItem = this._removeFromStack(item.depth);
     }
     if (lastItem !== item) {
       this._addToStack(item);
     }
+
 
     this._menuActiveItem = item;
     this.applyNodeStyle(item);
@@ -224,19 +239,17 @@ var TreeList = exports = Class(Widget, function(supr) {
       if (menuStack[menuStack.length - 1].children && menuStack[menuStack.length - 1].children.length) {
         i++;
       }
-      $.id(this._contentId).style.width = (i * 200 + this._leaveWidth) + 'px';
+      $.id(this._contentId).style.width = i * 200 + this._leaveWidth + 'px';
     }
   };
 
-  this.onUpdateItem = function(item, key) {
+  this.onUpdateItem = function (item, key) {
     var treeItem = {
         title: item[this._label],
-        toString: function() { return this.title; }
-      },
-      parentItem,
-      children,
-      child,
-      i, j;
+        toString: function () {
+          return this.title;
+        }
+      }, parentItem, children, child, i, j;
 
     if (this._itemByKey[key]) {
       if (this._itemByKey[key].node) {
@@ -245,7 +258,8 @@ var TreeList = exports = Class(Widget, function(supr) {
       return;
     }
 
-    if ((item.parent === null) || (item.parent === -1)) {
+
+    if (item.parent === null || item.parent === -1) {
       if (this._root === null) {
         this._rootGroup = this._createGroup(true);
         this._createItem(treeItem, this._rootGroup);
@@ -267,10 +281,10 @@ var TreeList = exports = Class(Widget, function(supr) {
         }
         children = parentItem.children;
 
-        if (this._menuActiveItem && ((this._menuActiveItem === parentItem) || (this._menuActiveItem.parent === parentItem))) {
+        if (this._menuActiveItem && (this._menuActiveItem === parentItem || this._menuActiveItem.parent === parentItem)) {
           for (i = 0, j = children.length; i < j; i++) {
             if (children[i].node) {
-              $.remove(children[i].node)
+              $.remove(children[i].node);
               children[i].node = null;
             }
           }
@@ -279,7 +293,7 @@ var TreeList = exports = Class(Widget, function(supr) {
 
           if (!parentItem.group) {
             parentItem.group = this._createGroup(true);
-            $.id(this._contentId).style.width = ((this._menuStack.length + 1) * 200 + 500) + 'px';
+            $.id(this._contentId).style.width = (this._menuStack.length + 1) * 200 + 500 + 'px';
           }
           for (i = 0, j = children.length; i < j; i++) {
             child = children[i];
@@ -297,28 +311,29 @@ var TreeList = exports = Class(Widget, function(supr) {
       treeItem.parent = parentItem;
     }
 
+
     treeItem.data = item;
     this._itemByKey[key] = treeItem;
   };
 
-  this.onCreateItem = function(item) {
+  this.onCreateItem = function (item) {
     this.onUpdateItem(item, item[this._key]);
   };
 
-  this.onRemoveItem = function(item, key) {
+  this.onRemoveItem = function (item, key) {
     var treeItem = this._itemByKey[key];
     var lastChild;
     var treeParent;
 
     if (treeItem) {
-      lastChild = (treeItem.parent.children.length <= 1);
+      lastChild = treeItem.parent.children.length <= 1;
       treeParent = item[this._dataSource.parentKey];
 
       this._removeFromStack(this._itemByKey[key].depth - 1);
       this._clearItem(this._itemByKey[key]);
       this._menuActiveItem = false;
 
-      delete(this._itemByKey[key]);
+      delete this._itemByKey[key];
       this.publish('UnSelectItem');
 
       if (lastChild && treeParent) {
@@ -329,22 +344,20 @@ var TreeList = exports = Class(Widget, function(supr) {
     }
   };
 
-  this.showItem = function(item) {
+  this.showItem = function (item) {
     var treeItem = this.getTreeNode(item);
     this.publish('DisplayItem', item, treeItem);
     this.applyNodeStyle(treeItem);
   };
 
-  this.setDataSource = function(dataSource) {
+  this.setDataSource = function (dataSource) {
     this._dataSource = dataSource;
     this._dataSource.subscribe('Update', this, this.onUpdateItem);
     this._dataSource.subscribe('Remove', this, this.onRemoveItem);
   };
 
-  this.getPathString = function(separator) {
-    var result = '',
-      menuStack = this._menuStack,
-      i, j;
+  this.getPathString = function (separator) {
+    var result = '', menuStack = this._menuStack, i, j;
 
     separator = separator || ' ';
     for (i = 0, j = menuStack.length; i < j; i++) {
@@ -354,10 +367,11 @@ var TreeList = exports = Class(Widget, function(supr) {
       result += menuStack[i].data[this._label];
     }
 
+
     return result;
   };
 
-  this.getTreeNode = function(item) {
+  this.getTreeNode = function (item) {
     return this._itemByKey[item[this._dataSource.key]];
   };
 });

@@ -1,8 +1,11 @@
-from util.browser import $;
+jsio('from util.browser import $');
 
-var hint = $({parent: document.body, className: 'hint'});
+var hint = $({
+  parent: document.body,
+  className: 'hint'
+});
 
-exports.show = function(x, y, text) {
+exports.show = function (x, y, text) {
   hint.innerHTML = text;
   hint.style.left = x + 'px';
   hint.style.top = y + 'px';
@@ -10,11 +13,11 @@ exports.show = function(x, y, text) {
 
   console.log(text);
   if (x + hint.offsetWidth >= document.width) {
-    hint.style.left = (x - hint.offsetWidth) + 'px';
+    hint.style.left = x - hint.offsetWidth + 'px';
   }
 };
 
-exports.hide = function() {
+exports.hide = function () {
   hint = hint || $({
     parent: document.body,
     className: 'graphHint'
@@ -23,30 +26,20 @@ exports.hide = function() {
   hint.style.display = 'none';
 };
 
-var setHintTimeout = function(evt) {
+var setHintTimeout = function (evt) {
   evt.target.hintTimeout && clearTimeout(evt.target.hintTimeout);
-  evt.target.hintTimeout = setTimeout(
-    bind(
-      this,
-      function() {
-        exports.show(evt.pageX + 12, evt.pageY + 14, evt.target.hintText);
-      }
-    ),
-    300
-  );
+  evt.target.hintTimeout = setTimeout(bind(this, function () {
+    exports.show(evt.pageX + 12, evt.pageY + 14, evt.target.hintText);
+  }), 300);
 };
 
-exports.add = function(el, text) {
+exports.add = function (el, text) {
   el.hintText = text;
 
   $.onEvent(el, 'mouseover', setHintTimeout);
   $.onEvent(el, 'mousemove', setHintTimeout);
-  $.onEvent(
-    el,
-    'mouseout',
-    function(evt) {
-      exports.hide();
-      evt.target.hintTimeout && clearTimeout(evt.target.hintTimeout);
-    }
-  );
-}
+  $.onEvent(el, 'mouseout', function (evt) {
+    exports.hide();
+    evt.target.hintTimeout && clearTimeout(evt.target.hintTimeout);
+  });
+};

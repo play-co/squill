@@ -1,31 +1,33 @@
-import std.uri;
-import util.ajax;
-from util.browser import $;
+jsio('import std.uri');
+jsio('import util.ajax');
+jsio('from util.browser import $');
 
 logger.setLevel(0);
 
-exports.get = function(opts, cb) {
+exports.get = function (opts, cb) {
   if (typeof opts == 'string') {
-    opts = {url: opts};
+    opts = { url: opts };
   }
 
-  var win = (opts.win || window);
+
+  var win = opts.win || window;
   var doc = win.document;
   var loc = win.location;
 
   var parent = opts.el || doc.getElementsByTagName('head')[0];
 
   // use a script tag
-  var el = $({tag: 'link'});
+  var el = $({ tag: 'link' });
   el.type = 'text/css';
   el.rel = 'stylesheet';
   if ('onload' in el) {
     el.onload = function () {
       setTimeout(function () {
         cb && cb(null);
-      }, 0); // wait for reflow
+      }, 0);
     };
 
+    // wait for reflow
     el.onerror = function (e) {
       cb && cb(e);
     };
@@ -35,6 +37,7 @@ exports.get = function(opts, cb) {
       cb && cb();
     }, 500);
   }
+
 
   var url = std.uri.relativeTo(opts.url, window.location.toString());
 
@@ -46,12 +49,15 @@ exports.get = function(opts, cb) {
   parent.appendChild(el);
   el.href = url;
 }
+;
 
 exports._styleTags = [];
-exports.reloadCSS = function() {
+exports.reloadCSS = function () {
   for (var i = 0, s; s = exports._styleTags[i]; ++i) {
-    util.ajax.get({url: s.src}, bind(this, function(s, err, content) {
-      if (!err) { $.setText(s.el, content); }
+    util.ajax.get({ url: s.src }, bind(this, function (s, err, content) {
+      if (!err) {
+        $.setText(s.el, content);
+      }
     }, s));
   }
-}
+};

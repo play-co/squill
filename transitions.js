@@ -1,4 +1,4 @@
-import lib.PubSub;
+jsio('import lib.PubSub');
 
 var Transition = Class(lib.PubSub, function () {
   this.init = function (opts) {
@@ -9,7 +9,8 @@ var Transition = Class(lib.PubSub, function () {
     setTimeout(bind(this, 'run'), 0);
   };
 
-  this.run = function () {};
+  this.run = function () {
+  };
 });
 
 var CSSTransition = Class(Transition, function () {
@@ -23,6 +24,7 @@ var CSSTransition = Class(Transition, function () {
     if (duration) {
       duration = parseFloat(duration) * (/ms/.test(duration) ? 1 : 1000);
     }
+
 
     setTimeout(bind(this, 'end'), duration);
   };

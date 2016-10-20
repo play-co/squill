@@ -1,35 +1,40 @@
-import lib.PubSub;
-import .Widget;
-import .Delegate;
+jsio('import lib.PubSub');
+jsio('import .Widget');
+jsio('import .Delegate');
 
-from util.browser import $;
+jsio('from util.browser import $');
 
-var Menu = exports = Class(Widget, function(supr) {
+var Menu = exports = Class(Widget, function (supr) {
   // this.init = function(params) {
   //  var params = JS.merge(params, {parent: $.id('wrapper')});
   //  supr(this, 'init', [params]);
   // }
-
   this._css = 'menu';
 
-  this._def = {
-    children: [{id: 'container'}]
-  };
+  this._def = { children: [{ id: 'container' }] };
 
   // the default menu delegate just forwards to the menu controller
-  this.delegate = new Delegate(function(on) {
-    on.call = function(ctx, name) {
+  this.delegate = new Delegate(function (on) {
+    on.call = function (ctx, name) {
       var delegate = ctx.controller.delegate;
       delegate.call.apply(delegate, [ctx.controller].concat(Array.prototype.slice.call(arguments, 1)));
-    }
+    };
   });
 
-  this.getContainer = function () { return this.container; }
+  this.getContainer = function () {
+    return this.container;
+  }
+;
 
-  this.onBeforeShow = function() {}
-  this.onShow = function() {}
-  this.onBeforeHide = function() {}
-  this.onHide = function() {}
+  this.onBeforeShow = function () {
+  };
+  this.onShow = function () {
+  };
+  this.onBeforeHide = function () {
+  };
+  this.onHide = function () {
+  }
+;
 
   this.toggle = function () {
     if (this._isShowing) {
@@ -38,8 +43,9 @@ var Menu = exports = Class(Widget, function(supr) {
       this.show();
     }
   }
+;
 
-  this.show = function() {
+  this.show = function () {
     this._isShowing = true;
 
     var menuEl = this._el;
@@ -50,12 +56,15 @@ var Menu = exports = Class(Widget, function(supr) {
           return true;
         }
 
+
         if (/squill-checkbox/.test(el.className)) {
           return false;
         }
 
+
         el = el.parentNode;
       }
+
 
       // close menu
       e.preventDefault && e.preventDefault();
@@ -86,15 +95,16 @@ var Menu = exports = Class(Widget, function(supr) {
     this.emit('open');
     Menu.emit('open', this);
   }
+;
 
-  this.hide = function() {
+  this.hide = function () {
     this._isShowing = false;
 
     $.hide(this._el);
 
     this.emit('close');
     Menu.emit('close', this);
-  }
+  };
 });
 
 var subs = new lib.PubSub();
@@ -108,17 +118,19 @@ function trapIframes() {
     untrapIframes();
   }
 
+
   _trappedFrames = Array.prototype.map.call(document.getElementsByTagName('iframe'), function (el) {
     var retVal = {
-        el: el,
-        set: el.style.pointerEvents
-      };
+      el: el,
+      set: el.style.pointerEvents
+    };
 
     el.style.pointerEvents = 'none';
 
     return retVal;
   });
 }
+
 
 function untrapIframes() {
   _trappedFrames.forEach(function (item) {

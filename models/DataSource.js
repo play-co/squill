@@ -1,18 +1,16 @@
-import lib.Callback;
-import .BasicDataSource as BasicDataSource;
+jsio('import lib.Callback');
+jsio('import .BasicDataSource as BasicDataSource');
 
 
-var defaults = {
-  key: 'id'
-};
+var defaults = { key: 'id' };
 
-var toStringSort = function() {
+var toStringSort = function () {
   return this._sortKey;
 };
 
 
-var DataSource = exports = Class(BasicDataSource, function(supr) {
-  this.init = function(opts) {
+var DataSource = exports = Class(BasicDataSource, function (supr) {
+  this.init = function (opts) {
     opts = merge(opts, defaults);
     supr(this, 'init', [opts]);
     this._opts = opts;
@@ -38,22 +36,23 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
     };
   };
 
-  this.setPersistence = function(persistence) {
+  this.setPersistence = function (persistence) {
     this._persistence = persistence;
     if (persistence) {
       this.onLoad.clear();
       persistence.load(this, this.onLoad.chain());
     }
   }
+;
 
-  this._saveChanges = function(type, key) {
+  this._saveChanges = function (type, key) {
     if (this._changeDataSave && !this._changeData[type + 'Hash'][key]) {
       this._changeData[type + 'Hash'][key] = true;
       this._changeData[type].push(key);
     }
   };
 
-  this.getFilteredDataSource = function(filterFn) {
+  this.getFilteredDataSource = function (filterFn) {
     var ds = new DataSource(this._opts);
     this.forEach(function (item) {
       if (filterFn(item)) {
@@ -69,32 +68,34 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
       }
     });
 
-    this.subscribe('Remove', function (id, item) { ds.remove(item); });
+    this.subscribe('Remove', function (id, item) {
+      ds.remove(item);
+    });
     return ds;
   };
 
-  this.signalUpdate = function(type, item, id) {
+  this.signalUpdate = function (type, item, id) {
     if (item[this.key] === undefined) {
       return;
     }
     switch (type) {
-      case 'UPDATE':
-        this._saveChanges('updated', item[this.key]);
-        this.publish('Update', item[this.key], item);
-        break;
+    case 'UPDATE':
+      this._saveChanges('updated', item[this.key]);
+      this.publish('Update', item[this.key], item);
+      break;
 
-      case 'REMOVE':
-        this._saveChanges('removed', item[this.key]);
-        this.publish('Remove', id, item);
-        break;
+
+    case 'REMOVE':
+      this._saveChanges('removed', item[this.key]);
+      this.publish('Remove', id, item);
+      break;
     }
   };
 
+
   // NEVER CHANGE THE ID OF AN ITEM WITHOUT REMOVING IT FROM THE DATASOURCE FIRST.
   // Love, Jeff Hubbard and Marcus Cavanaugh
-
-  this.updated =
-  this.add = function(item) {
+  this.updated = this.add = function (item) {
     if (isArray(item)) {
       var res = [];
       for (var i = 0, len = item.length; i < len; ++i) {
@@ -106,12 +107,16 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
         }
       }
 
+
       return res;
     } else {
       var id = item[this.key];
 
       // note: not the same as `if (!id) { ... }`
-      if (id == null) { return; }
+      if (id == null) {
+        return;
+      }
+
 
       var index = null;
       if (this._byID[id]) {
@@ -130,16 +135,18 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
         index = this.length++;
       }
 
+
       // if we're adding it to the array:
       if (index !== null) {
-
         // make sure it's an instance of the specified class
         if (this._ctor && !(item instanceof this._ctor)) {
           item = new this._ctor(item);
         }
 
+
         this._byIndex[index] = item;
       }
+
 
       this._byID[id] = item;
 
@@ -151,12 +158,18 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
       }
     }
 
+
     return item;
   };
 
-  this.remove = function(id) {
-    if (typeof id == 'object') { id = id[this.key]; }
-    if (id == null) { return; }
+  this.remove = function (id) {
+    if (typeof id == 'object') {
+      id = id[this.key];
+    }
+    if (id == null) {
+      return;
+    }
+
 
     if (this._byID[id]) {
       this.signalUpdate('REMOVE', this._byID[id], id);
@@ -170,15 +183,15 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
     }
   };
 
-  this.keepOnly = function(list) {
-    this.compare(list, function(dataSource, local, remote) {
+  this.keepOnly = function (list) {
+    this.compare(list, function (dataSource, local, remote) {
       if (!remote) {
         dataSource.remove(local);
       }
     });
   };
 
-  this.clear = function() {
+  this.clear = function () {
     var index = this._byIndex;
 
     this._byIndex = [];
@@ -190,11 +203,11 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
     }
   };
 
-  this.getCount = function() {
+  this.getCount = function () {
     return this.length;
   };
 
-  this.setSorter = function(sorter) {
+  this.setSorter = function (sorter) {
     this._sorter = sorter;
     if (sorter) {
       for (var i = 0, item; item = this._byIndex[i]; ++i) {
@@ -212,15 +225,16 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
     }, this);
   };
 
-  this.contains = function(id) {
+  this.contains = function (id) {
     return !!this._byID[id];
   };
 
-  this.getKey = function() {
+  this.getKey = function () {
     return this.key;
   }
+;
 
-  this.get = this.getItemForID = function(id) {
+  this.get = this.getItemForID = function (id) {
     return this._byID[id] || null;
   };
 
@@ -228,16 +242,16 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
     return this._byIndex.indexOf(item);
   };
 
-  this.getItemForIndex = function(index) {
+  this.getItemForIndex = function (index) {
     return this._byIndex[index];
   };
 
-  this.sort = function() {
+  this.sort = function () {
     this._byIndex.sort();
     this._reverse && this._byIndex.reverse();
   };
 
-  this.forEach = this.each = function(cb, context) {
+  this.forEach = this.each = function (cb, context) {
     for (var i = 0; i < this.length; ++i) {
       if (cb.call(context, this._byIndex[i], i)) {
         return;
@@ -245,22 +259,25 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
     }
   };
 
-  this.toJSON = function() {
+  this.toJSON = function () {
     return {
       key: this.key,
       items: this._byIndex
     };
   };
 
-  this.fromJSON = function(data) {
+  this.fromJSON = function (data) {
     this.clear();
     var key = this.key = data.key;
     this.add(data.items);
   };
 
-  this.toArray = function() { return this._byIndex.slice(0); }
+  this.toArray = function () {
+    return this._byIndex.slice(0);
+  }
+;
 
-  this.beginChanges = function() {
+  this.beginChanges = function () {
     this._changeDataSave = true;
     this._changeData = {
       updated: [],
@@ -270,11 +287,10 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
     };
   };
 
-  this.saveChanges = function() {
+  this.saveChanges = function () {
     this._changeDataSave = false;
     if (this._persistence) {
-      var changeData = this._changeData,
-        i, j;
+      var changeData = this._changeData, i, j;
 
       this._persistence.remove(changeData.removed);
 
@@ -286,13 +302,14 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
         this._persistence.update(updateList);
       }
 
+
       this._persistence.commit();
     }
   };
 
-  this.load = function(cb) {
+  this.load = function (cb) {
     if (this._persistence) {
-      this._persistence.load(this, function(err) {
+      this._persistence.load(this, function (err) {
         if (err) {
           logger.log('error loading', JSON.stringify(err));
         }
@@ -301,13 +318,14 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
     }
   };
 
-  this.save = function() {
+  this.save = function () {
     if (this._persistence) {
       this._persistence.save(this);
     }
   }
+;
 
-  this.compare = function(dict, cb) {
+  this.compare = function (dict, cb) {
     var key = this.key;
 
     // create a key-indexed copy of dict to run the comparison against
@@ -322,6 +340,7 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
       }
     }
 
+
     // first, compare all items in the index to the dict items
     var items = this._byIndex.slice(0);
     for (var i = 0, item; item = items[i]; ++i) {
@@ -330,14 +349,16 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
       delete compareTo[k];
     }
 
+
     // then, for any remaining dict items, they don't exist in the local version
     for (var k in compareTo) {
       cb.call(this, this, null, compareTo[k]);
     }
   }
+;
 
-  this.filter = function(filter) {
-    var result = new DataSource({key: this.key});
+  this.filter = function (filter) {
+    var result = new DataSource({ key: this.key });
     var key;
     var item;
     var match;
@@ -349,15 +370,17 @@ var DataSource = exports = Class(BasicDataSource, function(supr) {
       item = this._byIndex[i];
       match = true;
       for (key in filter) {
-        if ((typeof item[key] == 'string') && (item[key].toLowerCase().indexOf(filter[key]) == -1)) {
+        if (typeof item[key] == 'string' && item[key].toLowerCase().indexOf(filter[key]) == -1) {
           match = false;
         }
       }
+
 
       if (match) {
         result.add(item);
       }
     }
+
 
     return result;
   };

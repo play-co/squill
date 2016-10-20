@@ -1,24 +1,30 @@
-import lib.PubSub;
-import math.geom.Point as Point;
-from util.browser import $;
+jsio('import lib.PubSub');
+jsio('import math.geom.Point as Point');
+jsio('from util.browser import $');
 
-var gCurrentDrag = [],
-  gCurrentMouse = {x: 0, y: 0};
+var gCurrentDrag = [], gCurrentMouse = {
+    x: 0,
+    y: 0
+  };
 
 function resolveMouse(e) {
-  if (e.touches) { return resolveMouse(e.touches[0]); }
-  
+  if (e.touches) {
+    return resolveMouse(e.touches[0]);
+  }
+
+
   if ('pageX' in e) {
     gCurrentMouse.x = e.pageX;
     gCurrentMouse.y = e.pageY;
-  } else { // looks like IE
-    var doc = document.documentElement,
-      body = document.body;
-    
+  } else {
+    // looks like IE
+    var doc = document.documentElement, body = document.body;
+
     gCurrentMouse.x = e.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
-    gCurrentMouse.y = e.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop  || body && body.clientTop  || 0);
+    gCurrentMouse.y = e.clientY + (doc && doc.scrollTop || body && body.scrollTop || 0) - (doc && doc.clientTop || body && body.clientTop || 0);
   }
 }
+
 
 var _active = false;
 
@@ -28,6 +34,7 @@ function gAddItem(item) {
   _active = true;
 }
 
+
 function gRemoveItem(item) {
   for (var i = 0; i < gCurrentDrag.length; ++i) {
     if (gCurrentDrag[i] == item) {
@@ -36,26 +43,39 @@ function gRemoveItem(item) {
     }
   }
 
-  if (!gCurrentDrag[0]) { _active = false; }
+
+  if (!gCurrentDrag[0]) {
+    _active = false;
+  }
 }
 
+
 function onMove(e) {
-  if (!_active) { return; }
+  if (!_active) {
+    return;
+  }
+
 
   resolveMouse(e);
   for (var i = 0; i < gCurrentDrag.length; ++i) {
     gCurrentDrag[i].onMouseMove(e);
   }
 
+
 }
 
+
 function onUp(e) {
-  if (!_active) { return; }
+  if (!_active) {
+    return;
+  }
+
 
   for (var i = 0; i < gCurrentDrag.length; ++i) {
     gCurrentDrag[i].onMouseUp(e);
   }
 }
+
 
 function registerWindow(win) {
   var doc = win.document;
@@ -70,23 +90,28 @@ function registerWindow(win) {
   }
 }
 
-exports = Class(lib.PubSub, function(supr) {
 
-  this.init = function(params) {
+exports = Class(lib.PubSub, function (supr) {
+  this.init = function (params) {
     this._isActive = false;
   }
-  
-  this.isDragging = function () { return this._isActive; }
+;
+
+  this.isDragging = function () {
+    return this._isActive;
+  }
+;
 
   // data is an optional object that will be added to dragEvt.data.
   // This allows the caller of startDrag to pass along arbitrary objects
   // to the DragStart, Drag, and DragStop events, since the receiver
   // can just read data off of the event object (first argument).
-  this.startDrag = function(params, data) {
+  this.startDrag = function (params, data) {
     var e = this._evt = new exports.DragEvent();
     this._evt.data = data;
     this._evt.params = merge(params, {
-      /* addInScroll: true, */ // TODO?
+      /* addInScroll: true, */
+      // TODO?
       threshold: 5
     });
 
@@ -94,9 +119,9 @@ exports = Class(lib.PubSub, function(supr) {
     e.currPt = new Point(gCurrentMouse);
     gAddItem(this);
   }
+;
 
   this.onMouseMove = function (moveEvt) {
-
     var dragEvt = this._evt;
     var absDelta = Point.subtract(gCurrentMouse, dragEvt.srcPt);
 
@@ -108,6 +133,7 @@ exports = Class(lib.PubSub, function(supr) {
       this.publish('DragStart', dragEvt);
     }
 
+
     if (this._isActive) {
       $.stopEvent(moveEvt);
 
@@ -116,11 +142,11 @@ exports = Class(lib.PubSub, function(supr) {
       this.publish('Drag', dragEvt, moveEvt, Point.subtract(dragEvt.currPt, dragEvt.prevPt));
     }
   }
+;
 
-  this.onMouseUp = function(upEvt) {
+  this.onMouseUp = function (upEvt) {
     gRemoveItem(this);
     if (this._isActive) {
-
       $.stopEvent(upEvt);
       this._isActive = false;
       this.enableIframes();
@@ -128,13 +154,15 @@ exports = Class(lib.PubSub, function(supr) {
       return true;
     }
   }
+;
 
   this.disableIframes = function (doc) {
     if (!this._disabledFrames) {
       this._disabledFrames = [];
     }
 
-    $("iframe", doc).forEach(function (iframe) {
+
+    $('iframe', doc).forEach(function (iframe) {
       try {
         this._disabledFrames.push({
           frame: iframe,
@@ -142,20 +170,23 @@ exports = Class(lib.PubSub, function(supr) {
         });
 
         iframe.style.pointerEvents = 'none';
-      } catch (e) {}
+      } catch (e) {
+      }
     }, this);
   }
+;
 
   this.enableIframes = function () {
     this._disabledFrames.splice(0, this._disabledFrames.length).forEach(function (item) {
       item.frame.style.pointerEvents = item.pointerEvents;
     });
-  }
+  };
 });
 
 exports.registerWindow = registerWindow;
 
-exports.DragEvent = Class(function() {});
+exports.DragEvent = Class(function () {
+});
 
 var win = window;
 registerWindow(win);
@@ -163,5 +194,6 @@ while (win.parent != win) {
   win = win.parent;
   try {
     registerWindow(win);
-  } catch (e) {}
+  } catch (e) {
+  }
 }

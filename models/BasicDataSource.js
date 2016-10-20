@@ -1,7 +1,7 @@
-import lib.PubSub as PubSub;
+jsio('import lib.PubSub as PubSub');
 
-var BasicDataSource = exports = Class(PubSub, function(supr) {
-  this.init = function(opts) {
+var BasicDataSource = exports = Class(PubSub, function (supr) {
+  this.init = function (opts) {
     supr(this, 'init', arguments);
 
     this.key = this._key = opts.key;
@@ -9,7 +9,7 @@ var BasicDataSource = exports = Class(PubSub, function(supr) {
     this._hasRemote = opts.hasRemote;
   };
 
-  this.getKey = function() {
+  this.getKey = function () {
     return this._key;
   };
 });

@@ -1,13 +1,11 @@
-import squill.Widget;
-import squill.models.bindings as bindings;
+jsio('import squill.Widget');
+jsio('import squill.models.bindings as bindings');
 
-exports = Class(squill.Widget, function() {
+exports = Class(squill.Widget, function () {
   this._css = 'image';
-  this._def = {
-    tag: 'img'
-  };
+  this._def = { tag: 'img' };
 
-  this.buildWidget = function() {
+  this.buildWidget = function () {
     var opts = this._opts;
     if (opts.format) {
       bindings.parseFormat(this, opts.format);
@@ -23,6 +21,7 @@ exports = Class(squill.Widget, function() {
     }
   });
 
-  this.setData =
-  this.setSrc = function (src) { this.src = src; };
+  this.setData = this.setSrc = function (src) {
+    this.src = src;
+  };
 });

@@ -1,14 +1,14 @@
-from util.browser import $;
-import .Widget;
+jsio('from util.browser import $');
+jsio('import .Widget');
 
-import .hint as hint;
+jsio('import .hint as hint');
 
-var Graph = exports = Class(Widget, function(supr) {
+var Graph = exports = Class(Widget, function (supr) {
   this._css = 'cnvs';
   this._type = 'canvas';
 
-  this.init = function(opts) {
-    params = merge(opts, {tag: 'canvas'});
+  this.init = function (opts) {
+    params = merge(opts, { tag: 'canvas' });
     supr(this, 'init', arguments);
 
     this.setSettings(opts.settings || {});
@@ -23,20 +23,17 @@ var Graph = exports = Class(Widget, function(supr) {
     $.onEvent(this._el, 'mouseout', this, this._onMouseOut);
   };
 
-  this._onMouseMove = function(evt) {
-    var rectangles = this._rectangles,
-      rectangle,
-      found = false,
-      i = rectangles.length;
+  this._onMouseMove = function (evt) {
+    var rectangles = this._rectangles, rectangle, found = false, i = rectangles.length;
 
     while (i) {
       rectangle = rectangles[--i];
-      if ((evt.offsetX >= rectangle.x1) && (evt.offsetY >= rectangle.y1) &&
-        (evt.offsetX <= rectangle.x2) && (evt.offsetY <= rectangle.y2)) {
+      if (evt.offsetX >= rectangle.x1 && evt.offsetY >= rectangle.y1 && evt.offsetX <= rectangle.x2 && evt.offsetY <= rectangle.y2) {
         found = true;
         break;
       }
     }
+
 
     if (found) {
       hint.show(evt.pageX + 15, evt.pageY + 15, rectangle.label);
@@ -45,21 +42,19 @@ var Graph = exports = Class(Widget, function(supr) {
     }
   };
 
-  this._onMouseOut = function(evt) {
+  this._onMouseOut = function (evt) {
     hint.hide();
   };
 
-  this.buildWidget = function() {
+  this.buildWidget = function () {
     var el = this._el;
 
     this.initMouseEvents(el);
     this.initKeyEvents(el);
   };
 
-  this._renderBackground = function(ctx) {
-    var el = this._el,
-      width = el.width,
-      height = el.height;
+  this._renderBackground = function (ctx) {
+    var el = this._el, width = el.width, height = el.height;
 
     this._currentWidth = width;
     this._currentHeight = height;
@@ -72,12 +67,8 @@ var Graph = exports = Class(Widget, function(supr) {
     }
   };
 
-  this._calculateSegments = function(ctx, data) {
-    var settings = this._settings,
-      max = 0,
-      maxLabel = 0,
-      i, j = data.length,
-      k, l;
+  this._calculateSegments = function (ctx, data) {
+    var settings = this._settings, max = 0, maxLabel = 0, i, j = data.length, k, l;
 
     for (i = 0; i < j; i++) {
       item = data[i];
@@ -90,10 +81,14 @@ var Graph = exports = Class(Widget, function(supr) {
       }
     }
 
-    var steps = [0.5, 0.25, 0.2, 0.125, 0.1],
-      stepIndex = 0,
-      stepCount,
-      factor = 1;
+
+    var steps = [
+        0.5,
+        0.25,
+        0.2,
+        0.125,
+        0.1
+      ], stepIndex = 0, stepCount, factor = 1;
 
     while (max / (steps[stepIndex] * factor) > 10) {
       stepIndex++;
@@ -103,6 +98,7 @@ var Graph = exports = Class(Widget, function(supr) {
       }
     }
 
+
     stepCount = Math.ceil(max / (steps[stepIndex] * factor));
     return {
       steps: stepCount,
@@ -110,10 +106,10 @@ var Graph = exports = Class(Widget, function(supr) {
       max: stepCount * steps[stepIndex] * factor,
       maxLabel: maxLabel + 4,
       factor: factor
-    }
+    };
   };
 
-  this._trimLabel = function(segmentInfo, ctx, label) {
+  this._trimLabel = function (segmentInfo, ctx, label) {
     if (ctx.measureText(label).width > segmentInfo.maxLabel) {
       while (ctx.measureText(label + '...').width > segmentInfo.maxLabel) {
         label = label.substr(0, label.length - 1);
@@ -123,17 +119,8 @@ var Graph = exports = Class(Widget, function(supr) {
     return label;
   };
 
-  this._renderHorizontalAxis = function(segmentInfo, ctx, data) {
-    var settings = this._settings,
-      valueSpace = settings.valueSpace,
-      mainPadding = settings.mainPadding,
-      width = this._currentWidth - mainPadding * 2 - valueSpace,
-      height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel,
-      step = width / data.length,
-      label,
-      hasDecimal,
-      x, y,
-      i, j, k;
+  this._renderHorizontalAxis = function (segmentInfo, ctx, data) {
+    var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - valueSpace, height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel, step = width / data.length, label, hasDecimal, x, y, i, j, k;
 
     ctx.strokeStyle = settings.barBackground;
     for (i = 0; i < 2; i++) {
@@ -143,6 +130,7 @@ var Graph = exports = Class(Widget, function(supr) {
       ctx.lineTo(x, mainPadding + height);
       ctx.stroke();
     }
+
 
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
@@ -163,6 +151,7 @@ var Graph = exports = Class(Widget, function(supr) {
       }
     }
 
+
     ctx.strokeStyle = this._settings.lineColor;
     ctx.fillStyle = '#000000';
 
@@ -182,6 +171,7 @@ var Graph = exports = Class(Widget, function(supr) {
       j++;
     }
 
+
     i = height;
     j = 0;
     while (i >= 0) {
@@ -193,7 +183,7 @@ var Graph = exports = Class(Widget, function(supr) {
       ctx.stroke();
 
       label = (j * segmentInfo.step).toString(10);
-      if (hasDecimal && (label.indexOf('.') === -1)) {
+      if (hasDecimal && label.indexOf('.') === -1) {
         label += '.';
         for (k = 0; k < hasDecimal; k++) {
           label += '0';
@@ -205,6 +195,7 @@ var Graph = exports = Class(Widget, function(supr) {
       i = Math.ceil(i - height / segmentInfo.steps);
       j++;
     }
+
 
     ctx.textAlign = 'left';
 
@@ -231,20 +222,8 @@ var Graph = exports = Class(Widget, function(supr) {
     ctx.stroke();
   };
 
-  this._renderVerticalBars = function(segmentInfo, ctx, data) {
-    var settings = this._settings,
-      valueSpace = settings.valueSpace,
-      mainPadding = settings.mainPadding,
-      width = this._currentWidth - mainPadding * 2 - valueSpace,
-      height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel,
-      step = width / data.length,
-      barWidth = step - settings.barPadding * 2,
-      barWidthSeg,
-      barHeight,
-      barX,
-      item,
-      points,
-      i, j, k, l;
+  this._renderVerticalBars = function (segmentInfo, ctx, data) {
+    var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - valueSpace, height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel, step = width / data.length, barWidth = step - settings.barPadding * 2, barWidthSeg, barHeight, barX, item, points, i, j, k, l;
 
     ctx.globalAlpha = 0.9;
     for (i = 0, j = data.length; i < j; i++) {
@@ -265,24 +244,8 @@ var Graph = exports = Class(Widget, function(supr) {
     ctx.globalAlpha = 1;
   };
 
-  this._renderVerticalPoints = function(segmentInfo, ctx, data) {
-    var settings = this._settings,
-      renderPoints = (settings.types.indexOf('points') !== -1),
-      renderLines = (settings.types.indexOf('lines') !== -1),
-      renderArea = (settings.types.indexOf('area') !== -1),
-      valueSpace = settings.valueSpace,
-      mainPadding = settings.mainPadding,
-      width = this._currentWidth - mainPadding * 2 - valueSpace,
-      height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel,
-      step = width / data.length,
-      pointWidth = step - settings.barPadding * 2,
-      pointX, pointY,
-      points,
-      point,
-      pointList = [],
-      hasLast,
-      item,
-      i, j, k, l;
+  this._renderVerticalPoints = function (segmentInfo, ctx, data) {
+    var settings = this._settings, renderPoints = settings.types.indexOf('points') !== -1, renderLines = settings.types.indexOf('lines') !== -1, renderArea = settings.types.indexOf('area') !== -1, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - valueSpace, height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel, step = width / data.length, pointWidth = step - settings.barPadding * 2, pointX, pointY, points, point, pointList = [], hasLast, item, i, j, k, l;
 
     pointYLast = null;
 
@@ -294,19 +257,23 @@ var Graph = exports = Class(Widget, function(supr) {
       if (pointYLast === null) {
         pointYLast = [];
       }
-      pointX = ~~(valueSpace + mainPadding + i * step + settings.barPadding + (pointWidth / 2));
+      pointX = ~~(valueSpace + mainPadding + i * step + settings.barPadding + pointWidth / 2);
       for (k = 0, l = points.length; k < l; k++) {
         pointY = ~~(mainPadding + height - item.points[k] / segmentInfo.max * height);
 
         if (!pointList[k]) {
           pointList[k] = [];
         }
-        pointList[k].push({x: pointX, y: pointY});
+        pointList[k].push({
+          x: pointX,
+          y: pointY
+        });
 
         ctx.strokeStyle = settings.dataColors[k % settings.dataColors.length];
         if (renderPoints) {
           ctx.strokeRect(pointX - 4.5, pointY - 4.5, 10, 10);
         }
+
 
         if (hasLast && renderLines) {
           ctx.beginPath();
@@ -315,10 +282,12 @@ var Graph = exports = Class(Widget, function(supr) {
           ctx.stroke();
         }
 
+
         pointYLast[k] = pointY;
       }
       pointXLast = pointX;
     }
+
 
     if (renderArea) {
       ctx.globalAlpha = 0.05;
@@ -338,17 +307,8 @@ var Graph = exports = Class(Widget, function(supr) {
     }
   };
 
-  this._renderVerticalAxis = function(segmentInfo, ctx, data) {
-    var settings = this._settings,
-      valueSpace = settings.valueSpace,
-      mainPadding = settings.mainPadding,
-      width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel,
-      height = this._currentHeight - mainPadding * 2 - valueSpace,
-      step = height / data.length,
-      label,
-      hasDecimal,
-      x, y,
-      i, j, k;
+  this._renderVerticalAxis = function (segmentInfo, ctx, data) {
+    var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel, height = this._currentHeight - mainPadding * 2 - valueSpace, step = height / data.length, label, hasDecimal, x, y, i, j, k;
 
     ctx.strokeStyle = settings.barBackground;
     for (i = 0; i < 2; i++) {
@@ -358,6 +318,7 @@ var Graph = exports = Class(Widget, function(supr) {
       ctx.lineTo(mainPadding + segmentInfo.maxLabel + width, y);
       ctx.stroke();
     }
+
 
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
@@ -381,6 +342,7 @@ var Graph = exports = Class(Widget, function(supr) {
       }
     }
 
+
     ctx.textAlign = 'center';
 
     ctx.strokeStyle = this._settings.lineColor;
@@ -399,9 +361,11 @@ var Graph = exports = Class(Widget, function(supr) {
         }
       }
 
+
       i = Math.floor(i + width / segmentInfo.steps);
       j++;
     }
+
 
     i = 0;
     j = 0;
@@ -414,12 +378,13 @@ var Graph = exports = Class(Widget, function(supr) {
       ctx.stroke();
 
       label = (j * segmentInfo.step).toString(10);
-      if (hasDecimal && (label.indexOf('.') === -1)) {
+      if (hasDecimal && label.indexOf('.') === -1) {
         label += '.';
         for (k = 0; k < hasDecimal; k++) {
           label += '0';
         }
       }
+
 
       ctx.fillStyle = this._settings.textColor;
       ctx.fillText(label, mainPadding + segmentInfo.maxLabel + i, mainPadding + height + 2);
@@ -427,6 +392,7 @@ var Graph = exports = Class(Widget, function(supr) {
       i = Math.floor(i + width / segmentInfo.steps);
       j++;
     }
+
 
     ctx.textAlign = 'left';
 
@@ -450,21 +416,10 @@ var Graph = exports = Class(Widget, function(supr) {
     ctx.lineTo(i + settings.itemSize - 4, j + 11.5);
     ctx.stroke();
   }
+;
 
-  this._renderHorizontalBars = function(segmentInfo, ctx, data) {
-    var settings = this._settings,
-      valueSpace = settings.valueSpace,
-      mainPadding = settings.mainPadding,
-      width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel,
-      height = this._currentHeight - mainPadding * 2 - valueSpace,
-      step = height / data.length,
-      barWidth,
-      barHeight = step - settings.barPadding * 2,
-      barHeightSeg,
-      barX, barY,
-      item,
-      points,
-      i, j, k, l;
+  this._renderHorizontalBars = function (segmentInfo, ctx, data) {
+    var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel, height = this._currentHeight - mainPadding * 2 - valueSpace, step = height / data.length, barWidth, barHeight = step - settings.barPadding * 2, barHeightSeg, barX, barY, item, points, i, j, k, l;
 
     ctx.globalAlpha = 0.9;
     for (i = 0, j = data.length; i < j; i++) {
@@ -485,24 +440,8 @@ var Graph = exports = Class(Widget, function(supr) {
     ctx.globalAlpha = 1;
   };
 
-  this._renderHorizontalPoints = function(segmentInfo, ctx, data) {
-    var settings = this._settings,
-      renderPoints = (settings.types.indexOf('points') !== -1),
-      renderLines = (settings.types.indexOf('lines') !== -1),
-      renderArea = (settings.types.indexOf('area') !== -1),
-      valueSpace = settings.valueSpace,
-      mainPadding = settings.mainPadding,
-      width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel,
-      height = this._currentHeight - mainPadding * 2 - valueSpace,
-      step = height / data.length,
-      pointHeight = step - settings.barPadding * 2,
-      pointX, pointY,
-      points,
-      point,
-      pointList = [],
-      hasLast,
-      item,
-      i, j, k, l;
+  this._renderHorizontalPoints = function (segmentInfo, ctx, data) {
+    var settings = this._settings, renderPoints = settings.types.indexOf('points') !== -1, renderLines = settings.types.indexOf('lines') !== -1, renderArea = settings.types.indexOf('area') !== -1, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel, height = this._currentHeight - mainPadding * 2 - valueSpace, step = height / data.length, pointHeight = step - settings.barPadding * 2, pointX, pointY, points, point, pointList = [], hasLast, item, i, j, k, l;
 
     pointXLast = null;
 
@@ -521,12 +460,16 @@ var Graph = exports = Class(Widget, function(supr) {
         if (!pointList[k]) {
           pointList[k] = [];
         }
-        pointList[k].push({x: pointX, y: pointY});
+        pointList[k].push({
+          x: pointX,
+          y: pointY
+        });
 
         ctx.strokeStyle = settings.dataColors[k % settings.dataColors.length];
         if (renderPoints) {
           ctx.strokeRect(pointX - 4.5, pointY - 4.5, 10, 10);
         }
+
 
         if (hasLast && renderLines) {
           ctx.beginPath();
@@ -535,10 +478,12 @@ var Graph = exports = Class(Widget, function(supr) {
           ctx.stroke();
         }
 
+
         pointXLast[k] = pointX;
       }
       pointYLast = pointY;
     }
+
 
     if (renderArea) {
       ctx.globalAlpha = 0.05;
@@ -558,32 +503,29 @@ var Graph = exports = Class(Widget, function(supr) {
     }
   };
 
-  this.setData = function(data) {
-    var el = this._el,
-      ctx = el.getContext('2d'),
-      settings = this._settings,
-      types = settings.types,
-      axisRenderMethod = function() {},
-      barsRenderMethod = function() {},
-      pointsRenderMethod = function() {},
-      segmentInfo;
+  this.setData = function (data) {
+    var el = this._el, ctx = el.getContext('2d'), settings = this._settings, types = settings.types, axisRenderMethod = function () {
+      }, barsRenderMethod = function () {
+      }, pointsRenderMethod = function () {
+      }, segmentInfo;
 
     switch (settings.orientation) {
-      case 'horizontal':
-        el.width = this._width;
-        el.height = data.length * settings.itemSize + this._settings.valueSpace;
-        axisRenderMethod = bind(this, this._renderVerticalAxis);
-        barsRenderMethod = bind(this, this._renderHorizontalBars);
-        pointsRenderMethod = bind(this, this._renderHorizontalPoints);
-        break;
+    case 'horizontal':
+      el.width = this._width;
+      el.height = data.length * settings.itemSize + this._settings.valueSpace;
+      axisRenderMethod = bind(this, this._renderVerticalAxis);
+      barsRenderMethod = bind(this, this._renderHorizontalBars);
+      pointsRenderMethod = bind(this, this._renderHorizontalPoints);
+      break;
 
-      case 'vertical':
-        el.width = data.length * settings.itemSize + this._settings.valueSpace;
-        el.height = this._height;
-        axisRenderMethod = bind(this, this._renderHorizontalAxis);
-        barsRenderMethod = bind(this, this._renderVerticalBars);
-        pointsRenderMethod = bind(this, this._renderVerticalPoints);
-        break;
+
+    case 'vertical':
+      el.width = data.length * settings.itemSize + this._settings.valueSpace;
+      el.height = this._height;
+      axisRenderMethod = bind(this, this._renderHorizontalAxis);
+      barsRenderMethod = bind(this, this._renderVerticalBars);
+      pointsRenderMethod = bind(this, this._renderVerticalPoints);
+      break;
     }
 
     ctx.font = settings.font;
@@ -595,7 +537,7 @@ var Graph = exports = Class(Widget, function(supr) {
 
       axisRenderMethod(segmentInfo, ctx, data);
 
-      if ((types.indexOf('points') !== -1) || (types.indexOf('area') !== -1) || (types.indexOf('lines') !== -1)) {
+      if (types.indexOf('points') !== -1 || types.indexOf('area') !== -1 || types.indexOf('lines') !== -1) {
         pointsRenderMethod(segmentInfo, ctx, data);
       }
       if (types.indexOf('bars') !== -1) {
@@ -603,13 +545,14 @@ var Graph = exports = Class(Widget, function(supr) {
       }
     }
 
+
     this._data = data;
   };
 
-  this.setSettings = function(settings) {
+  this.setSettings = function (settings) {
     settings.mainLabel = settings.mainLabel || '';
     settings.textColor = settings.textColor || '#000000';
-    settings.fillColor = (settings.fillColor === undefined) ? '#FFFFFF' : settings.fillColor;
+    settings.fillColor = settings.fillColor === undefined ? '#FFFFFF' : settings.fillColor;
     settings.lineColor = settings.lineColor || '#000000';
     settings.orientation = settings.oriantation || 'horizontal';
     settings.types = settings.types || 'bars,lines,area,points';
@@ -617,7 +560,11 @@ var Graph = exports = Class(Widget, function(supr) {
     settings.barBackground = settings.barBackground || '#F8F8F8';
     settings.mainPadding = settings.mainPadding || 10;
     settings.valueSpace = settings.valueSpace || 40;
-    settings.dataColors = settings.dataColors || ['#DD0000', '#00DD00', '#0000DD'];
+    settings.dataColors = settings.dataColors || [
+      '#DD0000',
+      '#00DD00',
+      '#0000DD'
+    ];
     settings.font = settings.font || '13px Verdana';
     settings.maxLabelSize = settings.maxLabelSize || 200;
     settings.itemSize = settings.itemSize || 50;
@@ -625,7 +572,7 @@ var Graph = exports = Class(Widget, function(supr) {
     this._settings = settings;
   };
 
-  this.update = function() {
+  this.update = function () {
     this._data && this.setData(this._data);
   };
 });

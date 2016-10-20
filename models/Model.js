@@ -1,9 +1,10 @@
-import lib.PubSub;
+jsio('import lib.PubSub');
 
 
 function copy(obj) {
   return JSON.parse(JSON.stringify(obj));
 }
+
 
 var PATH_SEP = /[\[.,]/;
 function parsePath(path) {
@@ -12,24 +13,25 @@ function parsePath(path) {
   });
 }
 
+
 function matchPath(p1, p2) {
   return p1.indexOf(p2) == 0 || p2.indexOf(p1) == 0;
 }
 
 
-var Model = exports = Class(lib.PubSub, function (supr) {
 
+
+var Model = exports = Class(lib.PubSub, function (supr) {
   this.init = function (opts) {
     var obj;
 
     if (opts instanceof Model) {
       var cloneFrom = opts;
-      opts = {
-        localStorage: cloneFrom._storageKey
-      };
+      opts = { localStorage: cloneFrom._storageKey };
 
       obj = cloneFrom._data;
     }
+
 
     this._data = {};
 
@@ -41,10 +43,12 @@ var Model = exports = Class(lib.PubSub, function (supr) {
         if (raw) {
           try {
             obj = JSON.parse(raw);
-          } catch (e) {}
+          } catch (e) {
+          }
         }
       }
     }
+
 
     this.setObject(obj || {});
 
@@ -56,6 +60,7 @@ var Model = exports = Class(lib.PubSub, function (supr) {
         }, this);
       }
 
+
       // default values
       if (opts.defaults) {
         Object.keys(opts.defaults).forEach(function (key) {
@@ -66,6 +71,7 @@ var Model = exports = Class(lib.PubSub, function (supr) {
       }
     }
   }
+;
 
   this.setObject = function (obj) {
     this._data = obj;
@@ -73,16 +79,22 @@ var Model = exports = Class(lib.PubSub, function (supr) {
     this.persist();
     return this;
   }
+;
 
   this.toObject = function () {
     return copy(this._data);
   }
+;
 
   this.clone = function () {
     return new Model(this.getObject());
   }
+;
 
-  this.has = function (path) { return this.get(path) !== undefined; }
+  this.has = function (path) {
+    return this.get(path) !== undefined;
+  }
+;
 
   this.get = function (path) {
     var segments = parsePath(path);
@@ -93,12 +105,15 @@ var Model = exports = Class(lib.PubSub, function (supr) {
       o = o[segments[i++]];
     }
 
+
     return o;
   }
+;
 
   this.getObject = function (path) {
     return copy(this.get(path) || {});
   }
+;
 
   this.set = function (path, value) {
     var segments = parsePath(path);
@@ -111,8 +126,10 @@ var Model = exports = Class(lib.PubSub, function (supr) {
         o[s] = typeof segments[i] == 'number' ? [] : {};
       }
 
+
       o = o[s];
     }
+
 
     var prevValue = o[segments[n]];
     if (value != prevValue) {
@@ -120,29 +137,36 @@ var Model = exports = Class(lib.PubSub, function (supr) {
       this.emit(path, value);
     }
 
+
     this.persist();
     return this;
   }
+;
 
   this.emit = function (path, value) {
     if (path) {
       supr(this, 'emit', arguments);
     }
 
+
     if (this._subscribers) {
       Object.keys(this._subscribers).forEach(function (key) {
         if (!path || key != path && matchPath(key, path)) {
-          supr(this, 'emit', [key, this.get(key)]);
+          supr(this, 'emit', [
+            key,
+            this.get(key)
+          ]);
         }
       }, this);
     }
     return this;
   }
+;
 
   this.persist = function () {
     if (this._storageKey) {
       localStorage.setItem(this._storageKey, JSON.stringify(this._data));
     }
     return this;
-  }
+  };
 });
