@@ -1,3 +1,5 @@
+let exports = {};
+
 import Widget from 'squill/Widget';
 import bindings from 'squill/models/bindings';
 
@@ -25,3 +27,5 @@ exports = Class(Widget, function () {
     this.src = src;
   };
 });
+
+export default exports;

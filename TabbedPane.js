@@ -1,3 +1,5 @@
+let exports = {};
+
 import { merge } from 'base';
 
 import browser from 'util/browser';
@@ -212,3 +214,5 @@ exports.Pane = Class(Widget, function (supr) {
     this._sortIndex = sortIndex;
   };
 });
+
+export default exports;

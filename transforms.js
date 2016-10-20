@@ -1,3 +1,5 @@
+let exports = {};
+
 import browser from 'util/browser';
 let $ = browser.$;
 
@@ -84,3 +86,5 @@ exports.move = function (el, x, y, transition, cb) {
 };
 
 exports.hasTransform = hasTransform;
+
+export default exports;

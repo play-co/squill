@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   merge,
   bind
@@ -434,3 +436,5 @@ exports = Class(Widget, function (supr) {
   };
 });
 var List = exports;
+
+export default exports;

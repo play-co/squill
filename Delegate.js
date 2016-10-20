@@ -1,3 +1,5 @@
+let exports = {};
+
 var SLICE = Array.prototype.slice;
 
 exports = Class(function () {
@@ -24,3 +26,5 @@ exports = Class(function () {
   };
 });
 var Delegate = exports;
+
+export default exports;

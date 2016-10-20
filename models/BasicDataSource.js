@@ -1,3 +1,5 @@
+let exports = {};
+
 import PubSub from 'lib/PubSub';
 
 exports = Class(PubSub, function (supr) {
@@ -14,3 +16,5 @@ exports = Class(PubSub, function (supr) {
   };
 });
 var BasicDataSource = exports;
+
+export default exports;

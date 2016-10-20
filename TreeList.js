@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   merge,
   bind
@@ -382,3 +384,5 @@ exports = Class(Widget, function (supr) {
   };
 });
 var TreeList = exports;
+
+export default exports;

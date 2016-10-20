@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   merge,
   bind
@@ -156,3 +158,5 @@ exports = Class(Widget, function (supr) {
   };
 });
 var SelectBox = exports;
+
+export default exports;

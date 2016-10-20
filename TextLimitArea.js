@@ -1,3 +1,5 @@
+let exports = {};
+
 import browser from 'util/browser';
 let $ = browser.$;
 import Widget from './Widget';
@@ -49,3 +51,5 @@ exports = Class(TextArea, function (supr) {
 var TextLimitArea = exports;
 
 Widget.register(TextLimitArea, 'TextLimitArea');
+
+export default exports;

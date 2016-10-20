@@ -1,3 +1,5 @@
+let exports = {};
+
 import { merge } from 'base';
 
 import PubSub from 'lib/PubSub';
@@ -196,3 +198,5 @@ while (win.parent != win) {
   } catch (e) {
   }
 }
+
+export default exports;

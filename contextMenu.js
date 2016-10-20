@@ -1,3 +1,5 @@
+let exports = {};
+
 import browser from 'util/browser';
 let $ = browser.$;
 
@@ -144,3 +146,5 @@ exports.show = function (contextMenu, target) {
   var rect = target.getBoundingClientRect();
   showMenu(contextMenu, rect.left + ~~(rect.width / 2), rect.top + ~~(rect.height / 2));
 };
+
+export default exports;

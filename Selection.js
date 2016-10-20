@@ -1,3 +1,5 @@
+let exports = {};
+
 import { merge } from 'base';
 
 import PubSub from 'lib/PubSub';
@@ -143,3 +145,5 @@ exports.LocalStore = Class(function () {
   };
 });
 
+
+export default exports;

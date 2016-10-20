@@ -1,3 +1,5 @@
+let exports = {};
+
 import { merge } from 'base';
 
 import Widget from './Widget';
@@ -33,3 +35,5 @@ exports = Class(Widget, function () {
     this.contentPane.appendChild(el);
   };
 });
+
+export default exports;

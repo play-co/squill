@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 import browser from 'util/browser';
@@ -46,3 +48,5 @@ exports.add = function (el, text) {
     evt.target.hintTimeout && clearTimeout(evt.target.hintTimeout);
   });
 };
+
+export default exports;

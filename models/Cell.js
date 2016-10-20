@@ -1,3 +1,5 @@
+let exports = {};
+
 import Widget from './Widget';
 
 exports = Class(Widget, function (supr) {
@@ -20,3 +22,5 @@ exports = Class(Widget, function (supr) {
   };
 });
 var Cell = exports;
+
+export default exports;

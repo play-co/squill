@@ -1,3 +1,5 @@
+let exports = {};
+
 exports.classes = {
   alpha: require('./Alpha'),
   label: require('./Label'),
@@ -31,5 +33,9 @@ exports.resolve = function (env, opts) {
   }
 
 
+
+
   return imports;
 };
+
+export default exports;

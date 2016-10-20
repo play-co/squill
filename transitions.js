@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 import PubSub from 'lib/PubSub';
@@ -65,3 +67,5 @@ exports.cssFadeOut = function (el) {
     }
   });
 };
+
+export default exports;

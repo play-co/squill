@@ -1,3 +1,5 @@
+let exports = {};
+
 /**
  * A remark about the implementation of this persistence handler:
  *
@@ -174,3 +176,5 @@ exports = Class(BasicPersistenceHandler, function (supr) {
   };
 });
 var RemotePersistenceHandler = exports;
+
+export default exports;

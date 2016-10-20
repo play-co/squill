@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   logger,
   bind
@@ -68,3 +70,5 @@ exports.reloadCSS = function () {
     }, s));
   }
 };
+
+export default exports;

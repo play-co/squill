@@ -1,3 +1,5 @@
+let exports = {};
+
 import { merge } from 'base';
 
 import browser from 'util/browser';
@@ -34,3 +36,5 @@ exports = Class(Widget, function (supr) {
 });
 var Canvas = exports;
 
+
+export default exports;

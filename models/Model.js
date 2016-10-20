@@ -1,3 +1,5 @@
+let exports = {};
+
 import PubSub from 'lib/PubSub';
 
 
@@ -178,3 +180,5 @@ exports = Class(PubSub, function (supr) {
   };
 });
 var Model = exports;
+
+export default exports;

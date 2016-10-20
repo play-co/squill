@@ -1,3 +1,5 @@
+let exports = {};
+
 exports = Class(function () {
   this.init = function () {
     this._data = {};
@@ -11,3 +13,5 @@ exports = Class(function () {
     (this._data[key] || (this._data[key] = [])).push(item);
   };
 });
+
+export default exports;

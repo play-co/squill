@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 import PubSub from 'lib/PubSub';
@@ -137,3 +139,5 @@ function untrapIframes() {
     item.el.style.pointerEvents = item.set;
   });
 }
+
+export default exports;

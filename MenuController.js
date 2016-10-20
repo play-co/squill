@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 import PubSub from 'lib/PubSub';
@@ -228,3 +230,5 @@ exports = Class(Widget, function (supr) {
     }
   };
 });
+
+export default exports;

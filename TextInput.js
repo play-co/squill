@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   merge,
   bind
@@ -259,3 +261,5 @@ exports.INVALID_VALUE = {};
 var INVALID_VALUE = exports.INVALID_VALUE;
 
 Widget.register(TextInput, 'TextInput');
+
+export default exports;

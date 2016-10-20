@@ -1,3 +1,5 @@
+let exports = {};
+
 import browser from 'util/browser';
 let $ = browser.$;
 import Widget from 'squill/Widget';
@@ -32,3 +34,5 @@ exports = Class(Widget, function () {
 exports.prototype.setData = exports.prototype.setText;
 exports.prototype.setValue = exports.prototype.setText;
 exports.prototype.setLabel = exports.prototype.setText;
+
+export default exports;

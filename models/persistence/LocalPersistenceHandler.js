@@ -1,3 +1,5 @@
+let exports = {};
+
 import BasicPersistenceHandler from './BasicPersistenceHandler';
 
 exports = Class(BasicPersistenceHandler, function (supr) {
@@ -26,3 +28,5 @@ exports = Class(BasicPersistenceHandler, function (supr) {
   };
 });
 var LocalPersistenceHandler = exports;
+
+export default exports;

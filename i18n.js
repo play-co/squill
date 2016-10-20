@@ -1,3 +1,5 @@
+let exports = {};
+
 var gLang = null;
 
 exports.setLang = function (lang) {
@@ -18,3 +20,5 @@ exports.Language = Class(function () {
     return this._dict[key];
   };
 });
+
+export default exports;

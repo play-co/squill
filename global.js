@@ -1,3 +1,5 @@
+let exports = {};
+
 var gWidgetPrefix = 'squill-';
 var gWin = window;
 var gDoc = document;
@@ -19,3 +21,5 @@ exports.setWidgetPrefix = function (p) {
 exports.getWidgetPrefix = function () {
   return gWidgetPrefix;
 };
+
+export default exports;

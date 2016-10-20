@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 import browser from 'util/browser';
@@ -163,3 +165,5 @@ exports = Class(PubSub, function () {
   this.onDragStop = function (dragEvt, upEvt) {
   };
 });
+
+export default exports;

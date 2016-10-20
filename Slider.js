@@ -1,3 +1,5 @@
+let exports = {};
+
 import browser from 'util/browser';
 let $ = browser.$;
 import Widget from './Widget';
@@ -159,3 +161,5 @@ exports = Class(Widget, function (supr) {
 });
 var Slider = exports;
 
+
+export default exports;

@@ -1,3 +1,5 @@
+let exports = {};
+
 import { logger } from 'base';
 
 import Callback from 'lib/Callback';
@@ -92,5 +94,9 @@ exports.get = function (src, copy, noWarn) {
   }
 
 
+
+
   return _cache[src] = img;
 };
+
+export default exports;

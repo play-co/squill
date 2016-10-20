@@ -1,3 +1,5 @@
+let exports = {};
+
 import PubSub from 'lib/PubSub';
 
 exports = Class(PubSub, function () {
@@ -6,3 +8,5 @@ exports = Class(PubSub, function () {
     this._view = opts.view;
   };
 });
+
+export default exports;

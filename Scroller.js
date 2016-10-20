@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   merge,
   bind
@@ -144,3 +146,5 @@ exports = Class(Widget, function (supr) {
     }
   };
 });
+
+export default exports;

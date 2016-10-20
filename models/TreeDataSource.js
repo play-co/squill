@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   merge,
   isArray,
@@ -424,3 +426,5 @@ exports = Class(BasicDataSource, function (supr) {
   };
 });
 var TreeDataSource = exports;
+
+export default exports;

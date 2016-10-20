@@ -1,3 +1,5 @@
+let exports = {};
+
 import PubSub from 'lib/PubSub';
 import browser from 'util/browser';
 let $ = browser.$;
@@ -88,3 +90,5 @@ exports = Class(PubSub, function (supr) {
   };
 });
 var Element = exports;
+
+export default exports;

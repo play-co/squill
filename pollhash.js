@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 import PubSub from 'lib/PubSub';
@@ -56,3 +58,5 @@ exports.BasicPager = Class(function () {
     }
   };
 });
+
+export default exports;

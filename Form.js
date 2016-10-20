@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   merge,
   bind,
@@ -98,3 +100,5 @@ exports = Class(Widget, function (supr) {
   this.removeByName = function (name) {
   };
 });
+
+export default exports;

@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 import browser from 'util/browser';
@@ -18,10 +20,11 @@ exports = function (cb) {
   }
 
 
+
+
   cbs.push(cb);
   return cb;
-}
-;
+};
 var onResize = exports;
 
 exports.centerVertical = function (el) {
@@ -42,3 +45,5 @@ exports.center = function (el) {
   exports.centerVertical(el);
   exports.centerHorizontal(el);
 };
+
+export default exports;

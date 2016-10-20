@@ -1,3 +1,5 @@
+let exports = {};
+
 import widgets from './widgets';
 
 exports = Class(widgets.Widget, function () {
@@ -10,3 +12,5 @@ exports = Class(widgets.Widget, function () {
   this.addButton = function () {
   };
 });
+
+export default exports;

@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 /**
@@ -1126,3 +1128,5 @@ var jscolor = {
 
 //jscolor.install();
 exports = jscolor;
+
+export default exports;

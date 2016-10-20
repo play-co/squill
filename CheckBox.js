@@ -1,3 +1,5 @@
+let exports = {};
+
 import Widget from './Widget';
 import browser from 'util/browser';
 let $ = browser.$;
@@ -69,3 +71,5 @@ exports = Class(Widget, function (supr) {
   };
 });
 var CheckBox = exports;
+
+export default exports;

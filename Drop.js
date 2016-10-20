@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 import Widget from './Widget';
@@ -168,3 +170,5 @@ exports = Class(Widget, function (supr) {
   this.onDrop = function () {
   };
 });
+
+export default exports;

@@ -1,3 +1,5 @@
+let exports = {};
+
 import browser from 'util/browser';
 let $ = browser.$;
 import Widget from './Widget';
@@ -9,3 +11,5 @@ exports = Class(TextInput, function (supr) {
 var TextArea = exports;
 
 Widget.register(TextArea, 'TextArea');
+
+export default exports;

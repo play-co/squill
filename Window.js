@@ -1,3 +1,5 @@
+let exports = {};
+
 import { merge } from 'base';
 
 import PubSub from 'lib/PubSub';
@@ -61,3 +63,5 @@ exports.get = function (win) {
     return gWin[win[UNIQUE_ID]] = new Window(win);
   }
 };
+
+export default exports;

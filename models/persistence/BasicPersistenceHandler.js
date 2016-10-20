@@ -1,3 +1,5 @@
+let exports = {};
+
 import { isArray } from 'base';
 
 import PubSub from 'lib/PubSub';
@@ -53,3 +55,5 @@ exports = Class(PubSub, function (supr) {
 
 });
 var BasicPersistanceHandler = exports;
+
+export default exports;

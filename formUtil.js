@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 import browser from 'util/browser';
@@ -31,3 +33,5 @@ exports.onPress = function (el, cb) {
     cb();
   });
 };
+
+export default exports;

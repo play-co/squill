@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   merge,
   bind
@@ -582,3 +584,5 @@ exports = Class(Widget, function (supr) {
   };
 });
 var Graph = exports;
+
+export default exports;

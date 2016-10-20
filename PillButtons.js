@@ -1,3 +1,5 @@
+let exports = {};
+
 import { merge } from 'base';
 
 import Widget from './Widget';
@@ -59,3 +61,5 @@ exports = Class(Widget, function (supr) {
   };
 });
 var PillButtons = exports;
+
+export default exports;

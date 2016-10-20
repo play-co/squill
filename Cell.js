@@ -1,3 +1,5 @@
+let exports = {};
+
 import Widget from './Widget';
 import DataItem from './models/DataItem';
 
@@ -83,3 +85,5 @@ exports = Class(Widget, function (supr) {
 var Cell = exports;
 
 exports.Selectable = exports;
+
+export default exports;

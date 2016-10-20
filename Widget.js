@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   merge,
   logger,
@@ -671,3 +673,5 @@ Widget.get = function (name) {
 };
 
 Widget.WidgetSet = WidgetSet;
+
+export default exports;

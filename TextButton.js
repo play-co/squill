@@ -1,3 +1,5 @@
+let exports = {};
+
 import Button from './Button';
 import Widget from './Widget';
 import browser from 'util/browser';
@@ -24,3 +26,5 @@ exports = Class(Button, function (supr) {
 var TextButton = exports;
 
 Widget.register(TextButton, 'TextButton');
+
+export default exports;

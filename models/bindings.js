@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 var RE_BINDING = /(^|[^%])%\((.*?)\)([ +0-]?)(\d*)(\.?\d*)([dfcs])/g;
@@ -104,6 +106,19 @@ var bindings = require('./bindings');
 bindings.parseFormat({}, "Hello world %(format.this) 4d %(format.that)06.2f")
 
 */
+
+
+
+
+
+
+
+
+export default exports;
+
+
+
+
 
 
 

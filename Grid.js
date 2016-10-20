@@ -1,3 +1,5 @@
+let exports = {};
+
 import Widget from './Widget';
 
 exports = Class(Widget, function (supr) {
@@ -37,3 +39,5 @@ exports = Class(Widget, function (supr) {
     }
   };
 });
+
+export default exports;

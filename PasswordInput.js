@@ -1,3 +1,5 @@
+let exports = {};
+
 import TextInput from './TextInput';
 import Widget from './Widget';
 exports = Class(TextInput, function (supr) {
@@ -8,6 +10,12 @@ var PasswordInput = exports;
 
 Widget.register(PasswordInput, 'PasswordInput');
 
+
+
+
+
+
+export default exports;
 
 
 

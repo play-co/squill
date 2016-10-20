@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   merge,
   isArray,
@@ -387,3 +389,5 @@ exports = Class(BasicDataSource, function (supr) {
   };
 });
 var DataSource = exports;
+
+export default exports;

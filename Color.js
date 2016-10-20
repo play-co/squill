@@ -1,3 +1,5 @@
+let exports = {};
+
 import {
   merge,
   bind
@@ -56,3 +58,5 @@ exports = Class(Widget, function (supr) {
 });
 var Color = exports;
 
+
+export default exports;

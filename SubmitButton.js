@@ -1,3 +1,5 @@
+let exports = {};
+
 import { bind } from 'base';
 
 import browser from 'util/browser';
@@ -29,3 +31,5 @@ exports = Class(TextButton, function (supr) {
 var SubmitButton = exports;
 
 Widget.register(SubmitButton, 'SubmitButton');
+
+export default exports;
