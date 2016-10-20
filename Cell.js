@@ -4,7 +4,7 @@ import DataItem from './models/DataItem';
 import browser from 'util/browser';
 let $ = browser.$;
 
-var Cell = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this._css = 'cell';
 
   this.init = function (opts) {
@@ -80,5 +80,6 @@ var Cell = exports = Class(Widget, function (supr) {
     return isSelected;
   };
 });
+var Cell = exports;
 
 exports.Selectable = exports;

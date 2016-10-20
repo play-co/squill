@@ -1,6 +1,6 @@
 import PubSub from 'lib/PubSub';
 
-var BasicDataSource = exports = Class(PubSub, function (supr) {
+exports = Class(PubSub, function (supr) {
   this.init = function (opts) {
     supr(this, 'init', arguments);
 
@@ -13,3 +13,4 @@ var BasicDataSource = exports = Class(PubSub, function (supr) {
     return this._key;
   };
 });
+var BasicDataSource = exports;

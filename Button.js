@@ -9,7 +9,7 @@ import Widget from './Widget';
 
 import hint from './hint';
 
-var Button = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this._css = 'btn';
   this._type = 'button';
 
@@ -123,4 +123,5 @@ var Button = exports = Class(Widget, function (supr) {
     }
   };
 });
+var Button = exports;
 

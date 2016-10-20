@@ -9,7 +9,7 @@ import DataSource from 'squill/models/DataSource';
 import browser from 'util/browser';
 let $ = browser.$;
 
-var SelectBox = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this._css = 'select';
 
   this._def = {
@@ -155,3 +155,4 @@ var SelectBox = exports = Class(Widget, function (supr) {
     return this._select.value;
   };
 });
+var SelectBox = exports;

@@ -8,7 +8,7 @@ let $ = browser.$;
 import Widget from './Widget';
 import bindings from 'squill/models/bindings';
 
-var TextInput = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this._type = 'text';
   this._css = 'textInput';
 
@@ -253,7 +253,9 @@ var TextInput = exports = Class(Widget, function (supr) {
     this.setEnabled(true);
   };
 });
+var TextInput = exports;
 
-var INVALID_VALUE = exports.INVALID_VALUE = {};
+exports.INVALID_VALUE = {};
+var INVALID_VALUE = exports.INVALID_VALUE;
 
 Widget.register(TextInput, 'TextInput');

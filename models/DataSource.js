@@ -15,7 +15,7 @@ var toStringSort = function () {
 };
 
 
-var DataSource = exports = Class(BasicDataSource, function (supr) {
+exports = Class(BasicDataSource, function (supr) {
   this.init = function (opts) {
     opts = merge(opts, defaults);
     supr(this, 'init', [opts]);
@@ -386,3 +386,4 @@ var DataSource = exports = Class(BasicDataSource, function (supr) {
     return result;
   };
 });
+var DataSource = exports;

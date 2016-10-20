@@ -70,7 +70,7 @@ function _replaceNode(id) {
 ;
 
 
-var Widget = exports = Class(Element, function () {
+exports = Class(Element, function () {
   this._css = 'widget';
   this._name = '';
 
@@ -647,6 +647,7 @@ var Widget = exports = Class(Element, function () {
     return this;
   };
 });
+var Widget = exports;
 
 // Mix in Events
 // TODO: is this correct?

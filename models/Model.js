@@ -25,7 +25,15 @@ function matchPath(p1, p2) {
 
 
 
-var Model = exports = Class(PubSub, function (supr) {
+
+
+
+
+
+
+
+
+exports = Class(PubSub, function (supr) {
   this.init = function (opts) {
     var obj;
 
@@ -169,3 +177,4 @@ var Model = exports = Class(PubSub, function (supr) {
     return this;
   };
 });
+var Model = exports;

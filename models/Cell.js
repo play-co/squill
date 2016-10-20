@@ -1,6 +1,6 @@
 import Widget from './Widget';
 
-var Cell = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this.init = function (params) {
     supr(this, 'init', arguments);
   };
@@ -19,3 +19,4 @@ var Cell = exports = Class(Widget, function (supr) {
     }
   };
 });
+var Cell = exports;

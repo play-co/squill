@@ -7,7 +7,7 @@ import Resource from './Resource';
 import Widget from './Widget';
 import Selection from '../Selection';
 
-var List = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this.init = function (opts) {
     opts = merge(opts, {
       isFixedSize: true,
@@ -433,3 +433,4 @@ var List = exports = Class(Widget, function (supr) {
     return this.selection && this.selection.getSelectionCount();
   };
 });
+var List = exports;

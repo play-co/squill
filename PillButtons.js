@@ -6,7 +6,7 @@ let $ = browser.$;
 
 var defaults = { className: 'pillButtons' };
 
-var PillButtons = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this.init = function (opts) {
     opts = merge(opts, defaults);
     supr(this, 'init', [opts]);
@@ -58,3 +58,4 @@ var PillButtons = exports = Class(Widget, function (supr) {
     this.publish('Select', value);
   };
 });
+var PillButtons = exports;

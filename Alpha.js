@@ -8,7 +8,7 @@ import jscolor from './jscolor/jscolor';
 
 var alphaSelect = false, alphaIndicator;
 
-var Alpha = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this._css = 'lph';
   this._type = 'text';
 
@@ -180,4 +180,5 @@ var Alpha = exports = Class(Widget, function (supr) {
     return this._el.value;
   };
 });
+var Alpha = exports;
 

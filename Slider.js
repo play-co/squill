@@ -2,7 +2,7 @@ import browser from 'util/browser';
 let $ = browser.$;
 import Widget from './Widget';
 
-var Slider = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this._css = 'rng';
   this._type = 'range';
 
@@ -157,4 +157,5 @@ var Slider = exports = Class(Widget, function (supr) {
     this._checkMouse(evt);
   };
 });
+var Slider = exports;
 

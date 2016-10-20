@@ -12,7 +12,7 @@ $.onEvent(window, 'resize', function () {
   }
 });
 
-var onResize = exports = function (cb) {
+exports = function (cb) {
   if (typeof cb != 'function') {
     cb = bind.apply(this, arguments);
   }
@@ -21,8 +21,8 @@ var onResize = exports = function (cb) {
   cbs.push(cb);
   return cb;
 }
-
 ;
+var onResize = exports;
 
 exports.centerVertical = function (el) {
   var dim = $(window);

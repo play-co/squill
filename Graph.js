@@ -9,7 +9,7 @@ import Widget from './Widget';
 
 import hint from './hint';
 
-var Graph = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this._css = 'cnvs';
   this._type = 'canvas';
 
@@ -581,3 +581,4 @@ var Graph = exports = Class(Widget, function (supr) {
     this._data && this.setData(this._data);
   };
 });
+var Graph = exports;

@@ -18,7 +18,7 @@ import ajax from 'util/ajax';
 
 import BasicPersistenceHandler from './BasicPersistenceHandler';
 
-var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function (supr) {
+exports = Class(BasicPersistenceHandler, function (supr) {
   this.init = function (opts) {
     supr(this, 'init', arguments);
 
@@ -173,3 +173,4 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
     this._saveURL = saveURL;
   };
 });
+var RemotePersistenceHandler = exports;

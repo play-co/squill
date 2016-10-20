@@ -2,7 +2,7 @@ import Widget from './Widget';
 import browser from 'util/browser';
 let $ = browser.$;
 
-var CheckBox = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this._css = 'checkbox';
 
   this._def = {
@@ -68,3 +68,4 @@ var CheckBox = exports = Class(Widget, function (supr) {
     return this.isChecked() ? this.checkbox.value : null;
   };
 });
+var CheckBox = exports;

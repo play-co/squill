@@ -3,8 +3,9 @@ let $ = browser.$;
 import Widget from './Widget';
 import TextInput from './TextInput';
 
-var TextArea = exports = Class(TextInput, function (supr) {
+exports = Class(TextInput, function (supr) {
   this._tag = 'textarea';
 });
+var TextArea = exports;
 
 Widget.register(TextArea, 'TextArea');

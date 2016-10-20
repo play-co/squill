@@ -3,7 +3,7 @@ import Widget from './Widget';
 import browser from 'util/browser';
 let $ = browser.$;
 
-var TextButton = exports = Class(Button, function (supr) {
+exports = Class(Button, function (supr) {
   this._type = 'text-button';
 
   this.buildWidget = function () {
@@ -21,5 +21,6 @@ var TextButton = exports = Class(Button, function (supr) {
     }
   };
 });
+var TextButton = exports;
 
 Widget.register(TextButton, 'TextButton');

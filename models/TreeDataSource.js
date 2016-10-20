@@ -172,7 +172,7 @@ var toStringSort = function () {
 };
 
 
-var TreeDataSource = exports = Class(BasicDataSource, function (supr) {
+exports = Class(BasicDataSource, function (supr) {
   this.init = function (opts) {
     opts = opts || {};
     opts = merge(opts, defaults);
@@ -423,3 +423,4 @@ var TreeDataSource = exports = Class(BasicDataSource, function (supr) {
     this.publish('Error', message);
   };
 });
+var TreeDataSource = exports;

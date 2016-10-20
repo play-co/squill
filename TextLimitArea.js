@@ -3,7 +3,7 @@ let $ = browser.$;
 import Widget from './Widget';
 import TextArea from './TextArea';
 
-var TextLimitArea = exports = Class(TextArea, function (supr) {
+exports = Class(TextArea, function (supr) {
   this.buildWidget = function () {
     supr(this, 'buildWidget', arguments);
     this._limit = this._opts.limit || 140;
@@ -46,5 +46,6 @@ var TextLimitArea = exports = Class(TextArea, function (supr) {
 
 
 });
+var TextLimitArea = exports;
 
 Widget.register(TextLimitArea, 'TextLimitArea');

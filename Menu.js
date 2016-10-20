@@ -7,7 +7,7 @@ import Delegate from './Delegate';
 import browser from 'util/browser';
 let $ = browser.$;
 
-var Menu = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   // this.init = function(params) {
   //  var params = JS.merge(params, {parent: $.id('wrapper')});
   //  supr(this, 'init', [params]);
@@ -105,6 +105,7 @@ var Menu = exports = Class(Widget, function (supr) {
     Menu.emit('close', this);
   };
 });
+var Menu = exports;
 
 var subs = new PubSub();
 Menu.emit = bind(subs, 'emit');

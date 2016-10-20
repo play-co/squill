@@ -5,7 +5,7 @@ let $ = browser.$;
 import Widget from './Widget';
 import sort from 'lib/sort';
 
-var TabbedPane = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this._def = {
     className: 'tabbedPane',
     activeTabClassName: 'selected',
@@ -179,6 +179,7 @@ var TabbedPane = exports = Class(Widget, function (supr) {
     this.publish('ShowPane', pane);
   };
 });
+var TabbedPane = exports;
 
 
 var sortID = 0;

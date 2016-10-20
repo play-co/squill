@@ -2,7 +2,7 @@ import PubSub from 'lib/PubSub';
 import browser from 'util/browser';
 let $ = browser.$;
 
-var Element = exports = Class(PubSub, function (supr) {
+exports = Class(PubSub, function (supr) {
   this.init = function (opts) {
     this._opts = JS.merge(opts, {
       win: window,
@@ -87,3 +87,4 @@ var Element = exports = Class(PubSub, function (supr) {
     $.remove(this._el);
   };
 });
+var Element = exports;

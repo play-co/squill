@@ -1,6 +1,6 @@
 import BasicPersistenceHandler from './BasicPersistenceHandler';
 
-var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function (supr) {
+exports = Class(BasicPersistenceHandler, function (supr) {
   this.init = function (opts) {
     supr(this, 'init', arguments);
 
@@ -25,3 +25,4 @@ var LocalPersistenceHandler = exports = Class(BasicPersistenceHandler, function 
     localStorage.setItem(this._storageKey, JSON.stringify(dataSource));
   };
 });
+var LocalPersistenceHandler = exports;

@@ -18,7 +18,7 @@ var defaults = {
 };
 
 
-var TreeList = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this.init = function (opts) {
     opts = opts || {};
     opts = merge(opts, defaults);
@@ -381,3 +381,4 @@ var TreeList = exports = Class(Widget, function (supr) {
     return this._itemByKey[item[this._dataSource.key]];
   };
 });
+var TreeList = exports;

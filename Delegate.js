@@ -1,6 +1,6 @@
 var SLICE = Array.prototype.slice;
 
-var Delegate = exports = Class(function () {
+exports = Class(function () {
   this.init = function (def) {
     def && def(this);
   };
@@ -23,3 +23,4 @@ var Delegate = exports = Class(function () {
     this.call.apply(this, [ctx].concat(SLICE.call(args)));
   };
 });
+var Delegate = exports;

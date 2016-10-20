@@ -4,7 +4,7 @@ import browser from 'util/browser';
 let $ = browser.$;
 jsio('import .TextButton, .Widget');
 
-var SubmitButton = exports = Class(TextButton, function (supr) {
+exports = Class(TextButton, function (supr) {
   this.putHere = function () {
     supr(this, 'putHere', arguments);
     if (this._opts.form) {
@@ -26,5 +26,6 @@ var SubmitButton = exports = Class(TextButton, function (supr) {
     return this;
   };
 });
+var SubmitButton = exports;
 
 Widget.register(SubmitButton, 'SubmitButton');

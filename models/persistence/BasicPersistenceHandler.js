@@ -2,7 +2,7 @@ import { isArray } from 'base';
 
 import PubSub from 'lib/PubSub';
 
-var BasicPersistanceHandler = exports = Class(PubSub, function (supr) {
+exports = Class(PubSub, function (supr) {
   this.init = function (opts) {
     supr(this, 'init', arguments);
 
@@ -52,3 +52,4 @@ var BasicPersistanceHandler = exports = Class(PubSub, function (supr) {
   };
 
 });
+var BasicPersistanceHandler = exports;

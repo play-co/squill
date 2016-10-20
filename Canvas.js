@@ -4,7 +4,7 @@ import browser from 'util/browser';
 let $ = browser.$;
 import Widget from './Widget';
 
-var Canvas = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this._css = 'cnvs';
   this._type = 'canvas';
 
@@ -32,4 +32,5 @@ var Canvas = exports = Class(Widget, function (supr) {
     this.initKeyEvents(el);
   };
 });
+var Canvas = exports;
 

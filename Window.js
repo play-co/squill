@@ -7,7 +7,7 @@ let $ = browser.$;
 
 var UNIQUE_ID = '__squill__window_id';
 
-var Window = exports = Class(PubSub, function () {
+exports = Class(PubSub, function () {
   this.init = function (win) {
     this._win = win || window;
     this._location = new uri(this._win.location);
@@ -46,6 +46,7 @@ var Window = exports = Class(PubSub, function () {
     }
   };
 });
+var Window = exports;
 
 var gWin = {};
 exports.get = function (win) {

@@ -9,7 +9,7 @@ import Widget from './Widget';
 
 import jscolor from './jscolor/jscolor';
 
-var Color = exports = Class(Widget, function (supr) {
+exports = Class(Widget, function (supr) {
   this._css = 'clr';
   this._type = 'text';
 
@@ -54,4 +54,5 @@ var Color = exports = Class(Widget, function (supr) {
     this.publish('Change', this._el.value);
   };
 });
+var Color = exports;
 
