@@ -7,7 +7,7 @@ import browser from 'util/browser';
 let $ = browser.$;
 
 exports = class extends Widget {
-  addElement() {
+  addElement () {
     this.contentPane.appendChild(el);
   }
 };
@@ -23,16 +23,16 @@ exports.prototype._def = {
     cellspacing: 0
   },
   children: [$({
-      tag: 'tbody',
+    tag: 'tbody',
+    children: [$({
+      tag: 'tr',
       children: [$({
-          tag: 'tr',
-          children: [$({
-              id: 'contentPane',
-              tag: 'td',
-              attrs: { valign: 'middle' },
-              style: { verticalAlign: 'middle' }
-            })]
-        })]
+        id: 'contentPane',
+        tag: 'td',
+        attrs: { valign: 'middle' },
+        style: { verticalAlign: 'middle' }
+      })]
     })]
+  })]
 };
 export default exports;

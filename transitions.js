@@ -5,7 +5,7 @@ import { bind } from 'base';
 import PubSub from 'lib/PubSub';
 
 class Transition extends PubSub {
-  constructor(opts) {
+  constructor (opts) {
     super();
 
     this._target = opts.target;
@@ -14,12 +14,11 @@ class Transition extends PubSub {
 
     setTimeout(bind(this, 'run'), 0);
   }
-  run() {
-  }
+  run () {}
 }
 
 class CSSTransition extends Transition {
-  run() {
+  run () {
     var target = this._target;
     this._start && this._start(target);
 
@@ -30,12 +29,9 @@ class CSSTransition extends Transition {
       duration = parseFloat(duration) * (/ms/.test(duration) ? 1 : 1000);
     }
 
-
-
-
     setTimeout(bind(this, 'end'), duration);
   }
-  end() {
+  end () {
     var target = this._target;
     this._end && this._end(target);
     this.emit('end', target);

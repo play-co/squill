@@ -12,7 +12,7 @@ import Widget from './Widget';
 import hint from './hint';
 
 exports = class extends Widget {
-  constructor(opts) {
+  constructor (opts) {
     params = merge(opts, { tag: 'canvas' });
     super(...arguments);
 
@@ -27,19 +27,19 @@ exports = class extends Widget {
     $.onEvent(this._el, 'mousemove', this, this._onMouseMove);
     $.onEvent(this._el, 'mouseout', this, this._onMouseOut);
   }
-  _onMouseMove(evt) {
-    var rectangles = this._rectangles, rectangle, found = false, i = rectangles.length;
+  _onMouseMove (evt) {
+    var rectangles = this._rectangles,
+      rectangle, found = false,
+      i = rectangles.length;
 
     while (i) {
       rectangle = rectangles[--i];
-      if (evt.offsetX >= rectangle.x1 && evt.offsetY >= rectangle.y1 && evt.offsetX <= rectangle.x2 && evt.offsetY <= rectangle.y2) {
+      if (evt.offsetX >= rectangle.x1 && evt.offsetY >= rectangle.y1 && evt
+        .offsetX <= rectangle.x2 && evt.offsetY <= rectangle.y2) {
         found = true;
         break;
       }
     }
-
-
-
 
     if (found) {
       hint.show(evt.pageX + 15, evt.pageY + 15, rectangle.label);
@@ -47,17 +47,19 @@ exports = class extends Widget {
       hint.hide();
     }
   }
-  _onMouseOut(evt) {
+  _onMouseOut (evt) {
     hint.hide();
   }
-  buildWidget() {
+  buildWidget () {
     var el = this._el;
 
     this.initMouseEvents(el);
     this.initKeyEvents(el);
   }
-  _renderBackground(ctx) {
-    var el = this._el, width = el.width, height = el.height;
+  _renderBackground (ctx) {
+    var el = this._el,
+      width = el.width,
+      height = el.height;
 
     this._currentWidth = width;
     this._currentHeight = height;
@@ -69,8 +71,12 @@ exports = class extends Widget {
       ctx.clearRect(0, 0, width, height);
     }
   }
-  _calculateSegments(ctx, data) {
-    var settings = this._settings, max = 0, maxLabel = 0, i, j = data.length, k, l;
+  _calculateSegments (ctx, data) {
+    var settings = this._settings,
+      max = 0,
+      maxLabel = 0,
+      i, j = data.length,
+      k, l;
 
     for (i = 0; i < j; i++) {
       item = data[i];
@@ -83,16 +89,15 @@ exports = class extends Widget {
       }
     }
 
-
-
-
     var steps = [
         0.5,
         0.25,
         0.2,
         0.125,
         0.1
-      ], stepIndex = 0, stepCount, factor = 1;
+      ],
+      stepIndex = 0,
+      stepCount, factor = 1;
 
     while (max / (steps[stepIndex] * factor) > 10) {
       stepIndex++;
@@ -101,9 +106,6 @@ exports = class extends Widget {
         factor *= 10;
       }
     }
-
-
-
 
     stepCount = Math.ceil(max / (steps[stepIndex] * factor));
     return {
@@ -114,7 +116,7 @@ exports = class extends Widget {
       factor: factor
     };
   }
-  _trimLabel(segmentInfo, ctx, label) {
+  _trimLabel (segmentInfo, ctx, label) {
     if (ctx.measureText(label).width > segmentInfo.maxLabel) {
       while (ctx.measureText(label + '...').width > segmentInfo.maxLabel) {
         label = label.substr(0, label.length - 1);
@@ -123,8 +125,14 @@ exports = class extends Widget {
     }
     return label;
   }
-  _renderHorizontalAxis(segmentInfo, ctx, data) {
-    var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - valueSpace, height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel, step = width / data.length, label, hasDecimal, x, y, i, j, k;
+  _renderHorizontalAxis (segmentInfo, ctx, data) {
+    var settings = this._settings,
+      valueSpace = settings.valueSpace,
+      mainPadding = settings.mainPadding,
+      width = this._currentWidth - mainPadding * 2 - valueSpace,
+      height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel,
+      step = width / data.length,
+      label, hasDecimal, x, y, i, j, k;
 
     ctx.strokeStyle = settings.barBackground;
     for (i = 0; i < 2; i++) {
@@ -134,9 +142,6 @@ exports = class extends Widget {
       ctx.lineTo(x, mainPadding + height);
       ctx.stroke();
     }
-
-
-
 
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
@@ -157,9 +162,6 @@ exports = class extends Widget {
       }
     }
 
-
-
-
     ctx.strokeStyle = this._settings.lineColor;
     ctx.fillStyle = '#000000';
 
@@ -178,9 +180,6 @@ exports = class extends Widget {
       i = Math.ceil(i - height / segmentInfo.steps);
       j++;
     }
-
-
-
 
     i = height;
     j = 0;
@@ -206,15 +205,13 @@ exports = class extends Widget {
       j++;
     }
 
-
-
-
     ctx.textAlign = 'left';
 
     label = settings.mainLabel + ' x' + segmentInfo.factor;
 
     i = mainPadding;
-    j = mainPadding + height / 2 + (ctx.measureText(label).width + settings.itemSize) / 2;
+    j = mainPadding + height / 2 + (ctx.measureText(label).width + settings
+      .itemSize) / 2;
     ctx.save();
     ctx.rotate(Math.PI * -0.5);
     ctx.fillStyle = this._settings.textColor;
@@ -233,8 +230,15 @@ exports = class extends Widget {
     ctx.lineTo(i + 11.5, j + 5.5);
     ctx.stroke();
   }
-  _renderVerticalBars(segmentInfo, ctx, data) {
-    var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - valueSpace, height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel, step = width / data.length, barWidth = step - settings.barPadding * 2, barWidthSeg, barHeight, barX, item, points, i, j, k, l;
+  _renderVerticalBars (segmentInfo, ctx, data) {
+    var settings = this._settings,
+      valueSpace = settings.valueSpace,
+      mainPadding = settings.mainPadding,
+      width = this._currentWidth - mainPadding * 2 - valueSpace,
+      height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel,
+      step = width / data.length,
+      barWidth = step - settings.barPadding * 2,
+      barWidthSeg, barHeight, barX, item, points, i, j, k, l;
 
     ctx.globalAlpha = 0.9;
     for (i = 0, j = data.length; i < j; i++) {
@@ -249,13 +253,25 @@ exports = class extends Widget {
         barY = mainPadding + height - barHeight;
 
         ctx.fillStyle = settings.dataColors[k % settings.dataColors.length];
-        ctx.fillRect(barX + k * barWidthSeg, barY, barWidthSeg - 1, barHeight);
+        ctx.fillRect(barX + k * barWidthSeg, barY, barWidthSeg - 1,
+          barHeight);
       }
     }
     ctx.globalAlpha = 1;
   }
-  _renderVerticalPoints(segmentInfo, ctx, data) {
-    var settings = this._settings, renderPoints = settings.types.indexOf('points') !== -1, renderLines = settings.types.indexOf('lines') !== -1, renderArea = settings.types.indexOf('area') !== -1, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - valueSpace, height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel, step = width / data.length, pointWidth = step - settings.barPadding * 2, pointX, pointY, points, point, pointList = [], hasLast, item, i, j, k, l;
+  _renderVerticalPoints (segmentInfo, ctx, data) {
+    var settings = this._settings,
+      renderPoints = settings.types.indexOf('points') !== -1,
+      renderLines = settings.types.indexOf('lines') !== -1,
+      renderArea = settings.types.indexOf('area') !== -1,
+      valueSpace = settings.valueSpace,
+      mainPadding = settings.mainPadding,
+      width = this._currentWidth - mainPadding * 2 - valueSpace,
+      height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel,
+      step = width / data.length,
+      pointWidth = step - settings.barPadding * 2,
+      pointX, pointY, points, point, pointList = [],
+      hasLast, item, i, j, k, l;
 
     pointYLast = null;
 
@@ -267,9 +283,11 @@ exports = class extends Widget {
       if (pointYLast === null) {
         pointYLast = [];
       }
-      pointX = ~~(valueSpace + mainPadding + i * step + settings.barPadding + pointWidth / 2);
+      pointX = ~~(valueSpace + mainPadding + i * step + settings.barPadding +
+        pointWidth / 2);
       for (k = 0, l = points.length; k < l; k++) {
-        pointY = ~~(mainPadding + height - item.points[k] / segmentInfo.max * height);
+        pointY = ~~(mainPadding + height - item.points[k] / segmentInfo.max *
+          height);
 
         if (!pointList[k]) {
           pointList[k] = [];
@@ -284,9 +302,6 @@ exports = class extends Widget {
           ctx.strokeRect(pointX - 4.5, pointY - 4.5, 10, 10);
         }
 
-
-
-
         if (hasLast && renderLines) {
           ctx.beginPath();
           ctx.moveTo(pointXLast, pointYLast[k]);
@@ -294,16 +309,10 @@ exports = class extends Widget {
           ctx.stroke();
         }
 
-
-
-
         pointYLast[k] = pointY;
       }
       pointXLast = pointX;
     }
-
-
-
 
     if (renderArea) {
       ctx.globalAlpha = 0.05;
@@ -322,8 +331,14 @@ exports = class extends Widget {
       ctx.globalAlpha = 1;
     }
   }
-  _renderVerticalAxis(segmentInfo, ctx, data) {
-    var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel, height = this._currentHeight - mainPadding * 2 - valueSpace, step = height / data.length, label, hasDecimal, x, y, i, j, k;
+  _renderVerticalAxis (segmentInfo, ctx, data) {
+    var settings = this._settings,
+      valueSpace = settings.valueSpace,
+      mainPadding = settings.mainPadding,
+      width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel,
+      height = this._currentHeight - mainPadding * 2 - valueSpace,
+      step = height / data.length,
+      label, hasDecimal, x, y, i, j, k;
 
     ctx.strokeStyle = settings.barBackground;
     for (i = 0; i < 2; i++) {
@@ -333,9 +348,6 @@ exports = class extends Widget {
       ctx.lineTo(mainPadding + segmentInfo.maxLabel + width, y);
       ctx.stroke();
     }
-
-
-
 
     ctx.textAlign = 'right';
     ctx.textBaseline = 'top';
@@ -347,7 +359,8 @@ exports = class extends Widget {
       ctx.fillStyle = this._settings.textColor;
       ctx.fillText(label, mainPadding + segmentInfo.maxLabel - 4, y + 4);
       this._rectangles.push({
-        x1: mainPadding + segmentInfo.maxLabel - 4 - ctx.measureText(label).width,
+        x1: mainPadding + segmentInfo.maxLabel - 4 - ctx.measureText(
+          label).width,
         y1: y + 4,
         x2: mainPadding + segmentInfo.maxLabel - 4,
         y2: y + 20,
@@ -358,9 +371,6 @@ exports = class extends Widget {
         ctx.fillRect(mainPadding + segmentInfo.maxLabel, y, width, step);
       }
     }
-
-
-
 
     ctx.textAlign = 'center';
 
@@ -380,15 +390,9 @@ exports = class extends Widget {
         }
       }
 
-
-
-
       i = Math.floor(i + width / segmentInfo.steps);
       j++;
     }
-
-
-
 
     i = 0;
     j = 0;
@@ -408,24 +412,20 @@ exports = class extends Widget {
         }
       }
 
-
-
-
       ctx.fillStyle = this._settings.textColor;
-      ctx.fillText(label, mainPadding + segmentInfo.maxLabel + i, mainPadding + height + 2);
+      ctx.fillText(label, mainPadding + segmentInfo.maxLabel + i,
+        mainPadding + height + 2);
 
       i = Math.floor(i + width / segmentInfo.steps);
       j++;
     }
 
-
-
-
     ctx.textAlign = 'left';
 
     label = settings.mainLabel + ' x' + segmentInfo.factor;
 
-    i = mainPadding + width / 2 - (ctx.measureText(label).width + settings.itemSize) / 2 + segmentInfo.maxLabel;
+    i = mainPadding + width / 2 - (ctx.measureText(label).width + settings.itemSize) /
+      2 + segmentInfo.maxLabel;
     j = mainPadding + height + 18;
 
     ctx.fillStyle = this._settings.textColor;
@@ -443,8 +443,15 @@ exports = class extends Widget {
     ctx.lineTo(i + settings.itemSize - 4, j + 11.5);
     ctx.stroke();
   }
-  _renderHorizontalBars(segmentInfo, ctx, data) {
-    var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel, height = this._currentHeight - mainPadding * 2 - valueSpace, step = height / data.length, barWidth, barHeight = step - settings.barPadding * 2, barHeightSeg, barX, barY, item, points, i, j, k, l;
+  _renderHorizontalBars (segmentInfo, ctx, data) {
+    var settings = this._settings,
+      valueSpace = settings.valueSpace,
+      mainPadding = settings.mainPadding,
+      width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel,
+      height = this._currentHeight - mainPadding * 2 - valueSpace,
+      step = height / data.length,
+      barWidth, barHeight = step - settings.barPadding * 2,
+      barHeightSeg, barX, barY, item, points, i, j, k, l;
 
     ctx.globalAlpha = 0.9;
     for (i = 0, j = data.length; i < j; i++) {
@@ -459,13 +466,25 @@ exports = class extends Widget {
         barY = ~~mainPadding + i * step + settings.barPadding;
 
         ctx.fillStyle = settings.dataColors[k % settings.dataColors.length];
-        ctx.fillRect(barX, barY + k * barHeightSeg, barWidth, barHeightSeg - 1);
+        ctx.fillRect(barX, barY + k * barHeightSeg, barWidth, barHeightSeg -
+          1);
       }
     }
     ctx.globalAlpha = 1;
   }
-  _renderHorizontalPoints(segmentInfo, ctx, data) {
-    var settings = this._settings, renderPoints = settings.types.indexOf('points') !== -1, renderLines = settings.types.indexOf('lines') !== -1, renderArea = settings.types.indexOf('area') !== -1, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel, height = this._currentHeight - mainPadding * 2 - valueSpace, step = height / data.length, pointHeight = step - settings.barPadding * 2, pointX, pointY, points, point, pointList = [], hasLast, item, i, j, k, l;
+  _renderHorizontalPoints (segmentInfo, ctx, data) {
+    var settings = this._settings,
+      renderPoints = settings.types.indexOf('points') !== -1,
+      renderLines = settings.types.indexOf('lines') !== -1,
+      renderArea = settings.types.indexOf('area') !== -1,
+      valueSpace = settings.valueSpace,
+      mainPadding = settings.mainPadding,
+      width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel,
+      height = this._currentHeight - mainPadding * 2 - valueSpace,
+      step = height / data.length,
+      pointHeight = step - settings.barPadding * 2,
+      pointX, pointY, points, point, pointList = [],
+      hasLast, item, i, j, k, l;
 
     pointXLast = null;
 
@@ -477,9 +496,11 @@ exports = class extends Widget {
       if (pointXLast === null) {
         pointXLast = [];
       }
-      pointY = ~~(mainPadding + i * step + settings.barPadding + pointHeight / 2);
+      pointY = ~~(mainPadding + i * step + settings.barPadding +
+        pointHeight / 2);
       for (k = 0, l = points.length; k < l; k++) {
-        pointX = ~~(mainPadding + item.points[k] / segmentInfo.max * width + segmentInfo.maxLabel);
+        pointX = ~~(mainPadding + item.points[k] / segmentInfo.max * width +
+          segmentInfo.maxLabel);
 
         if (!pointList[k]) {
           pointList[k] = [];
@@ -494,9 +515,6 @@ exports = class extends Widget {
           ctx.strokeRect(pointX - 4.5, pointY - 4.5, 10, 10);
         }
 
-
-
-
         if (hasLast && renderLines) {
           ctx.beginPath();
           ctx.moveTo(pointXLast[k], pointYLast);
@@ -504,16 +522,10 @@ exports = class extends Widget {
           ctx.stroke();
         }
 
-
-
-
         pointXLast[k] = pointX;
       }
       pointYLast = pointY;
     }
-
-
-
 
     if (renderArea) {
       ctx.globalAlpha = 0.05;
@@ -532,31 +544,32 @@ exports = class extends Widget {
       ctx.globalAlpha = 1;
     }
   }
-  setData(data) {
-    var el = this._el, ctx = el.getContext('2d'), settings = this._settings, types = settings.types, axisRenderMethod = function () {
-      }, barsRenderMethod = function () {
-      }, pointsRenderMethod = function () {
-      }, segmentInfo;
+  setData (data) {
+    var el = this._el,
+      ctx = el.getContext('2d'),
+      settings = this._settings,
+      types = settings.types,
+      axisRenderMethod = function () {},
+      barsRenderMethod = function () {},
+      pointsRenderMethod = function () {},
+      segmentInfo;
 
     switch (settings.orientation) {
-    case 'horizontal':
-      el.width = this._width;
-      el.height = data.length * settings.itemSize + this._settings.valueSpace;
-      axisRenderMethod = bind(this, this._renderVerticalAxis);
-      barsRenderMethod = bind(this, this._renderHorizontalBars);
-      pointsRenderMethod = bind(this, this._renderHorizontalPoints);
-      break;
+      case 'horizontal':
+        el.width = this._width;
+        el.height = data.length * settings.itemSize + this._settings.valueSpace;
+        axisRenderMethod = bind(this, this._renderVerticalAxis);
+        barsRenderMethod = bind(this, this._renderHorizontalBars);
+        pointsRenderMethod = bind(this, this._renderHorizontalPoints);
+        break;
 
-
-
-
-    case 'vertical':
-      el.width = data.length * settings.itemSize + this._settings.valueSpace;
-      el.height = this._height;
-      axisRenderMethod = bind(this, this._renderHorizontalAxis);
-      barsRenderMethod = bind(this, this._renderVerticalBars);
-      pointsRenderMethod = bind(this, this._renderVerticalPoints);
-      break;
+      case 'vertical':
+        el.width = data.length * settings.itemSize + this._settings.valueSpace;
+        el.height = this._height;
+        axisRenderMethod = bind(this, this._renderHorizontalAxis);
+        barsRenderMethod = bind(this, this._renderVerticalBars);
+        pointsRenderMethod = bind(this, this._renderVerticalPoints);
+        break;
     }
 
     ctx.font = settings.font;
@@ -568,7 +581,8 @@ exports = class extends Widget {
 
       axisRenderMethod(segmentInfo, ctx, data);
 
-      if (types.indexOf('points') !== -1 || types.indexOf('area') !== -1 || types.indexOf('lines') !== -1) {
+      if (types.indexOf('points') !== -1 || types.indexOf('area') !== -1 ||
+        types.indexOf('lines') !== -1) {
         pointsRenderMethod(segmentInfo, ctx, data);
       }
       if (types.indexOf('bars') !== -1) {
@@ -576,15 +590,13 @@ exports = class extends Widget {
       }
     }
 
-
-
-
     this._data = data;
   }
-  setSettings(settings) {
+  setSettings (settings) {
     settings.mainLabel = settings.mainLabel || '';
     settings.textColor = settings.textColor || '#000000';
-    settings.fillColor = settings.fillColor === undefined ? '#FFFFFF' : settings.fillColor;
+    settings.fillColor = settings.fillColor === undefined ? '#FFFFFF' :
+      settings.fillColor;
     settings.lineColor = settings.lineColor || '#000000';
     settings.orientation = settings.oriantation || 'horizontal';
     settings.types = settings.types || 'bars,lines,area,points';
@@ -603,7 +615,7 @@ exports = class extends Widget {
 
     this._settings = settings;
   }
-  update() {
+  update () {
     this._data && this.setData(this._data);
   }
 };

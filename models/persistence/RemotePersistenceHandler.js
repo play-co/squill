@@ -9,7 +9,7 @@ let exports = {};
  * data to the server.
  *
  * The final version should only send the updates to the server.
-**/
+ **/
 import {
   isArray,
   bind,
@@ -21,25 +21,22 @@ import ajax from 'util/ajax';
 import BasicPersistenceHandler from './BasicPersistenceHandler';
 
 exports = class extends BasicPersistenceHandler {
-  constructor(opts) {
+  constructor (opts) {
     super(...arguments);
 
     this._loadURL = opts && opts.loadURL;
     this._saveURL = opts && opts.saveURL;
   }
-  _checkChangeData() {
+  _checkChangeData () {
     if (!this._updateList) {
       this._updateList = [];
     }
-
-
-
 
     if (!this._removeList) {
       this._removeList = [];
     }
   }
-  update(data) {
+  update (data) {
     var i, j;
 
     if (isArray(data)) {
@@ -53,7 +50,7 @@ exports = class extends BasicPersistenceHandler {
       this._data[data[this._key]] = data;
     }
   }
-  remove(data) {
+  remove (data) {
     var i, j;
 
     if (isArray(data)) {
@@ -67,52 +64,42 @@ exports = class extends BasicPersistenceHandler {
       delete this._data[data];
     }
   }
-  load(dataSource, cb) {
+  load (dataSource, cb) {
     if (this._loadURL === null) {
       cb && cb({ NoURL: 'Loading URL is not set.' });
       return;
     }
 
-
-
-
-
-
-
-
     ajax.post({
       url: this._loadURL,
       data: this._params
     }, bind(this, function (err, response) {
-      var errorMessage = false, receivedData = {}, data = [], i;
+      var errorMessage = false,
+        receivedData = {},
+        data = [],
+        i;
 
       if (err) {
         errorMessage = err;
       }
 
-
-
-
       if (!errorMessage) {
         try {
           receivedData = JSON.parse(response);
         } catch (e) {
-          errorMessage = 'Something went wrong decoding the JSON data.';
+          errorMessage =
+            'Something went wrong decoding the JSON data.';
         }
       }
 
-
-
-
       if (receivedData.error !== false) {
-        errorMessage = 'The server reported a problem fetching the data: ' + receivedData.message;
+        errorMessage =
+          'The server reported a problem fetching the data: ' +
+          receivedData.message;
       }
       if (!errorMessage && receivedData.data === undefined) {
         errorMessage = 'Data missing';
       }
-
-
-
 
       if (!errorMessage) {
         receivedData = receivedData.data;
@@ -129,9 +116,6 @@ exports = class extends BasicPersistenceHandler {
         this._data = JSON.parse(response).data;
       }
 
-
-
-
       if (errorMessage) {
         cb && cb({ LoadingError: 'Loading error: ' + errorMessage });
       } else {
@@ -143,24 +127,20 @@ exports = class extends BasicPersistenceHandler {
       }
     }));
   }
-  commit() {
+  commit () {
     if (this._saveURL === null) {
       return;
     }
 
-
-
-
-    var data = {}, i, j;
+    var data = {},
+      i, j;
 
     for (i in this._data) {
-      if (this._data.hasOwnProperty(i) && this._data[i][this._key] !== undefined) {
+      if (this._data.hasOwnProperty(i) && this._data[i][this._key] !==
+        undefined) {
         data[this._data[i][this._key]] = this._data[i];
       }
     }
-
-
-
 
     this._checkChangeData();
 
@@ -178,10 +158,10 @@ exports = class extends BasicPersistenceHandler {
       this.publish('CommitFinished');
     }));
   }
-  setLoadURL(loadURL) {
+  setLoadURL (loadURL) {
     this._loadURL = loadURL;
   }
-  setSaveURL(saveURL) {
+  setSaveURL (saveURL) {
     this._saveURL = saveURL;
   }
 };

@@ -7,14 +7,11 @@ import Widget from './Widget';
 import browser from 'util/browser';
 let $ = browser.$;
 
-function cancelEvent(e) {
+function cancelEvent (e) {
   e.stopPropagation();
   e.preventDefault();
   return false;
 }
-
-
-
 
 var _activeDocuments = [];
 _activeDocuments.add = function (doc) {
@@ -29,16 +26,10 @@ _activeDocuments.add = function (doc) {
     }
   }
 
-
-
-
   if (!docWrapper) {
     docWrapper = { doc: doc };
     this.push(docWrapper);
   }
-
-
-
 
   if (!docWrapper.handler) {
     docWrapper.handler = $.onEvent(doc.body, 'mousedown', function () {
@@ -48,9 +39,6 @@ _activeDocuments.add = function (doc) {
       }
     });
   }
-
-
-
 
   return docWrapper;
 };
@@ -63,16 +51,12 @@ _activeDocuments.remove = function (doc) {
         clearTimeout(this[i].timeout);
       }
 
-
-
-
       $.removeClass(doc.body, 'squill-drop-hover');
       this.splice(i, 1);
       return;
     }
   }
 };
-
 
 _activeDocuments.clear = function () {
   while (this[0]) {
@@ -89,7 +73,7 @@ _activeDocuments.clearTimeouts = function () {
   }
 };
 
-function registerDocument(doc) {
+function registerDocument (doc) {
   var body = doc.body;
   body.addEventListener('dragenter', cancelEvent, false);
   body.addEventListener('dragover', function (e) {
@@ -116,13 +100,10 @@ function registerDocument(doc) {
   }, false);
 }
 
-
-
-
 registerDocument(document);
 
 exports = class extends Widget {
-  buildWidget() {
+  buildWidget () {
     super.buildWidget(...arguments);
 
     this._hoverClass = this._opts.hoverClass || 'over';
@@ -139,7 +120,7 @@ exports = class extends Widget {
       return cancelEvent(e);
     }), false);
 
-    //modify the styles
+    // modify the styles
     el.addEventListener('dragover', bind(this, function (e) {
       $.addClass(el, this._hoverClass);
       _activeDocuments.clearTimeouts();
@@ -178,8 +159,7 @@ exports = class extends Widget {
       }
     }), false);
   }
-  onDrop() {
-  }
+  onDrop () {}
 };
 
 export default exports;

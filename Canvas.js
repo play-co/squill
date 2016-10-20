@@ -7,15 +7,15 @@ let $ = browser.$;
 import Widget from './Widget';
 
 exports = class extends Widget {
-  constructor(params) {
+  constructor (params) {
     params = merge(params, { tag: 'canvas' });
     this._isEnabled = params.isEnabled;
     super(params);
   }
-  create() {
+  create () {
     super.create(...arguments);
   }
-  buildWidget() {
+  buildWidget () {
     var el = this._el;
 
     el.width = this._opts.width;
@@ -24,9 +24,6 @@ exports = class extends Widget {
       el.style.backgroundColor = this._opts.color;
     }
 
-
-
-
     this.initMouseEvents(el);
     this.initKeyEvents(el);
   }
@@ -34,6 +31,5 @@ exports = class extends Widget {
 exports.prototype._css = 'cnvs';
 exports.prototype._type = 'canvas';
 var Canvas = exports;
-
 
 export default exports;

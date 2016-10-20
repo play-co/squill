@@ -3,13 +3,11 @@ let exports = {};
 import widgets from './widgets';
 
 exports = class extends widgets.Widget {
-  constructor() {
+  constructor () {
     super();
   }
-  add() {
-  }
-  addButton() {
-  }
+  add () {}
+  addButton () {}
 };
 
 export default exports;

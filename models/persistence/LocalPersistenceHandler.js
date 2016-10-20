@@ -3,12 +3,12 @@ let exports = {};
 import BasicPersistenceHandler from './BasicPersistenceHandler';
 
 exports = class extends BasicPersistenceHandler {
-  constructor(opts) {
+  constructor (opts) {
     super(...arguments);
 
     this._storageKey = opts.storageKey;
   }
-  load(dataSource, cb) {
+  load (dataSource, cb) {
     var dataStr = localStorage.getItem(this._storageKey);
     if (dataStr) {
       try {
@@ -21,7 +21,7 @@ exports = class extends BasicPersistenceHandler {
       return cb && cb({ 'NoData': true });
     }
   }
-  save(dataSource) {
+  save (dataSource) {
     localStorage.setItem(this._storageKey, JSON.stringify(dataSource));
   }
 };

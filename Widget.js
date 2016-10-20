@@ -20,7 +20,7 @@ let WIDGET_CLASSES = __imports__.classes;
 
 var uid = 0;
 
-function shallowCopy(p) {
+function shallowCopy (p) {
   var o = {};
   for (var i in p) {
     if (p.hasOwnProperty(i)) {
@@ -30,48 +30,42 @@ function shallowCopy(p) {
   return o;
 }
 
-
-
-
 class WidgetSet {
-  constructor(target) {
+  constructor (target) {
     this._target = target;
     this.events = [];
   }
-  getTarget() {
+  getTarget () {
     return this._target;
   }
-  hasWidget(id) {
+  hasWidget (id) {
     return !!this._target[id];
   }
-  addWidget(id, widget) {
+  addWidget (id, widget) {
     this._target[id] = widget;
   }
-  addSubscription(widget, signal)
+  addSubscription (widget, signal)
     /* ... args */
     {
-      if (this._target.dispatchEvent) {
-        widget.subscribe.apply(widget, [
-          signal,
-          this._target,
-          'dispatchEvent',
-          widget.getId()
-        ].concat(Array.prototype.slice.call(arguments, 2)));
-      }
+    if (this._target.dispatchEvent) {
+      widget.subscribe.apply(widget, [
+        signal,
+        this._target,
+        'dispatchEvent',
+        widget.getId()
+      ].concat(Array.prototype.slice.call(arguments, 2)));
     }
+  }
 }
 
-
-function _replaceNode(id) {
+function _replaceNode (id) {
   var el = $.id(id);
   el.parentNode.insertBefore(this._el, el);
   el.parentNode.removeChild(el);
-}
-;
-
+};
 
 exports = class extends Element {
-  __getDef__() {
+  __getDef__ () {
     var cls = this.constructor;
     var def = {};
 
@@ -86,10 +80,7 @@ exports = class extends Element {
       copyDef(this._def);
     }
 
-
-
-
-    function copyDef(src) {
+    function copyDef (src) {
       for (var key in src) {
         if (key == 'attrs' || key == 'style') {
           def[key] = merge(def[key], src[key]);
@@ -107,22 +98,14 @@ exports = class extends Element {
       }
     }
 
-
-
-
-
-
-
-
     return def;
   }
-  constructor(opts) {
+  constructor (opts) {
     super();
 
     opts = opts || {};
 
     this._children = [];
-
 
     // ===
     // merge this._def and opts
@@ -134,44 +117,26 @@ exports = class extends Element {
 
     // className merges
     if (def.className) {
-      opts.className = opts.className ? opts.className + ' ' + def.className : def.className;
+      opts.className = opts.className ? opts.className + ' ' + def.className :
+        def.className;
     }
-
-
-
 
     if (def.attrs) {
       opts.attrs = merge(opts.attrs, def.attrs);
     }
 
-
-
-
     if (def.style) {
       opts.style = merge(opts.style, def.style);
     }
 
-
-
-
     // opts take precedence over def
     this._opts = opts;
     for (var name in def) {
-      if (name != 'children' && !opts.hasOwnProperty(name) && def.hasOwnProperty(name)) {
+      if (name != 'children' && !opts.hasOwnProperty(name) && def.hasOwnProperty(
+          name)) {
         opts[name] = def[name];
       }
     }
-
-
-
-
-
-
-
-
-
-
-
 
     // delete opts.children;
     // end merge
@@ -183,17 +148,11 @@ exports = class extends Element {
       this.delegate = opts.delegate;
     }
 
-
-
-
     var widgetParent;
     var buildNow = false;
     if (opts.widgetParent) {
       widgetParent = opts.widgetParent;
     }
-
-
-
 
     this.controller = opts.controller || widgetParent;
 
@@ -205,17 +164,11 @@ exports = class extends Element {
           widgetParent = opts.parent;
         }
 
-
-
-
         opts.parent = parent.getContainer();
       } else if (!parent.appendChild) {
         delete opts.parent;
       }
     }
-
-
-
 
     if (widgetParent) {
       widgetParent.addWidget(this);
@@ -223,13 +176,13 @@ exports = class extends Element {
       this.build(opts.el);
     }
   }
-  getOpts() {
+  getOpts () {
     return this._opts;
   }
-  getId() {
+  getId () {
     return this._id || this._el && this._el.id;
   }
-  build(el) {
+  build (el) {
     if (!this._el || this._el != el) {
       var opts = this._opts;
       var children = opts.children;
@@ -242,38 +195,28 @@ exports = class extends Element {
         opts.children = children;
       }
 
-
-
-
       this.buildContent();
     }
 
-
-
-
-
-
-
-
     return this;
   }
-  getParent() {
+  getParent () {
     return this._el && this._el.parentNode;
   }
-  getWidgetParent() {
+  getWidgetParent () {
     return this._widgetParent;
   }
-  setWidgetParent(parent) {
+  setWidgetParent (parent) {
     if (this._widgetParent != parent) {
       this._widgetParent.removeWidget(this);
       parent.addWidget(this);
       this._widgetParent = parent;
     }
   }
-  getChildren() {
+  getChildren () {
     return this._children;
   }
-  forEachDescend(cb, ctx) {
+  forEachDescend (cb, ctx) {
     var n = this._children.length;
     for (var i = 0; i < n; ++i) {
       var child = this._children[i];
@@ -283,22 +226,20 @@ exports = class extends Element {
       }
     }
   }
-  getFirstChild() {
-    return this._children && this._children.length ? this._children[0] : null;
+  getFirstChild () {
+    return this._children && this._children.length ? this._children[0] :
+      null;
   }
-  dispatchEvent(id, evt) {
+  dispatchEvent (id, evt) {
     this.delegate.apply(this, arguments);
   }
-  addElement(el) {
+  addElement (el) {
     this._el.appendChild(el);
   }
-  addWidget(def, parent, result) {
+  addWidget (def, parent, result) {
     if (!this._el) {
       this.build();
     }
-
-
-
 
     parent = def.parent || parent || this.getContainer() || this._el;
 
@@ -314,16 +255,10 @@ exports = class extends Element {
         delete opts.children;
       }
 
-
-
-
       var el;
       if ('type' in opts && !opts.type) {
         logger.warn('Did you forget to provide a type?', opts);
       }
-
-
-
 
       if (!opts.type || typeof opts.type == 'string') {
         if (WIDGET_CLASSES[opts.type]) {
@@ -342,18 +277,12 @@ exports = class extends Element {
         el = new opts.type(opts);
       }
 
-
-
-
       if (result && opts.id && !result.hasWidget(opts.id)) {
         result.addWidget(opts.id, el);
       }
     } else {
       el = def;
     }
-
-
-
 
     if (el instanceof Widget) {
       if (el.getWidgetParent() != this) {
@@ -362,30 +291,18 @@ exports = class extends Element {
           prevParent.removeWidget(this);
         }
 
-
-
-
         el._widgetParent = this;
         if (!el.controller) {
           el.controller = this;
         }
 
-
-
-
         this._children.push(el);
       }
-
-
-
 
       if (el.getParent() != parent) {
         el.setParent(parent);
       }
     }
-
-
-
 
     if (children) {
       if (el.buildChildren) {
@@ -400,52 +317,40 @@ exports = class extends Element {
       }
     }
 
-
-
-
     return el;
   }
-  removeChild(widget) {
+  removeChild (widget) {
     if (widget.remove) {
       widget.remove();
     }
 
-
-
-
     this.removeWidget(widget);
   }
-  removeWidget(widget) {
+  removeWidget (widget) {
     var index = this._children.indexOf(widget);
     if (index >= 0) {
       this._children.splice(index, 1);
     }
   }
-  getContainer() {
+  getContainer () {
     return this._el;
   }
-  getName() {
+  getName () {
     return this._name;
   }
-  setName(name) {
+  setName (name) {
     this._name = name;
   }
-  buildContent() {
+  buildContent () {
     var opts = this._opts;
 
     if (global.getWidgetPrefix() !== null) {
       $.addClass(this._el, global.getWidgetPrefix() + this._css);
     }
 
-
-
-
     if (!this.delegate) {
       this.delegate = new Delegate();
     }
-
-
-
 
     // TODO: what's this doing here?
     if (opts.errorLabel) {
@@ -455,9 +360,6 @@ exports = class extends Element {
         parent: this._el
       });
     }
-
-
-
 
     // def items always go on the widget
     var def = this._def;
@@ -471,9 +373,6 @@ exports = class extends Element {
       }
     }
 
-
-
-
     // primary target for opts children is the result passed in
     var result = opts.__result || localRes || new WidgetSet(this);
 
@@ -482,40 +381,30 @@ exports = class extends Element {
       this.buildChildren(opts.children, null, result);
     }
 
-
-
-
     if (opts.data && this.setData) {
       bindings.parseData(this, opts.data);
     }
 
-
-
-
     this.buildWidget(this._el, result);
   }
-  buildChildren(children, parent, result) {
+  buildChildren (children, parent, result) {
     if (!parent) {
       parent = this.getContainer() || this._el;
     }
-
-
-
 
     for (var i = 0, n = children.length; i < n; ++i) {
       this.addWidget(children[i], parent, result);
     }
   }
-  buildWidget() {
-  }
-  errors() {
+  buildWidget () {}
+  errors () {
     return this.validators.map(function (item) {
       if (item.isValid == false) {
         return item.message;
       }
     });
   }
-  validate() {
+  validate () {
     var isValid = true;
     for (var i = 0, len = this.validators.length; i < len; ++i) {
       var v = this.validators[i];
@@ -523,36 +412,33 @@ exports = class extends Element {
     }
     return this._isValid = isValid;
   }
-  isValid() {
+  isValid () {
     return this._isValid;
   }
-  getI18n(key, id) {
+  getI18n (key, id) {
     var src = key in this._opts ? this._opts : i18n.get(id || this._opts.id);
 
     return src && src[key] || '';
   }
-  getElement() {
+  getElement () {
     if (!this._el) {
       this.build();
     }
     return this._el;
   }
-  addClass(cls) {
+  addClass (cls) {
     $.addClass(this._el, cls);
   }
-  removeClass(cls) {
+  removeClass (cls) {
     $.removeClass(this._el, cls);
   }
-  hasClass(cls) {
+  hasClass (cls) {
     return (' ' + this._el.className + ' ').indexOf(cls) >= 0;
   }
-  toggleClass(cls, isToggled) {
+  toggleClass (cls, isToggled) {
     if (isToggled === undefined) {
       isToggled = !this.hasClass(cls);
     }
-
-
-
 
     if (isToggled) {
       this.addClass(cls);
@@ -560,32 +446,33 @@ exports = class extends Element {
       this.removeClass(cls);
     }
   }
-  onBeforeShow() {
+  onBeforeShow () {
     for (var i = 0, child; child = this._children[i]; ++i) {
       child.onBeforeShow.apply(child, arguments);
     }
   }
-  onShow() {
+  onShow () {
     this._isShowing = true;
     for (var i = 0, child; child = this._children[i]; ++i) {
       child.onShow.apply(child, arguments);
     }
   }
-  onBeforeHide() {
+  onBeforeHide () {
     for (var i = 0, child; child = this._children[i]; ++i) {
       child.onBeforeHide.apply(child, arguments);
     }
   }
-  onHide() {
+  onHide () {
     this._isShowing = false;
     for (var i = 0, child; child = this._children[i]; ++i) {
       child.onHide.apply(child, arguments);
     }
   }
-  isShowing() {
-    return this._visibleState == 'beforeVisible' || this._visibleState == 'visible';
+  isShowing () {
+    return this._visibleState == 'beforeVisible' || this._visibleState ==
+      'visible';
   }
-  show() {
+  show () {
     this._visibleState = 'beforeVisible';
 
     var el = this.getElement();
@@ -593,7 +480,8 @@ exports = class extends Element {
     this.onBeforeShow && transition.on('start', bind(this, 'onBeforeShow'));
     transition.on('start', bind(this, function () {
       var style = this._opts && this._opts.style;
-      var display = style && style.display != 'none' && style.display || '';
+      var display = style && style.display != 'none' && style.display ||
+        '';
       if (this._el && this._visibleState == 'beforeVisible') {
         this._el.style.display = display;
         if (getComputedStyle(this._el, 'display') == 'none') {
@@ -606,7 +494,7 @@ exports = class extends Element {
     this.onShow && transition.on('end', bind(this, 'onShow'));
     return transition;
   }
-  hide() {
+  hide () {
     this._visibleState = 'beforeHidden';
 
     var el = this.getElement();
@@ -621,42 +509,32 @@ exports = class extends Element {
     this.onHide && transition.on('end', bind(this, 'onHide'));
     return transition;
   }
-  removeChildren() {
+  removeChildren () {
     this._children.forEach(function (child) {
       child.remove();
     });
   }
-  remove() {
+  remove () {
     this.onBeforeHide();
     $.remove(this.getElement());
     this.onHide();
   }
-  getModel() {
+  getModel () {
     return this.__model;
   }
-  setModel(path, value) {
+  setModel (path, value) {
     if (arguments.length == 1) {
       this.__model.setObject(path);
     } else {
       this.__model.set(path, value);
     }
 
-
-
-
-
-
-
-
     return this;
   }
-  putHere() {
+  putHere () {
     if (!this._el) {
       this.build();
     }
-
-
-
 
     var id = 'jsioWidgetId' + ++uid;
     global.getTargetDocument().write('<div id="' + id + '"></div>');
@@ -664,8 +542,9 @@ exports = class extends Element {
 
     return this;
   }
-  setParent(parent) {
-    var el = parent && (parent.getContainer && parent.getContainer() || parent.appendChild && parent || $.id(parent));
+  setParent (parent) {
+    var el = parent && (parent.getContainer && parent.getContainer() ||
+      parent.appendChild && parent || $.id(parent));
 
     if (el) {
       if (!this._el) {
@@ -675,9 +554,6 @@ exports = class extends Element {
         el.appendChild(this._el);
       }
     }
-
-
-
 
     return this;
   }
@@ -695,9 +571,6 @@ var Widget = exports;
 for (let k in Events) {
   Widget.prototype[k] = Events.prototype[k];
 }
-
-
-
 
 var map = {};
 var lowerCaseMap = {};

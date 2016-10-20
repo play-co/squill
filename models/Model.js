@@ -2,61 +2,24 @@ let exports = {};
 
 import PubSub from 'lib/PubSub';
 
-
-function copy(obj) {
+function copy (obj) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-
-
-
 var PATH_SEP = /[\[.,]/;
-function parsePath(path) {
+
+function parsePath (path) {
   return path.split(PATH_SEP).map(function (piece) {
     return piece[piece.length - 1] == ']' ? parseInt(piece) : piece;
   });
 }
 
-
-
-
-function matchPath(p1, p2) {
+function matchPath (p1, p2) {
   return p1.indexOf(p2) == 0 || p2.indexOf(p1) == 0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 exports = class extends PubSub {
-  constructor(opts) {
+  constructor (opts) {
     super();
 
     var obj;
@@ -68,9 +31,6 @@ exports = class extends PubSub {
       obj = cloneFrom._data;
     }
 
-
-
-
     this._data = {};
 
     if (opts && opts.localStorage) {
@@ -81,14 +41,10 @@ exports = class extends PubSub {
         if (raw) {
           try {
             obj = JSON.parse(raw);
-          } catch (e) {
-          }
+          } catch (e) {}
         }
       }
     }
-
-
-
 
     this.setObject(obj || {});
 
@@ -100,9 +56,6 @@ exports = class extends PubSub {
         }, this);
       }
 
-
-
-
       // default values
       if (opts.defaults) {
         Object.keys(opts.defaults).forEach(function (key) {
@@ -113,22 +66,22 @@ exports = class extends PubSub {
       }
     }
   }
-  setObject(obj) {
+  setObject (obj) {
     this._data = obj;
     this.emit();
     this.persist();
     return this;
   }
-  toObject() {
+  toObject () {
     return copy(this._data);
   }
-  clone() {
+  clone () {
     return new Model(this.getObject());
   }
-  has(path) {
+  has (path) {
     return this.get(path) !== undefined;
   }
-  get(path) {
+  get (path) {
     var segments = parsePath(path);
     var n = segments.length;
     var i = 0;
@@ -137,19 +90,12 @@ exports = class extends PubSub {
       o = o[segments[i++]];
     }
 
-
-
-
-
-
-
-
     return o;
   }
-  getObject(path) {
+  getObject (path) {
     return copy(this.get(path) || {});
   }
-  set(path, value) {
+  set (path, value) {
     var segments = parsePath(path);
     var n = segments.length - 1;
     var i = 0;
@@ -160,14 +106,8 @@ exports = class extends PubSub {
         o[s] = typeof segments[i] == 'number' ? [] : {};
       }
 
-
-
-
       o = o[s];
     }
-
-
-
 
     var prevValue = o[segments[n]];
     if (value != prevValue) {
@@ -175,23 +115,13 @@ exports = class extends PubSub {
       this.emit(path, value);
     }
 
-
-
-
-
-
-
-
     this.persist();
     return this;
   }
-  emit(path, value) {
+  emit (path, value) {
     if (path) {
       super.emit(...arguments);
     }
-
-
-
 
     if (this._subscribers) {
       Object.keys(this._subscribers).forEach(function (key) {
@@ -202,7 +132,7 @@ exports = class extends PubSub {
     }
     return this;
   }
-  persist() {
+  persist () {
     if (this._storageKey) {
       localStorage.setItem(this._storageKey, JSON.stringify(this._data));
     }

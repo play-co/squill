@@ -10,7 +10,7 @@ let $ = browser.$;
 var UNIQUE_ID = '__squill__window_id';
 
 exports = class extends PubSub {
-  constructor(win) {
+  constructor (win) {
     super();
 
     this._win = win || window;
@@ -19,29 +19,31 @@ exports = class extends PubSub {
     $.onEvent(this._win, 'resize', this, 'onViewportChange');
     $.onEvent(this._win, 'scroll', this, 'onViewportChange');
   }
-  onViewportChange(e) {
+  onViewportChange (e) {
     this._dim = $(this._win);
     this.publish('ViewportChange', e, this._dim);
   }
-  getViewport() {
+  getViewport () {
     return this._dim;
   }
-  query(key) {
+  query (key) {
     return this._location.query(key);
   }
-  hash(key) {
+  hash (key) {
     return this._location.query(key);
   }
-  center(el, opts) {
+  center (el, opts) {
     opts = merge(opts, { subscribe: true });
 
-    var width = 'width' in opts ? opts.width : el.offsetWidth, height = 'height' in opts ? opts.height : el.offsetHeight;
+    var width = 'width' in opts ? opts.width : el.offsetWidth,
+      height = 'height' in opts ? opts.height : el.offsetHeight;
 
     el.style.left = (this._dim.width - width) / 2 + 'px';
     el.style.top = (this._dim.height - height) / 2 + 'px';
 
     if (opts.subscribe) {
-      this.subscribe('ViewportChange', this, 'center', el, merge({ subscribe: false }, opts));
+      this.subscribe('ViewportChange', this, 'center', el, merge({ subscribe: false },
+        opts));
     }
   }
 };
@@ -53,9 +55,6 @@ exports.get = function (win) {
   if (!win) {
     win = window;
   }
-
-
-
 
   if (win[UNIQUE_ID]) {
     return gWin[win[UNIQUE_ID]];

@@ -10,25 +10,21 @@ import browser from 'util/browser';
 let $ = browser.$;
 
 exports = class extends Widget {
-  getContainer() {
+  getContainer () {
     return this.container;
   }
-  onBeforeShow() {
-  }
-  onShow() {
-  }
-  onBeforeHide() {
-  }
-  onHide() {
-  }
-  toggle() {
+  onBeforeShow () {}
+  onShow () {}
+  onBeforeHide () {}
+  onHide () {}
+  toggle () {
     if (this._isShowing) {
       this.hide();
     } else {
       this.show();
     }
   }
-  show() {
+  show () {
     this._isShowing = true;
 
     var menuEl = this._el;
@@ -39,21 +35,12 @@ exports = class extends Widget {
           return true;
         }
 
-
-
-
         if (/squill-checkbox/.test(el.className)) {
           return false;
         }
 
-
-
-
         el = el.parentNode;
       }
-
-
-
 
       // close menu
       e.preventDefault && e.preventDefault();
@@ -68,7 +55,8 @@ exports = class extends Widget {
         this.hide();
 
         untrapIframes();
-        document.body.removeEventListener('mousedown', eventHandler, true);
+        document.body.removeEventListener('mousedown', eventHandler,
+          true);
         document.body.removeEventListener('mouseup', eventHandler, true);
         document.body.removeEventListener('click', clickHandler, true);
       }
@@ -84,7 +72,7 @@ exports = class extends Widget {
     this.emit('open');
     Menu.emit('open', this);
   }
-  hide() {
+  hide () {
     this._isShowing = false;
 
     $.hide(this._el);
@@ -98,7 +86,8 @@ exports.prototype._def = { children: [{ id: 'container' }] };
 exports.prototype.delegate = new Delegate(function (on) {
   on.call = function (ctx, name) {
     var delegate = ctx.controller.delegate;
-    delegate.call.apply(delegate, [ctx.controller].concat(Array.prototype.slice.call(arguments, 1)));
+    delegate.call.apply(delegate, [ctx.controller].concat(Array.prototype
+      .slice.call(arguments, 1)));
   };
 });
 var Menu = exports;
@@ -109,15 +98,14 @@ Menu.on = bind(subs, 'on');
 Menu.removeListener = bind(subs, 'removeListener');
 
 var _trappedFrames = [];
-function trapIframes() {
+
+function trapIframes () {
   if (_trappedFrames.length) {
     untrapIframes();
   }
 
-
-
-
-  _trappedFrames = Array.prototype.map.call(document.getElementsByTagName('iframe'), function (el) {
+  _trappedFrames = Array.prototype.map.call(document.getElementsByTagName(
+    'iframe'), function (el) {
     var retVal = {
       el: el,
       set: el.style.pointerEvents
@@ -129,14 +117,10 @@ function trapIframes() {
   });
 }
 
-
-
-
-function untrapIframes() {
+function untrapIframes () {
   _trappedFrames.forEach(function (item) {
     item.el.style.pointerEvents = item.set;
   });
 }
-
 
 export default exports;

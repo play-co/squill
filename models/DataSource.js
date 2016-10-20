@@ -9,16 +9,14 @@ import {
 import Callback from 'lib/Callback';
 import BasicDataSource from './BasicDataSource';
 
-
 var defaults = { key: 'id' };
 
 var toStringSort = function () {
   return this._sortKey;
 };
 
-
 exports = class extends BasicDataSource {
-  constructor(opts) {
+  constructor (opts) {
     opts = merge(opts, defaults);
     super(opts);
     this._opts = opts;
@@ -43,20 +41,20 @@ exports = class extends BasicDataSource {
       removedHash: {}
     };
   }
-  setPersistence(persistence) {
+  setPersistence (persistence) {
     this._persistence = persistence;
     if (persistence) {
       this.onLoad.clear();
       persistence.load(this, this.onLoad.chain());
     }
   }
-  _saveChanges(type, key) {
+  _saveChanges (type, key) {
     if (this._changeDataSave && !this._changeData[type + 'Hash'][key]) {
       this._changeData[type + 'Hash'][key] = true;
       this._changeData[type].push(key);
     }
   }
-  getFilteredDataSource(filterFn) {
+  getFilteredDataSource (filterFn) {
     var ds = new DataSource(this._opts);
     this.forEach(function (item) {
       if (filterFn(item)) {
@@ -77,26 +75,23 @@ exports = class extends BasicDataSource {
     });
     return ds;
   }
-  signalUpdate(type, item, id) {
+  signalUpdate (type, item, id) {
     if (item[this.key] === undefined) {
       return;
     }
     switch (type) {
-    case 'UPDATE':
-      this._saveChanges('updated', item[this.key]);
-      this.publish('Update', item[this.key], item);
-      break;
+      case 'UPDATE':
+        this._saveChanges('updated', item[this.key]);
+        this.publish('Update', item[this.key], item);
+        break;
 
-
-
-
-    case 'REMOVE':
-      this._saveChanges('removed', item[this.key]);
-      this.publish('Remove', id, item);
-      break;
+      case 'REMOVE':
+        this._saveChanges('removed', item[this.key]);
+        this.publish('Remove', id, item);
+        break;
     }
   }
-  add(item) {
+  add (item) {
     if (isArray(item)) {
       var res = [];
       for (var i = 0, len = item.length; i < len; ++i) {
@@ -108,9 +103,6 @@ exports = class extends BasicDataSource {
         }
       }
 
-
-
-
       return res;
     } else {
       var id = item[this.key];
@@ -119,9 +111,6 @@ exports = class extends BasicDataSource {
       if (id == null) {
         return;
       }
-
-
-
 
       var index = null;
       if (this._byID[id]) {
@@ -140,9 +129,6 @@ exports = class extends BasicDataSource {
         index = this.length++;
       }
 
-
-
-
       // if we're adding it to the array:
       if (index !== null) {
         // make sure it's an instance of the specified class
@@ -150,14 +136,8 @@ exports = class extends BasicDataSource {
           item = new this._ctor(item);
         }
 
-
-
-
         this._byIndex[index] = item;
       }
-
-
-
 
       this._byID[id] = item;
 
@@ -169,21 +149,15 @@ exports = class extends BasicDataSource {
       }
     }
 
-
-
-
     return item;
   }
-  remove(id) {
+  remove (id) {
     if (typeof id == 'object') {
       id = id[this.key];
     }
     if (id == null) {
       return;
     }
-
-
-
 
     if (this._byID[id]) {
       this.signalUpdate('REMOVE', this._byID[id], id);
@@ -196,14 +170,14 @@ exports = class extends BasicDataSource {
       }
     }
   }
-  keepOnly(list) {
+  keepOnly (list) {
     this.compare(list, function (dataSource, local, remote) {
       if (!remote) {
         dataSource.remove(local);
       }
     });
   }
-  clear() {
+  clear () {
     var index = this._byIndex;
 
     this._byIndex = [];
@@ -214,10 +188,10 @@ exports = class extends BasicDataSource {
       this.signalUpdate('REMOVE', item, item[this.key]);
     }
   }
-  getCount() {
+  getCount () {
     return this.length;
   }
-  setSorter(sorter) {
+  setSorter (sorter) {
     this._sorter = sorter;
     if (sorter) {
       for (var i = 0, item; item = this._byIndex[i]; ++i) {
@@ -228,52 +202,52 @@ exports = class extends BasicDataSource {
     this.sort();
     return this;
   }
-  getIDs() {
+  getIDs () {
     return this._byIndex.map(function (item) {
       return item[this.key];
     }, this);
   }
-  contains(id) {
+  contains (id) {
     return !!this._byID[id];
   }
-  getKey() {
+  getKey () {
     return this.key;
   }
-  getItemForID(id) {
+  getItemForID (id) {
     return this._byID[id] || null;
   }
-  indexOf(item) {
+  indexOf (item) {
     return this._byIndex.indexOf(item);
   }
-  getItemForIndex(index) {
+  getItemForIndex (index) {
     return this._byIndex[index];
   }
-  sort() {
+  sort () {
     this._byIndex.sort();
     this._reverse && this._byIndex.reverse();
   }
-  each(cb, context) {
+  each (cb, context) {
     for (var i = 0; i < this.length; ++i) {
       if (cb.call(context, this._byIndex[i], i)) {
         return;
       }
     }
   }
-  toJSON() {
+  toJSON () {
     return {
       key: this.key,
       items: this._byIndex
     };
   }
-  fromJSON(data) {
+  fromJSON (data) {
     this.clear();
     var key = this.key = data.key;
     this.add(data.items);
   }
-  toArray() {
+  toArray () {
     return this._byIndex.slice(0);
   }
-  beginChanges() {
+  beginChanges () {
     this._changeDataSave = true;
     this._changeData = {
       updated: [],
@@ -282,10 +256,11 @@ exports = class extends BasicDataSource {
       removedHash: {}
     };
   }
-  saveChanges() {
+  saveChanges () {
     this._changeDataSave = false;
     if (this._persistence) {
-      var changeData = this._changeData, i, j;
+      var changeData = this._changeData,
+        i, j;
 
       this._persistence.remove(changeData.removed);
 
@@ -297,13 +272,10 @@ exports = class extends BasicDataSource {
         this._persistence.update(updateList);
       }
 
-
-
-
       this._persistence.commit();
     }
   }
-  load(cb) {
+  load (cb) {
     if (this._persistence) {
       this._persistence.load(this, function (err) {
         if (err) {
@@ -313,12 +285,12 @@ exports = class extends BasicDataSource {
       });
     }
   }
-  save() {
+  save () {
     if (this._persistence) {
       this._persistence.save(this);
     }
   }
-  compare(dict, cb) {
+  compare (dict, cb) {
     var key = this.key;
 
     // create a key-indexed copy of dict to run the comparison against
@@ -333,9 +305,6 @@ exports = class extends BasicDataSource {
       }
     }
 
-
-
-
     // first, compare all items in the index to the dict items
     var items = this._byIndex.slice(0);
     for (var i = 0, item; item = items[i]; ++i) {
@@ -344,15 +313,12 @@ exports = class extends BasicDataSource {
       delete compareTo[k];
     }
 
-
-
-
     // then, for any remaining dict items, they don't exist in the local version
     for (var k in compareTo) {
       cb.call(this, this, null, compareTo[k]);
     }
   }
-  filter(filter) {
+  filter (filter) {
     var result = new DataSource({ key: this.key });
     var key;
     var item;
@@ -365,21 +331,16 @@ exports = class extends BasicDataSource {
       item = this._byIndex[i];
       match = true;
       for (key in filter) {
-        if (typeof item[key] == 'string' && item[key].toLowerCase().indexOf(filter[key]) == -1) {
+        if (typeof item[key] == 'string' && item[key].toLowerCase().indexOf(
+            filter[key]) == -1) {
           match = false;
         }
       }
-
-
-
 
       if (match) {
         result.add(item);
       }
     }
-
-
-
 
     return result;
   }

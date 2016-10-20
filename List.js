@@ -13,7 +13,7 @@ import DataItem from './models/DataItem';
 import Selection from './Selection';
 
 var List = module.exports = class extends Widget {
-  constructor(opts) {
+  constructor (opts) {
     opts = merge(opts, {
       containSelf: true,
       cellSpacing: 0,
@@ -37,9 +37,6 @@ var List = module.exports = class extends Widget {
       this.setSorter(opts.sorter);
     }
 
-
-
-
     this._lastFilter = null;
 
     this._cellsByID = {};
@@ -62,33 +59,27 @@ var List = module.exports = class extends Widget {
       opts.__result.addSubscription(this, 'select');
     }
 
-
-
-
     Window.get().on('ViewportChange', bind(this, 'needsRender'));
   }
-  getContainer() {
+  getContainer () {
     return this._container;
   }
-  getDataSource() {
+  getDataSource () {
     return this._dataSource;
   }
-  setModel(path, value) {
+  setModel (path, value) {
     if (arguments.length == 1) {
       this.setDataSource(arguments[0]);
     } else {
       return super.setModel(...arguments);
     }
   }
-  setData(data) {
+  setData (data) {
     if (!this._dataSource) {
       this.setDataSource(new DataSource({ sorter: this._sorter }));
     } else {
       this._dataSource.clear();
     }
-
-
-
 
     if (data) {
       var items;
@@ -102,24 +93,15 @@ var List = module.exports = class extends Widget {
         });
       }
 
-
-
-
       this._dataSource.add(items);
     }
 
-
-
-
     this.needsRender();
   }
-  setDataSource(dataSource) {
+  setDataSource (dataSource) {
     if (this._dataSource == dataSource) {
       return;
     }
-
-
-
 
     if (this._dataSource) {
       this._dataSource.unsubscribe('Update', this);
@@ -127,16 +109,13 @@ var List = module.exports = class extends Widget {
       this.clear();
     }
 
-
-
-
     this._dataSource = dataSource;
     this._dataSource.subscribe('Update', this, 'onUpdateItem');
     this._dataSource.subscribe('Remove', this, 'onRemoveItem');
 
     this.needsRender();
   }
-  onUpdateItem(id, item) {
+  onUpdateItem (id, item) {
     var cell = this._cellsByID[id];
     if (cell) {
       var prevData = cell.getItem();
@@ -149,16 +128,13 @@ var List = module.exports = class extends Widget {
       }
     }
 
-
-
-
     this.updateFilter();
   }
-  onRemoveItem(id) {
+  onRemoveItem (id) {
     this._removed[id] = true;
     this.updateFilter();
   }
-  buildWidget() {
+  buildWidget () {
     this._container = $({
       parent: this._el,
       className: this._opts.containerClassName,
@@ -168,37 +144,32 @@ var List = module.exports = class extends Widget {
       this._container.style.position = 'relative';
     }
 
-
-
-
     if (this._opts.selection || this._opts.selectable) {
       this.setSelectable(this._opts.selection || this._opts.selectable);
     }
 
-
-
-
     this.render();
   }
-  setValue(value) {
+  setValue (value) {
     if (this.selection) {
       this.selection.select(value);
     }
   }
-  getValue() {
+  getValue () {
     if (this.selection) {
       return this.selection.get();
     }
   }
-  setSelectable(selectable) {
+  setSelectable (selectable) {
     this.selection = new Selection({
       parent: this,
       type: selectable
-    }).subscribe('Select', this, '_onSelected', true).subscribe('Deselect', this, '_onSelected', false);
+    }).subscribe('Select', this, '_onSelected', true).subscribe(
+      'Deselect', this, '_onSelected', false);
 
     this.selection;
   }
-  _onSelected(isSelected, item, id) {
+  _onSelected (isSelected, item, id) {
     if (this._cellsByID[id] !== undefined) {
       this._cellsByID[id].updateSelected();
 
@@ -211,44 +182,34 @@ var List = module.exports = class extends Widget {
       }
     }
   }
-  setCellCtor(cellCtor) {
+  setCellCtor (cellCtor) {
     if (cellCtor == this._cellCtor) {
       return;
     }
 
-
-
-
-
-
-
-
     this._cellCtor = cellCtor;
     this.clear();
   }
-  clear() {
+  clear () {
     for (var id in this._cellsByID) {
       var cell = this._cellsByID[id];
       cell.remove();
     }
 
-
-
-
     this._cellsByID = {};
     this._renderedDataSource = null;
     this._cellDim = null;
   }
-  getCellById(id) {
+  getCellById (id) {
     return this._cellsByID[id];
   }
-  setCellForId(id, cell) {
+  setCellForId (id, cell) {
     this._cellsByID[id] = cell;
   }
-  getCells() {
+  getCells () {
     return this._cellsByID;
   }
-  setSorter(sorter) {
+  setSorter (sorter) {
     if (sorter != this._rawSorter) {
       this._rawSorter = sorter;
       this._sorter = function (item) {
@@ -256,14 +217,11 @@ var List = module.exports = class extends Widget {
       };
     }
 
-
-
-
     if (this._renderedDataSource) {
       this._renderedDataSource.setSorter(sorter);
     }
   }
-  setFilter(filter) {
+  setFilter (filter) {
     if (filter != this._rawFilter) {
       this._rawFilter = filter;
       this._filter = function (item) {
@@ -271,18 +229,16 @@ var List = module.exports = class extends Widget {
       };
     }
 
-
-
-
     this.needsRender();
   }
-  setFixedHeight(isFixedHeight) {
+  setFixedHeight (isFixedHeight) {
     this._opts.isFixedHeight = isFixedHeight;
   }
-  _applyDataSource() {
+  _applyDataSource () {
     if (this._filter != this._lastFilter) {
       this._lastFilter = this._filter;
-      this._renderedDataSource = this._dataSource.getFilteredDataSource(this._filter);
+      this._renderedDataSource = this._dataSource.getFilteredDataSource(
+        this._filter);
 
       this._lastSorter = this._sorter;
       this._renderedDataSource.setSorter(this._sorter);
@@ -298,23 +254,15 @@ var List = module.exports = class extends Widget {
       }
     }
 
-
-
-
-
-
-
-
-
     if (!this._renderedDataSource) {
       this._renderedDataSource = this._dataSource;
     }
   }
-  onShow() {
+  onShow () {
     super.onShow(...arguments);
     this.needsRender();
   }
-  render() {
+  render () {
     if (!this._dataSource) {
       return;
     }
@@ -329,39 +277,28 @@ var List = module.exports = class extends Widget {
       this.renderDynamicHeight();
     }
 
-
-
-
-
-
-
-
-
     this._removed = {};
   }
-  setCellDim(cellDim) {
+  setCellDim (cellDim) {
     this._cellDim = cellDim;
   }
-  getCellDim() {
+  getCellDim () {
     if (this._cellDim) {
       return this._cellDim;
     }
-
-
-
 
     if (this._opts.isFixedHeight) {
       var item = this._renderedDataSource.getItemForIndex(0);
       if (!item) {
         return false;
       }
-      var key = item[this._renderedDataSource.getKey()], cell = this._cellsByID[key] || (this._cellsByID[key] = this._createCell(item)), dim = $.size(cell.getElement());
+      var key = item[this._renderedDataSource.getKey()],
+        cell = this._cellsByID[key] || (this._cellsByID[key] = this._createCell(
+          item)),
+        dim = $.size(cell.getElement());
       if (dim.width == 0 || dim.height == 0) {
         return null;
       }
-
-
-
 
       var cellSpacing = this._opts.cellSpacing;
       if (cellSpacing) {
@@ -369,16 +306,13 @@ var List = module.exports = class extends Widget {
         dim.height += cellSpacing;
       }
 
-
-
-
       this._cellDim = dim;
       return dim;
     } else {
       throw 'unimplemented';
     }
   }
-  _createCell(item) {
+  _createCell (item) {
     var key = this._dataSource.getKey();
     var cell = new this._cellCtor({
       parent: this,
@@ -391,7 +325,7 @@ var List = module.exports = class extends Widget {
     cell.render();
     return cell;
   }
-  _nodeOrder() {
+  _nodeOrder () {
     var container = this._container;
     var src = this._renderedDataSource;
     var key = src.key;
@@ -405,9 +339,6 @@ var List = module.exports = class extends Widget {
       return;
     }
 
-
-
-
     dummy = document.createElement('div');
 
     container.insertBefore(dummy, container.childNodes[0]);
@@ -420,12 +351,9 @@ var List = module.exports = class extends Widget {
       }
     }
 
-
-
-
     container.removeChild(dummy);
   }
-  renderAllDelayed() {
+  renderAllDelayed () {
     var src = this._renderedDataSource;
     if (!src) {
       return;
@@ -434,18 +362,13 @@ var List = module.exports = class extends Widget {
       return;
     }
 
-
-
-
     var i = 0;
-    function renderOne() {
+
+    function renderOne () {
       var item = src.getItemForIndex(i);
       if (!item) {
         return false;
       }
-
-
-
 
       var id = item[src.getKey()];
       var cell = this._cellsByID[id];
@@ -453,27 +376,21 @@ var List = module.exports = class extends Widget {
         cell = this._cellsByID[id] = this._createCell(item);
       } else {
         cell.render();
-      }
-      !this._applyNodeOrder && this.positionCell(cell, i);
+      }!this._applyNodeOrder && this.positionCell(cell, i);
       ++i;
       return true;
     }
 
-
-
-
-    function renderMany() {
+    function renderMany () {
       if (this._renderManyTimeout) {
         clearTimeout(this._renderManyTimeout);
         this._renderManyTimeout = void 0;
       }
 
-
-
-
       var THRESHOLD = 50;
       // ms to render
-      var n = 0, t = +new Date();
+      var n = 0,
+        t = +new Date();
       while (n++ < 10 || +new Date() - t < THRESHOLD) {
         if (!renderOne.call(this)) {
           this._applyNodeOrder && this._nodeOrder();
@@ -481,14 +398,8 @@ var List = module.exports = class extends Widget {
         }
       }
 
-
-
-
       this._renderManyTimeout = setTimeout(bind(this, renderMany), 100);
     }
-
-
-
 
     var removed = this._removed;
     for (var id in removed) {
@@ -499,26 +410,26 @@ var List = module.exports = class extends Widget {
           delete this._cellsByID[id];
         }
       }
-    }
-    ;
+    };
 
     renderMany.call(this);
   }
-  setOffsetParent(offsetParent) {
+  setOffsetParent (offsetParent) {
     this._opts.offsetParent = offsetParent;
   }
-  setTiled(tiled) {
+  setTiled (tiled) {
     this._opts.isTiled = tiled;
     this._isTiled = tiled;
   }
-  updateRenderOpts() {
+  updateRenderOpts () {
     var r = this._renderOpts;
 
     r.offsetTop = this._containSelf ? 0 : this._container.offsetTop;
     r.offsetLeft = this._containSelf ? 0 : this._container.offsetLeft;
 
     var parent = this._offsetParent || this.getOffsetParent();
-    r.top = (parent.getAttribute('squill-scroller-top') || parent.scrollTop) - r.offsetTop;
+    r.top = (parent.getAttribute('squill-scroller-top') || parent.scrollTop) -
+      r.offsetTop;
     r.height = parent.offsetHeight;
     r.bottom = r.top + r.height;
 
@@ -530,9 +441,6 @@ var List = module.exports = class extends Widget {
       r.cellWidth = cellDim.width;
       r.cellHeight = cellDim.height;
     }
-
-
-
 
     var n = r.numRows = this._renderedDataSource.length;
     if (this._opts.isFixedHeight) {
@@ -548,9 +456,6 @@ var List = module.exports = class extends Widget {
       }
     }
 
-
-
-
     if (!this._applyNodeOrder) {
       if (this._opts.absolutePosition) {
         this._container.style.height = r.numRows * r.cellHeight + 'px';
@@ -559,18 +464,12 @@ var List = module.exports = class extends Widget {
       }
     }
 
-
-
-
     return true;
   }
-  positionCell(cell, i) {
+  positionCell (cell, i) {
     if (!this._opts.absolutePosition) {
       return;
     }
-
-
-
 
     var r = this._renderOpts;
     var el = cell.getElement();
@@ -585,11 +484,12 @@ var List = module.exports = class extends Widget {
       el.style.top = (i * r.cellHeight || 0) + r.offsetTop + 'px';
     }
   }
-  getOffsetParent() {
+  getOffsetParent () {
     // the list might be contained in some other scrolling div
-    return this._opts.offsetParent || (this._containSelf ? this._container : this._container.offsetParent) || document.body;
+    return this._opts.offsetParent || (this._containSelf ? this._container :
+      this._container.offsetParent) || document.body;
   }
-  renderFixedHeight() {
+  renderFixedHeight () {
     var parent = this.getOffsetParent();
     if (!parent) {
       return;
@@ -599,21 +499,18 @@ var List = module.exports = class extends Widget {
         this._removeScrollEvt();
       }
       this._offsetParent = parent;
-      this._removeScrollEvt = $.onEvent(parent, 'scroll', this, 'needsRender');
+      this._removeScrollEvt = $.onEvent(parent, 'scroll', this,
+        'needsRender');
     }
 
-
-
-
     // render data
-    var src = this._renderedDataSource, key = src.getKey(), n = src.length;
+    var src = this._renderedDataSource,
+      key = src.getKey(),
+      n = src.length;
 
     if (n && !this.updateRenderOpts()) {
       return;
     }
-
-
-
 
     // swap lists
     var oldCellsByID = this._cellsByID;
@@ -629,9 +526,6 @@ var List = module.exports = class extends Widget {
           break;
         }
 
-
-
-
         var id = item[key];
         var cell = oldCellsByID[id];
         if (!cell) {
@@ -641,14 +535,10 @@ var List = module.exports = class extends Widget {
           cell.render();
         }
 
-
-
-
         this.positionCell(cell, i);
         this._cellsByID[id] = cell;
       }
-    }
-    ;
+    };
 
     // remove old items
     if (!this._opts.preserveCells) {

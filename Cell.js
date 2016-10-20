@@ -7,7 +7,7 @@ import browser from 'util/browser';
 let $ = browser.$;
 
 exports = class extends Widget {
-  constructor(opts) {
+  constructor (opts) {
     super(...arguments);
 
     if (opts.item) {
@@ -18,39 +18,38 @@ exports = class extends Widget {
       }
     }
   }
-  buildWidget(el) {
+  buildWidget (el) {
     this.initMouseEvents();
   }
-  isSelected() {
-    return this._widgetParent.selection && this._widgetParent.selection.isSelected(this._item);
+  isSelected () {
+    return this._widgetParent.selection && this._widgetParent.selection.isSelected(
+      this._item);
   }
-  select() {
-    this._widgetParent.selection && this._widgetParent.selection.select(this._item);
+  select () {
+    this._widgetParent.selection && this._widgetParent.selection.select(
+      this._item);
   }
-  deselect() {
-    this._widgetParent.selection && this._widgetParent.selection.deselect(this._item);
+  deselect () {
+    this._widgetParent.selection && this._widgetParent.selection.deselect(
+      this._item);
   }
-  setItem(data, item) {
+  setItem (data, item) {
     this.setModel(data);
     this._data = data;
     this._item = item || data;
     this.updateSelected();
   }
-  getData() {
+  getData () {
     return this._data;
   }
-  getItem() {
+  getItem () {
     return this._item;
   }
-  render() {
-  }
-  onSelect() {
+  render () {}
+  onSelect () {
     if (!this._widgetParent.selection) {
       return;
     }
-
-
-
 
     var type = this._widgetParent.selection.getType();
     if (type == 'toggle' || type == 'multi') {
@@ -63,7 +62,7 @@ exports = class extends Widget {
       this.select();
     }
   }
-  updateSelected() {
+  updateSelected () {
     var isSelected = this.isSelected();
     if (isSelected) {
       $.addClass(this._el, 'selected');

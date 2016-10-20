@@ -3,10 +3,10 @@ let exports = {};
 import Widget from './Widget';
 
 exports = class extends Widget {
-  getContainer() {
+  getContainer () {
     return this.contents;
   }
-  buildChildren(children) {
+  buildChildren (children) {
     if (Array.isArray(children[0])) {
       var args = Array.prototype.slice.call(arguments);
       var gridChildren = args[0] = [];
@@ -33,9 +33,9 @@ exports = class extends Widget {
 
 exports.prototype._def = {
   children: [{
-      id: 'contents',
-      tag: 'table',
-      style: { borderSpacing: 0 }
-    }]
+    id: 'contents',
+    tag: 'table',
+    style: { borderSpacing: 0 }
+  }]
 };
 export default exports;

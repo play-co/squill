@@ -5,7 +5,7 @@ import browser from 'util/browser';
 let $ = browser.$;
 
 exports = class extends PubSub {
-  constructor(opts) {
+  constructor (opts) {
     super();
 
     this._opts = JS.merge(opts, {
@@ -13,7 +13,7 @@ exports = class extends PubSub {
       tag: 'div'
     });
   }
-  build() {
+  build () {
     if (!this._el) {
       if (this._opts.el) {
         this._el = this._opts.el;
@@ -22,35 +22,24 @@ exports = class extends PubSub {
         this._el = $.create(this._opts);
       }
 
-
-
-
       this.buildContent();
     }
 
-
-
-
-
-
-
-
     return this;
   }
-  getId() {
+  getId () {
     return this._el && this._el.id || this._opts && this._opts.id;
   }
-  buildContent() {
-  }
-  destroy() {
+  buildContent () {}
+  destroy () {
     if (!this._el) {
       return;
     }
   }
-  getElement() {
+  getElement () {
     return this._el || this.build()._el;
   }
-  appendChild(el) {
+  appendChild (el) {
     if (!this._el) {
       this.build();
     }
@@ -58,13 +47,10 @@ exports = class extends PubSub {
 
     return this;
   }
-  appendTo(el) {
+  appendTo (el) {
     if (!this._el) {
       this.build();
     }
-
-
-
 
     if (el instanceof Element) {
       el.appendChild(this);
@@ -72,24 +58,18 @@ exports = class extends PubSub {
       el.appendChild(this._el);
     }
 
-
-
-
-
-
-
-
     return this;
   }
-  setPos(x, y) {
+  setPos (x, y) {
     this._el.style.x = x + 'px';
     this._el.style.y = y + 'px';
   }
-  center() {
+  center () {
     var dim = $(window);
-    this.setPos(Math.max(0, dim.width - this._el.offsetWidth) / 2, Math.max(0, dim.height - this._el.offsetHeight) / 2);
+    this.setPos(Math.max(0, dim.width - this._el.offsetWidth) / 2, Math.max(
+      0, dim.height - this._el.offsetHeight) / 2);
   }
-  remove() {
+  remove () {
     $.remove(this._el);
   }
 };

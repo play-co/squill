@@ -10,7 +10,7 @@ import Element from './Element';
 import Widget from './Widget';
 
 exports = class extends Widget {
-  constructor(opts) {
+  constructor (opts) {
     opts = merge(opts, {});
     super(opts);
 
@@ -19,7 +19,7 @@ exports = class extends Widget {
       this.addItems(opts.items);
     }
   }
-  buildContent() {
+  buildContent () {
     this.each(bind(this, function (item) {
       if ($.isElement(item)) {
         this._el.appendChild(item);
@@ -28,7 +28,7 @@ exports = class extends Widget {
       }
     }));
   }
-  validate() {
+  validate () {
     this.each(bind(this, function (item) {
       if (item.isValid) {
         if (!item.isValid()) {
@@ -38,19 +38,19 @@ exports = class extends Widget {
     }));
     return this.isValid;
   }
-  each(cb) {
+  each (cb) {
     for (var i = 0, w; w = this._items[i]; ++i) {
       cb(w);
     }
   }
 
-  addItems(items) {
+  addItems (items) {
     for (var i = 0, len = items.length; i < len; ++i) {
       var def = items[i];
       this.add(def);
     }
   }
-  add(item) {
+  add (item) {
     if ($.isElement(item)) {
       if (this._el) {
         this._el.appendChild(item);
@@ -70,73 +70,9 @@ exports = class extends Widget {
       return;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     this._items.push(item);
   }
-  removeByName(name) {
-  }
+  removeByName (name) {}
 };
 
 exports.prototype.isValid = true;

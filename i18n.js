@@ -10,13 +10,13 @@ exports.get = function (key) {
 };
 
 exports.Language = class {
-  constructor(dict) {
+  constructor (dict) {
     this._dict = dict;
   }
-  add(key, value) {
+  add (key, value) {
     this._dict[key] = value;
   }
-  get(key) {
+  get (key) {
     return this._dict[key];
   }
 };

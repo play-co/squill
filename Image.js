@@ -4,19 +4,19 @@ import Widget from 'squill/Widget';
 import bindings from 'squill/models/bindings';
 
 exports = class extends Widget {
-  buildWidget() {
+  buildWidget () {
     var opts = this._opts;
     if (opts.format) {
       bindings.parseFormat(this, opts.format);
     }
   }
-  set src(src) {
+  set src (src) {
     this._el.src = src;
   }
-  get src() {
+  get src () {
     return this._el.src;
   }
-  setSrc(src) {
+  setSrc (src) {
     this.src = src;
   }
 };

@@ -10,7 +10,7 @@ import Widget from './Widget';
 import Selection from '../Selection';
 
 exports = class extends Widget {
-  constructor(opts) {
+  constructor (opts) {
     opts = merge(opts, {
       isFixedSize: true,
       recycle: true
@@ -31,7 +31,7 @@ exports = class extends Widget {
 
     this.updateOpts(opts);
   }
-  updateOpts(opts) {
+  updateOpts (opts) {
     if (this._opts) {
       for (var key in opts) {
         this._opts[key] = opts[key];
@@ -39,9 +39,6 @@ exports = class extends Widget {
     } else {
       this._opts = opts;
     }
-
-
-
 
     if (opts.getCell) {
       this.setCellGetter(opts.getCell);
@@ -70,22 +67,15 @@ exports = class extends Widget {
       }
     }
 
-
-
-
-
-
-
-
     return this._opts;
   }
-  setSelections(selections) {
+  setSelections (selections) {
     selections.forEach(bind(this, 'select'));
   }
-  getDataSource() {
+  getDataSource () {
     return this._dataSource;
   }
-  setDataSource(dataSource) {
+  setDataSource (dataSource) {
     if (this._dataSource) {
       this._dataSource.unsubscribe('Update', this, '_onUpdate');
       this._dataSource.unsubscribe('Remove', this, '_onRemove');
@@ -97,43 +87,40 @@ exports = class extends Widget {
       this.needsSort();
     }
   }
-  _onUpdate(id, item) {
+  _onUpdate (id, item) {
     var cell = this._cells[id];
     if (cell) {
       this._updatedCells[id] = item;
     }
     this.needsSort();
   }
-  _onRemove(id, item) {
+  _onRemove (id, item) {
     this._removed[id] = true;
     this.needsSort();
   }
-  needsSort() {
+  needsSort () {
     this._needsSort = true;
     this._view.needsRepaint();
   }
-  setSelected(data) {
+  setSelected (data) {
     this._selected = data;
   }
-  getSelected() {
+  getSelected () {
     return this._selected;
   }
-  setCellGetter(getCell) {
+  setCellGetter (getCell) {
     this._getCell = getCell;
   }
-  getCellById(id) {
+  getCellById (id) {
     return this._cells[id];
   }
-  setSorter(sorter) {
+  setSorter (sorter) {
     this._sorter = sorter;
   }
-  render(viewport) {
+  render (viewport) {
     if (!this._dataSource) {
       return;
     }
-
-
-
 
     if (this._needsSort) {
       this._needsSort = null;
@@ -143,9 +130,6 @@ exports = class extends Widget {
         delete this._updatedCells[id];
       }
     }
-
-
-
 
     var count = this._dataSource.length;
     if (this._opts.isFixedSize) {
@@ -159,10 +143,10 @@ exports = class extends Widget {
       }
     }
   }
-  getRenderOpts() {
+  getRenderOpts () {
     return this._renderOpts;
   }
-  _positionCell(cell, i, y) {
+  _positionCell (cell, i, y) {
     var view = this._view;
     view.addCell(cell);
 
@@ -191,7 +175,7 @@ exports = class extends Widget {
       });
     }
   }
-  renderVariable(viewport) {
+  renderVariable (viewport) {
     if (!this._dataSource) {
       return;
     }
@@ -199,20 +183,15 @@ exports = class extends Widget {
       return;
     }
 
-
-
-
     var i = 0;
     var y = 0;
-    function renderOne() {
+
+    function renderOne () {
       var item = this._dataSource.getItemForIndex(i);
       if (!item) {
         this._view.setMaxY(y);
         return false;
       }
-
-
-
 
       var id = item[this._dataSource.key];
       var cell = this._createCell(item);
@@ -224,35 +203,23 @@ exports = class extends Widget {
       return true;
     }
 
-
-
-
-    function renderMany() {
+    function renderMany () {
       var THRESHOLD = 50;
       // ms to render
-      var n = 0, t = +new Date();
+      var n = 0,
+        t = +new Date();
       while (n++ < 10 || +new Date() - t < THRESHOLD) {
         if (!renderOne.call(this)) {
           return;
         }
       }
 
-
-
-
       setTimeout(bind(this, renderMany), 100);
     }
 
-
-
-
-
-
-
-
     renderMany.call(this);
   }
-  _removeCells() {
+  _removeCells () {
     var removed = this._removed;
     this._removed = {};
     for (var id in removed) {
@@ -265,7 +232,7 @@ exports = class extends Widget {
       }
     }
   }
-  _createCell(item) {
+  _createCell (item) {
     var id = item[this._dataSource.key];
     var cell = this._cells[id];
     if (!cell) {
@@ -273,15 +240,9 @@ exports = class extends Widget {
         cell = this._cellResource.get();
       }
 
-
-
-
       if (!cell) {
         cell = this._getCell(item, this._cellResource);
       }
-
-
-
 
       this._cells[id] = cell;
       cell.setController(this);
@@ -289,16 +250,9 @@ exports = class extends Widget {
       cell.model.setResource(this._cellResource);
     }
 
-
-
-
-
-
-
-
     return cell;
   }
-  _updateRenderOpts(viewport) {
+  _updateRenderOpts (viewport) {
     var r = this._renderOpts;
     r.top = viewport.y - this._renderMargin;
     r.height = viewport.height + 2 * this._renderMargin;
@@ -312,19 +266,14 @@ exports = class extends Widget {
           return false;
         }
 
-
-
-
         var key = item[this._dataSource.key];
-        var cell = this._cells[key] || (this._cells[key] = this._createCell(item));
+        var cell = this._cells[key] || (this._cells[key] = this._createCell(
+          item));
         r.fullWidth = r.cellWidth = cell.getWidth();
         r.fullHeight = r.cellHeight = cell.getHeight();
         if (this._opts.isTiled && !r.cellWidth || !r.cellHeight) {
           return null;
         }
-
-
-
 
         var cellSpacing = this._opts.cellSpacing || 0;
         if (cellSpacing) {
@@ -332,9 +281,6 @@ exports = class extends Widget {
           r.fullHeight += cellSpacing;
         }
       }
-
-
-
 
       if (this._opts.isTiled) {
         r.maxWidth = viewport.width;
@@ -347,28 +293,15 @@ exports = class extends Widget {
         r.end = r.bottom / r.fullHeight + 1 | 0;
       }
 
-
-
-
       this._view.setMaxY(r.numRows * r.fullHeight);
     }
 
-
-
-
-
-
-
-
     return true;
   }
-  renderFixed(viewport) {
+  renderFixed (viewport) {
     if (!this._updateRenderOpts(viewport)) {
       return;
     }
-
-
-
 
     var r = this._renderOpts;
     var i = 0;
@@ -395,9 +328,6 @@ exports = class extends Widget {
       }
     }
 
-
-
-
     for (var id in cells) {
       var cell = cells[id];
 
@@ -407,30 +337,27 @@ exports = class extends Widget {
       }
     }
 
-
-
-
     this._cells = newCells;
   }
-  _onSelect(dataItem, id) {
+  _onSelect (dataItem, id) {
     this.publish('Select', dataItem, id);
   }
-  _onDeselect(dataItem, id) {
+  _onDeselect (dataItem, id) {
     this.publish('Deselect', dataItem, id);
   }
-  isSelected(dataItem) {
+  isSelected (dataItem) {
     return this.selection && this.selection.isSelected(dataItem);
   }
-  toggle(dataItem) {
+  toggle (dataItem) {
     this.selection && this.selection.toggle(dataItem);
   }
-  select(dataItem) {
+  select (dataItem) {
     this.selection && this.selection.select(dataItem);
   }
-  deselect(dataItem) {
+  deselect (dataItem) {
     this.selection && this.selection.deselect(dataItem);
   }
-  deselectAll() {
+  deselectAll () {
     if (this.selection) {
       var selection = this.selection.get();
       for (var id in selection) {
@@ -440,7 +367,7 @@ exports = class extends Widget {
       this.selection.deselectAll();
     }
   }
-  getSelections() {
+  getSelections () {
     var selectionIDMap = this.selection.get();
     var dataSource = this.getDataSource();
     var key = dataSource.getKey();
@@ -450,7 +377,7 @@ exports = class extends Widget {
       return !!selectionIDMap[itemKey];
     });
   }
-  getSelectionCount() {
+  getSelectionCount () {
     return this.selection && this.selection.getSelectionCount();
   }
 };

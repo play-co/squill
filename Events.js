@@ -11,14 +11,16 @@ var SLICE = Array.prototype.slice;
 var isMobile = /(iPod|iPhone|iPad|Android)/i.test(navigator.userAgent);
 
 exports = class extends PubSub {
-  event(el, name, handler) {
+  event (el, name, handler) {
     if (!this._eventEnabled) {
       this._eventEnabled = {};
     }
     var args = [
         this,
         handler
-      ].concat(SLICE.call(arguments, 3)), handler = bind.apply(this, args), events = this._eventEnabled;
+      ].concat(SLICE.call(arguments, 3)),
+      handler = bind.apply(this, args),
+      events = this._eventEnabled;
 
     events[name] = true;
     $.onEvent(el, name, function () {
@@ -27,19 +29,16 @@ exports = class extends PubSub {
       }
     });
   }
-  isDragging() {
+  isDragging () {
     return this._isDragging || false;
   }
-  initDragEvents(el) {
+  initDragEvents (el) {
     if (!this.__drag) {
       var d = this.__drag = new Drag();
       d.subscribe('DragStart', this, 'onDragStart');
       d.subscribe('Drag', this, 'onDrag');
       d.subscribe('DragStop', this, 'onDragStop');
     }
-
-
-
 
     var startDrag = bind(this.__drag, 'startDrag');
     if (!el) {
@@ -50,7 +49,7 @@ exports = class extends PubSub {
     }
     $.onEvent(el, 'mousedown', startDrag);
   }
-  initMouseEvents(el) {
+  initMouseEvents (el) {
     el = el || this._el;
 
     if (isMobile) {
@@ -65,92 +64,83 @@ exports = class extends PubSub {
       this.event(el, 'click', 'onClick');
     }
 
-
-
-
     var opts = this._opts;
     if (opts && opts.__result) {
       opts.__result.addSubscription(this, 'Select');
     }
 
-
-
-
     return this;
   }
-  initFocusEvents(el) {
+  initFocusEvents (el) {
     el = el || this._el;
     this.event(el, 'focus', 'onFocus');
     this.event(el, 'blur', 'onBlur');
     return this;
   }
-  initKeyEvents(el) {
+  initKeyEvents (el) {
     el = el || this._el;
     this.event(el, 'keydown', 'onKeyDown');
     this.event(el, 'keypress', 'onKeyPress');
     this.event(el, 'keyup', 'onKeyUp');
     return this;
   }
-  _onTouchStart(e) {
+  _onTouchStart (e) {
     this.onMouseOver(e);
     this.onMouseDown(e);
   }
-  _onTouchEnd(e) {
+  _onTouchEnd (e) {
     this.onMouseUp(e);
     this.onClick(e);
     this.onMouseOut(e);
   }
-  onMouseOver(e) {
+  onMouseOver (e) {
     if (!this._enableMouseEvents)
-      this._isOver = true;
+      { this._isOver = true; }
     this.publish('Over', e);
   }
-  onMouseMove(e) {
+  onMouseMove (e) {
     if (!this._enableMouseEvents)
-      this.publish('Move', e);
+      { this.publish('Move', e); }
   }
-  onMouseOut(e) {
+  onMouseOut (e) {
     this._isOver = false;
     this.publish('Out', e);
   }
-  onMouseDown(e) {
+  onMouseDown (e) {
     this._isDown = true;
     this.publish('Down', e);
     return false;
   }
-  onMouseUp(e) {
+  onMouseUp (e) {
     this._isDown = false;
     this.publish('Up', e);
     return false;
   }
-  onClick(e) {
+  onClick (e) {
     this.publish('Select', e);
     this.emit('click', e);
     return false;
   }
-  onFocus(e) {
+  onFocus (e) {
     this._isFocused = true;
     this.publish('Focus', e);
   }
-  onBlur(e) {
+  onBlur (e) {
     this._isFocused = false;
     this.publish('Blur', e);
   }
-  onKeyUp(e) {
+  onKeyUp (e) {
     this.publish('KeyUp', e);
   }
-  onKeyPress(e) {
+  onKeyPress (e) {
     this.publish('KeyPress', e);
   }
-  onKeyDown(e) {
+  onKeyDown (e) {
     this.publish('KeyDown', e);
   }
-  onDragStart(dragEvt) {
-  }
-  onDrag(dragEvt, moveEvt) {
-  }
-  onDragStop(dragEvt, upEvt) {
-  }
+  onDragStart (dragEvt) {}
+  onDrag (dragEvt, moveEvt) {}
+  onDragStop (dragEvt, upEvt) {}
 };
 
 export default exports;

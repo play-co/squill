@@ -11,7 +11,7 @@ import Widget from './Widget';
 import bindings from 'squill/models/bindings';
 
 exports = class extends Widget {
-  constructor(opts) {
+  constructor (opts) {
     opts = merge(opts, {
       name: '',
       value: '',
@@ -20,20 +20,20 @@ exports = class extends Widget {
 
     this._def = {
       children: [{
-          tag: opts.multiline ? 'textarea' : 'input',
-          id: '_input',
-          attrs: {
-            type: 'text',
-            value: opts.value,
-            name: opts.name
-          },
-          style: merge(opts.textStyle, {
-            MozBoxSizing: 'border-box',
-            WebkitBoxSizing: 'border-box',
-            MsBoxSizing: 'border-box',
-            boxSizing: 'border-box'
-          })
-        }],
+        tag: opts.multiline ? 'textarea' : 'input',
+        id: '_input',
+        attrs: {
+          type: 'text',
+          value: opts.value,
+          name: opts.name
+        },
+        style: merge(opts.textStyle, {
+          MozBoxSizing: 'border-box',
+          WebkitBoxSizing: 'border-box',
+          MsBoxSizing: 'border-box',
+          boxSizing: 'border-box'
+        })
+      }],
       style: { position: 'relative' }
     };
 
@@ -44,16 +44,9 @@ exports = class extends Widget {
       });
     }
 
-
-
-
-
-
-
-
     super(opts);
   }
-  buildWidget() {
+  buildWidget () {
     var el = this._el;
     var type = this._opts.type;
     if ('ontouchstart' in this._el) {
@@ -76,9 +69,6 @@ exports = class extends Widget {
       }), true);
     }
 
-
-
-
     var opts = this._opts;
     if (!opts.prefixLabel || opts.placeholder) {
       var label = this.getI18n('label');
@@ -94,68 +84,62 @@ exports = class extends Widget {
       }
     }
 
-
-
-
     this.initMouseEvents(el);
     this.initFocusEvents(this._input);
     this.initKeyEvents(this._input);
   }
-  focus() {
+  focus () {
     this._input.focus();
   }
-  blur() {
+  blur () {
     this._input.blur();
   }
-  getInputElement() {
+  getInputElement () {
     return this._input;
   }
-  setName(name) {
+  setName (name) {
     super.setName(...arguments);
 
     if (this._input) {
       this._input.name = name;
     }
   }
-  setValue(value) {
+  setValue (value) {
     if (value === undefined) {
       value = '';
     }
-
-
-
 
     this.saveSelection();
     this._value = this._input.value = value;
     this.restoreSelection();
   }
-  getValue() {
+  getValue () {
     return this._input.value;
   }
-  onKeyDown() {
+  onKeyDown () {
     super.onKeyDown(...arguments);
     if (this._placeholder) {
       $.hide(this._placeholder);
     }
   }
-  onKeyUp() {
+  onKeyUp () {
     super.onKeyUp(...arguments);
     this.checkLabel();
     this.checkValue();
   }
-  onMouseDown(evt) {
+  onMouseDown (evt) {
     super.onMouseDown(...arguments);
 
     evt.stopPropagation();
   }
-  onKeyPress(e) {
+  onKeyPress (e) {
     super.onKeyPress(...arguments);
     if (e.keyCode == 13) {
       this.publish('EnterPressed');
     }
     this.checkValue();
   }
-  onBlur() {
+  onBlur () {
     super.onBlur();
     this.checkLabel();
 
@@ -163,27 +147,21 @@ exports = class extends Widget {
       $.show(this._overlay);
     }
   }
-  isValid() {
+  isValid () {
     return this._isValid;
   }
-  checkValue() {
+  checkValue () {
     var value = this._input.value;
     var formatter = this._opts.formatter;
     if (formatter) {
       value = formatter(value);
     }
 
-
-
-
     if (value == INVALID_VALUE) {
       this._isValid = false;
       $.addClass(this._el, 'invalid');
       return;
     }
-
-
-
 
     this._isValid = true;
     $.removeClass(this._el, 'invalid');
@@ -199,29 +177,28 @@ exports = class extends Widget {
       this.publish('ValueChange', this._value);
     }
   }
-  saveSelection() {
+  saveSelection () {
     this._selection = {
       start: this._input.selectionStart,
       end: this._input.selectionEnd
     };
   }
-  restoreSelection() {
+  restoreSelection () {
     var input = this._input;
     if (this._isFocused) {
       input.selectionStart = this._selection.start;
       input.selectionEnd = this._selection.end;
     }
   }
-  checkLabel() {
+  checkLabel () {
     if (this._placeholder && /^\s*$/.test(this._input.value)) {
       $.show(this._placeholder);
     }
   }
-  onClick() {
+  onClick () {
     super.onClick();
-
   }
-  setEnabled(isEnabled) {
+  setEnabled (isEnabled) {
     this._isEnabled = isEnabled;
     if (isEnabled) {
       delete this._input.disabled;
@@ -231,16 +208,16 @@ exports = class extends Widget {
       this.addClass('disabled');
     }
   }
-  isFocused() {
+  isFocused () {
     return this._isFocused;
   }
-  isEnabled() {
+  isEnabled () {
     return this._isEnabled;
   }
-  disable() {
+  disable () {
     this.setEnabled(false);
   }
-  enable() {
+  enable () {
     this.setEnabled(true);
   }
 };

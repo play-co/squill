@@ -9,14 +9,15 @@ let $ = browser.$;
 var defaults = { className: 'pillButtons' };
 
 exports = class extends Widget {
-  constructor(opts) {
+  constructor (opts) {
     opts = merge(opts, defaults);
     super(opts);
   }
-  buildWidget(el) {
+  buildWidget (el) {
     this._options = {};
 
-    var opts = this._opts.options, len = opts.length;
+    var opts = this._opts.options,
+      len = opts.length;
     for (var i = 0; i < len; ++i) {
       var optionEl = $({
         text: opts[i].text,
@@ -32,23 +33,17 @@ exports = class extends Widget {
         };
       }
 
-
-
-
       $.onEvent(optionEl, 'mousedown', this, 'onSelect', optionEl, opts[i].value);
       this._options[opts[i].value] = optionEl;
     }
   }
-  setValue(value) {
+  setValue (value) {
     this.onSelect(this._options[value], value);
   }
-  onSelect(optionEl, value, evt) {
+  onSelect (optionEl, value, evt) {
     if (value === this._selected.value) {
       return;
     }
-
-
-
 
     $.removeClass(this._selected.optionEl, 'selected');
     $.addClass(optionEl, 'selected');

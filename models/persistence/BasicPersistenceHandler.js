@@ -5,20 +5,18 @@ import { isArray } from 'base';
 import PubSub from 'lib/PubSub';
 
 exports = class extends PubSub {
-  constructor(opts) {
+  constructor (opts) {
     super(...arguments);
 
     this._params = opts.params || {};
     this._key = opts.key;
   }
-  clear() {
+  clear () {
     this._data = {};
   }
-  load() {
-  }
-  commit() {
-  }
-  update(data) {
+  load () {}
+  commit () {}
+  update (data) {
     var i, j;
 
     if (isArray(data)) {
@@ -29,10 +27,10 @@ exports = class extends PubSub {
       this._data[data[this._key]] = data;
     }
   }
-  setSource(dataSource) {
+  setSource (dataSource) {
     this._dataSource = dataSource;
   }
-  remove(data) {
+  remove (data) {
     var i, j;
 
     if (isArray(data)) {
@@ -43,7 +41,7 @@ exports = class extends PubSub {
       delete this._data[data];
     }
   }
-  setParams(params) {
+  setParams (params) {
     this._params = params;
   }
 };

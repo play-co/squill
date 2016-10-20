@@ -19,9 +19,8 @@ var defaults = {
   contentId: 'contentWrapper'
 };
 
-
 exports = class extends Widget {
-  constructor(opts) {
+  constructor (opts) {
     opts = opts || {};
     opts = merge(opts, defaults);
 
@@ -42,17 +41,14 @@ exports = class extends Widget {
       this._dataSource = null;
     }
 
-
-
-
     this._def = {
       id: this._wrapperId,
       className: 'browser',
       children: [{
-          id: this._contentId,
-          className: 'contentWrapper',
-          children: []
-        }]
+        id: this._contentId,
+        className: 'contentWrapper',
+        children: []
+      }]
     };
 
     this._root = null;
@@ -60,10 +56,11 @@ exports = class extends Widget {
 
     super(...arguments);
   }
-  _initClasses(opts) {
+  _initClasses (opts) {
     this._classNames = {
       nodeWrapper: opts.nodeWrapper || 'browserNodeWrapper',
-      nodeWrapperHidden: opts.nodeWrapperHidden || 'browserNodeWrapperHidden',
+      nodeWrapperHidden: opts.nodeWrapperHidden ||
+        'browserNodeWrapperHidden',
       node: opts.node || 'browserNode',
       nodeChildren: opts.nodeChildren || 'children',
       // Node has children...
@@ -72,7 +69,7 @@ exports = class extends Widget {
       nodeActiveChild: opts.nodeActiveChild || 'browserNodeActiveChild'
     };
   }
-  _clearItem(item) {
+  _clearItem (item) {
     var parent, children, i, j;
 
     if (item.children) {
@@ -81,9 +78,6 @@ exports = class extends Widget {
         this._clearItem(children.pop());
       }
     }
-
-
-
 
     if (item.parent) {
       parent = item.parent;
@@ -101,25 +95,24 @@ exports = class extends Widget {
       }
     }
 
-
-
-
     $.remove(item.node);
     item.group && $.remove(item.group);
   }
-  _createMenuId(inc) {
+  _createMenuId (inc) {
     var menuId = this._menuId;
     if (inc) {
       this._menuId++;
     }
     return this._elementIDPrefix + menuId;
   }
-  _createGroup(visible) {
-    var menuId = this._createMenuId(true), node = $({
+  _createGroup (visible) {
+    var menuId = this._createMenuId(true),
+      node = $({
         parent: $({
           parent: $.id(this._contentId),
           id: menuId,
-          className: visible ? this._classNames.nodeWrapper : this._classNames.nodeWrapperHidden
+          className: visible ? this._classNames.nodeWrapper : this._classNames
+            .nodeWrapperHidden
         }),
         className: this._classNames.node
       });
@@ -127,7 +120,7 @@ exports = class extends Widget {
     node.menuId = menuId;
     return node;
   }
-  _createItem(item, group) {
+  _createItem (item, group) {
     var id = this._createMenuId(true);
 
     item.node = $({
@@ -138,7 +131,7 @@ exports = class extends Widget {
     });
     $.onEvent(id, 'click', this, 'onClick', item);
   }
-  buildWidget() {
+  buildWidget () {
     this._menuId = 0;
     this._menuById = [];
     this._menuStack = [];
@@ -148,10 +141,12 @@ exports = class extends Widget {
       this._dataSource.each(bind(this, this.onCreateItem));
     }
   }
-  _removeFromStack(depth) {
-    var menuStack = this._menuStack, info = null;
+  _removeFromStack (depth) {
+    var menuStack = this._menuStack,
+      info = null;
 
-    while (menuStack.length && menuStack[menuStack.length - 1].depth >= depth) {
+    while (menuStack.length && menuStack[menuStack.length - 1].depth >=
+      depth) {
       info = menuStack.pop();
 
       $.removeClass(info.node.id, this._classNames.nodeActive);
@@ -163,12 +158,9 @@ exports = class extends Widget {
       }
     }
 
-
-
-
     return info;
   }
-  applyNodeStyle(item) {
+  applyNodeStyle (item) {
     if (item.children && item.children.length) {
       $.addClass(item.node, this._classNames.nodeChildren);
     } else {
@@ -180,9 +172,6 @@ exports = class extends Widget {
       $.removeClass(item.node, this._classNames.nodeActive);
     }
 
-
-
-
     if (item.removeCustomClass !== undefined && item.removeCustomClass) {
       $.removeClass(item.node, item.removeCustomClass);
     }
@@ -191,7 +180,7 @@ exports = class extends Widget {
       $.addClass(item.node, item.customClass);
     }
   }
-  _addToStack(item) {
+  _addToStack (item) {
     this._menuStack.push(item);
     this.applyNodeStyle(item);
 
@@ -215,7 +204,7 @@ exports = class extends Widget {
       $.removeClass(item.group.menuId, this._classNames.nodeWrapperHidden);
     }
   }
-  onClick(item) {
+  onClick (item) {
     var menuStack = this._menuStack;
     var lastItem = null;
     var id;
@@ -230,9 +219,6 @@ exports = class extends Widget {
       lastItem = null;
     }
 
-
-
-
     if (menuStack.length && item.depth <= menuStack[menuStack.length - 1].depth) {
       lastItem = this._removeFromStack(item.depth);
     }
@@ -240,27 +226,26 @@ exports = class extends Widget {
       this._addToStack(item);
     }
 
-
-
-
     this._menuActiveItem = item;
     this.applyNodeStyle(item);
 
     if (menuStack.length) {
       i = menuStack.length;
-      if (menuStack[menuStack.length - 1].children && menuStack[menuStack.length - 1].children.length) {
+      if (menuStack[menuStack.length - 1].children && menuStack[menuStack.length -
+          1].children.length) {
         i++;
       }
       $.id(this._contentId).style.width = i * 200 + this._leaveWidth + 'px';
     }
   }
-  onUpdateItem(item, key) {
+  onUpdateItem (item, key) {
     var treeItem = {
         title: item[this._label],
         toString: function () {
           return this.title;
         }
-      }, parentItem, children, child, i, j;
+      },
+      parentItem, children, child, i, j;
 
     if (this._itemByKey[key]) {
       if (this._itemByKey[key].node) {
@@ -268,9 +253,6 @@ exports = class extends Widget {
       }
       return;
     }
-
-
-
 
     if (item.parent === null || item.parent === -1) {
       if (this._root === null) {
@@ -294,7 +276,8 @@ exports = class extends Widget {
         }
         children = parentItem.children;
 
-        if (this._menuActiveItem && (this._menuActiveItem === parentItem || this._menuActiveItem.parent === parentItem)) {
+        if (this._menuActiveItem && (this._menuActiveItem === parentItem ||
+            this._menuActiveItem.parent === parentItem)) {
           for (i = 0, j = children.length; i < j; i++) {
             if (children[i].node) {
               $.remove(children[i].node);
@@ -306,7 +289,8 @@ exports = class extends Widget {
 
           if (!parentItem.group) {
             parentItem.group = this._createGroup(true);
-            $.id(this._contentId).style.width = (this._menuStack.length + 1) * 200 + 500 + 'px';
+            $.id(this._contentId).style.width = (this._menuStack.length + 1) *
+              200 + 500 + 'px';
           }
           for (i = 0, j = children.length; i < j; i++) {
             child = children[i];
@@ -324,16 +308,13 @@ exports = class extends Widget {
       treeItem.parent = parentItem;
     }
 
-
-
-
     treeItem.data = item;
     this._itemByKey[key] = treeItem;
   }
-  onCreateItem(item) {
+  onCreateItem (item) {
     this.onUpdateItem(item, item[this._key]);
   }
-  onRemoveItem(item, key) {
+  onRemoveItem (item, key) {
     var treeItem = this._itemByKey[key];
     var lastChild;
     var treeParent;
@@ -356,18 +337,20 @@ exports = class extends Widget {
       }
     }
   }
-  showItem(item) {
+  showItem (item) {
     var treeItem = this.getTreeNode(item);
     this.publish('DisplayItem', item, treeItem);
     this.applyNodeStyle(treeItem);
   }
-  setDataSource(dataSource) {
+  setDataSource (dataSource) {
     this._dataSource = dataSource;
     this._dataSource.subscribe('Update', this, this.onUpdateItem);
     this._dataSource.subscribe('Remove', this, this.onRemoveItem);
   }
-  getPathString(separator) {
-    var result = '', menuStack = this._menuStack, i, j;
+  getPathString (separator) {
+    var result = '',
+      menuStack = this._menuStack,
+      i, j;
 
     separator = separator || ' ';
     for (i = 0, j = menuStack.length; i < j; i++) {
@@ -377,12 +360,9 @@ exports = class extends Widget {
       result += menuStack[i].data[this._label];
     }
 
-
-
-
     return result;
   }
-  getTreeNode(item) {
+  getTreeNode (item) {
     return this._itemByKey[item[this._dataSource.key]];
   }
 };

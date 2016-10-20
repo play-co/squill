@@ -12,7 +12,7 @@ import browser from 'util/browser';
 let $ = browser.$;
 
 exports = class extends Widget {
-  constructor(opts) {
+  constructor (opts) {
     opts = merge(opts, { momentum: true });
 
     this._scrollTop = 0;
@@ -26,7 +26,7 @@ exports = class extends Widget {
 
     super(opts);
   }
-  buildContent() {
+  buildContent () {
     var el = this._el;
 
     $.style(el, { height: '100%' });
@@ -47,9 +47,6 @@ exports = class extends Widget {
       this._el.style.overflow = 'auto';
     }
 
-
-
-
     if (this._def) {
       var def = this._def;
       this._def = null;
@@ -59,35 +56,29 @@ exports = class extends Widget {
       this.buildChildren(merge({ el: this._scrollPane }, def));
     }
 
-
-
-
-
-
-
-
     return super.buildContent(...arguments);
   }
-  getScrollTop() {
+  getScrollTop () {
     return this._scrollTop;
   }
-  getScrollPane() {
+  getScrollPane () {
     return this._scrollPane;
   }
-  onTouchStart() {
+  onTouchStart () {
     if (this._momentum) {
       clearInterval(this._momentum);
     }
   }
-  onDragStart(dragEvt, mouseEvt) {
+  onDragStart (dragEvt, mouseEvt) {
     this._height = this._scrollPane.offsetHeight - this._el.offsetHeight;
     this._lastDelta.when = +new Date();
     if (this._momentum) {
       clearInterval(this._momentum);
     }
   }
-  onDrag(dragEvt, moveEvt, delta) {
-    var now = +new Date(), d = this._lastDelta;
+  onDrag (dragEvt, moveEvt, delta) {
+    var now = +new Date(),
+      d = this._lastDelta;
 
     d.diff = delta.y;
     d.duration = d.when && now - d.when || 0;
@@ -95,7 +86,7 @@ exports = class extends Widget {
 
     this.scrollTo(this._scrollTop + delta.y);
   }
-  scrollTo(y, animate) {
+  scrollTo (y, animate) {
     this._scrollTop = y;
     if (this._scrollTop < -this._height) {
       this._scrollTop = -this._height;
@@ -103,9 +94,6 @@ exports = class extends Widget {
     if (this._scrollTop > 0) {
       this._scrollTop = 0;
     }
-
-
-
 
     this._el.setAttribute('squill-scroller-top', -this._scrollTop);
 
@@ -118,19 +106,27 @@ exports = class extends Widget {
     });
 
     if (animate) {
-      transforms.move(this._scrollPane, 0, this._scrollTop, '0.5s ease-in-out', onFinish);
+      transforms.move(this._scrollPane, 0, this._scrollTop,
+        '0.5s ease-in-out', onFinish);
     } else {
       transforms.move(this._scrollPane, 0, this._scrollTop);
       onFinish();
     }
   }
-  onDragStop(dragEvt, selectEvt) {
+  onDragStop (dragEvt, selectEvt) {
     $.stopEvent(selectEvt);
     if (this._hasMomentum && this._lastDelta.duration != 0) {
-      var d = this._lastDelta, speed = d.diff / d.duration, start = d.when, time = d.when, dir = speed > 0 ? 1 : -1, dur = 2;
+      var d = this._lastDelta,
+        speed = d.diff / d.duration,
+        start = d.when,
+        time = d.when,
+        dir = speed > 0 ? 1 : -1,
+        dur = 2;
 
       this._momentum = setInterval(bind(this, function () {
-        var now = +new Date(), dt = now - time, distance = speed * dt;
+        var now = +new Date(),
+          dt = now - time,
+          distance = speed * dt;
 
         this.scrollTo(this._scrollTop + distance);
 

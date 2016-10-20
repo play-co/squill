@@ -20,16 +20,13 @@ document.oncontextmenu = function (evt) {
   return true;
 };
 
-function clearMenu() {
+function clearMenu () {
   while (contextMenu.elements.length) {
     $.remove(contextMenu.elements.pop());
   }
 }
 
-
-
-
-function clickOption(evt) {
+function clickOption (evt) {
   var option = contextMenu.options[evt.target.optionIndex];
   if (option) {
     if (option.checked === true || option.checked === false) {
@@ -47,10 +44,9 @@ function clickOption(evt) {
   } else {
     hideMenu();
   }
-}
-;
+};
 
-function showMenu(menu, x, y) {
+function showMenu (menu, x, y) {
   if (contextMenu === false) {
     contextMenu = {
       overlay: document.createElement('div'),
@@ -68,9 +64,6 @@ function showMenu(menu, x, y) {
       $.stopEvent(evt);
     });
   }
-
-
-
 
   contextMenu.options = menu.options;
 
@@ -98,22 +91,13 @@ function showMenu(menu, x, y) {
         className += ' checkedOption';
       }
 
-
-
-
       if (option.selected === true) {
         className += ' selectedOption';
       }
 
-
-
-
       if (option.className) {
         className += ' ' + option.className;
       }
-
-
-
 
       element = $({
         parent: contextMenu.element,
@@ -127,9 +111,6 @@ function showMenu(menu, x, y) {
     }
     contextMenu.elements.push(element);
   }
-
-
-
 
   $.style(contextMenu.overlay, { display: 'block' });
 
@@ -145,18 +126,17 @@ function showMenu(menu, x, y) {
     style.width = menu.width + 'px';
   }
   $.style(contextMenu.element, style);
-}
-;
+};
 
-function hideMenu() {
+function hideMenu () {
   $.style(contextMenu.overlay, { display: 'none' });
   $.style(contextMenu.element, { display: 'none' });
-}
-;
+};
 
 exports.show = function (contextMenu, target) {
   var rect = target.getBoundingClientRect();
-  showMenu(contextMenu, rect.left + ~~(rect.width / 2), rect.top + ~~(rect.height / 2));
+  showMenu(contextMenu, rect.left + ~~(rect.width / 2), rect.top + ~~(rect.height /
+    2));
 };
 
 export default exports;

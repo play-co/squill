@@ -3,7 +3,7 @@ let exports = {};
 import PubSub from 'lib/PubSub';
 
 exports = class extends PubSub {
-  constructor(opts) {
+  constructor (opts) {
     super();
 
     this._opts = opts;

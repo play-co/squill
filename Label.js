@@ -6,7 +6,7 @@ import Widget from 'squill/Widget';
 import bindings from 'squill/models/bindings';
 
 exports = class extends Widget {
-  buildWidget() {
+  buildWidget () {
     this.setLabel(this.getI18n('label'));
 
     var opts = this._opts;
@@ -14,10 +14,10 @@ exports = class extends Widget {
       bindings.parseFormat(this, opts.format);
     }
   }
-  setText(text) {
+  setText (text) {
     $.setText(this._labelSpan, text);
   }
-  setHTML(html) {
+  setHTML (html) {
     this._labelSpan.innerHTML = html;
   }
 };
@@ -25,9 +25,9 @@ exports = class extends Widget {
 exports.prototype._css = 'label';
 exports.prototype._def = {
   children: [{
-      id: '_labelSpan',
-      tag: 'span'
-    }]
+    id: '_labelSpan',
+    tag: 'span'
+  }]
 };
 exports.prototype.setData = exports.prototype.setText;
 exports.prototype.setValue = exports.prototype.setText;

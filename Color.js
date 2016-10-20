@@ -12,14 +12,13 @@ import Widget from './Widget';
 import jscolor from './jscolor/jscolor';
 
 exports = class extends Widget {
-  constructor(params) {
+  constructor (params) {
     params = merge(params, { tag: 'input' });
     this._isEnabled = params.isEnabled;
 
     super(params);
-
   }
-  buildWidget() {
+  buildWidget () {
     var el = this._el;
 
     $.addClass(el, 'squill-color');
@@ -31,7 +30,7 @@ exports = class extends Widget {
 
     jscolor.bind(el);
   }
-  setValue(value) {
+  setValue (value) {
     if (value) {
       if (value[0] !== '#') {
         value = '#' + value;
@@ -42,16 +41,15 @@ exports = class extends Widget {
     }
     this._el.value = value;
   }
-  getValue() {
+  getValue () {
     return this._el.value;
   }
-  _onChange() {
+  _onChange () {
     this.publish('Change', this._el.value);
   }
 };
 exports.prototype._css = 'clr';
 exports.prototype._type = 'text';
 var Color = exports;
-
 
 export default exports;

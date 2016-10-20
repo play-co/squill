@@ -5,21 +5,15 @@ import browser from 'util/browser';
 let $ = browser.$;
 
 exports = class extends Widget {
-  buildWidget() {
+  buildWidget () {
     this.setLabel(this._opts.label || '');
     if (this._opts.name) {
       this.setName(this._opts.name);
     }
 
-
-
-
     if (this._opts.value) {
       this.setValue(this._opts.value);
     }
-
-
-
 
     this.initMouseEvents(this.checkbox);
     $.onEvent(this.checkbox, 'change', this, '_onCheck');
@@ -28,43 +22,42 @@ exports = class extends Widget {
       this._opts.__result.addSubscription(this, 'Select', this._opts.id);
     }
   }
-  _onCheck() {
+  _onCheck () {
     this.publish('Check', this.isChecked());
     this.emit('change', this.isChecked());
   }
-  setLabel(label) {
+  setLabel (label) {
     $.setText(this.label, label);
   }
-  setName(name) {
+  setName (name) {
     this.checkbox.name = name;
   }
-  setValue(value) {
+  setValue (value) {
     this.checkbox.checked = !!value;
   }
-  isChecked() {
+  isChecked () {
     return this.checkbox.checked;
   }
-  setChecked(isChecked) {
+  setChecked (isChecked) {
     this.checkbox.checked = isChecked;
   }
-  getValue() {
+  getValue () {
     return this.isChecked() ? this.checkbox.value : null;
   }
 };
 exports.prototype._css = 'checkbox';
 exports.prototype._def = {
   tag: 'label',
-  children: [
-    {
-      id: 'checkbox',
-      tag: 'input',
-      attrs: { type: 'checkbox' }
-    },
-    {
-      tag: 'span',
-      id: 'label',
-      text: ''
-    }
+  children: [{
+    id: 'checkbox',
+    tag: 'input',
+    attrs: { type: 'checkbox' }
+  },
+  {
+    tag: 'span',
+    id: 'label',
+    text: ''
+  }
   ]
 };
 exports.prototype.setData = exports.prototype.setValue;

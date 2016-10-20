@@ -28,25 +28,14 @@ THE SOFTWARE.
   try {
     test.type = 'range';
     if (test.type == 'range')
-      return;
+      { return; }
   } catch (e) {
     return;
   }
 
-
-
-
-
-
-
-
-
   // test for required property support
   if (!document.mozSetImageElement || !('MozAppearance' in test.style))
-    return;
-
-
-
+    { return; }
 
   var scale;
   var isMac = navigator.platform == 'MacIntel';
@@ -55,7 +44,10 @@ THE SOFTWARE.
     width: isMac ? 22 : 12,
     height: isMac ? 16 : 20
   };
-  var track = '-moz-linear-gradient(top, transparent ' + (isMac ? '6px, #999 6px, #999 7px, #ccc 9px, #bbb 11px, #bbb 12px, transparent 12px' : '9px, #999 9px, #bbb 10px, #fff 11px, transparent 11px') + ', transparent)';
+  var track = '-moz-linear-gradient(top, transparent ' + (isMac ?
+      '6px, #999 6px, #999 7px, #ccc 9px, #bbb 11px, #bbb 12px, transparent 12px' :
+      '9px, #999 9px, #bbb 10px, #fff 11px, transparent 11px') +
+    ', transparent)';
   var styles = {
     'min-width': thumb.width + 'px',
     'min-height': thumb.height + 'px',
@@ -71,45 +63,34 @@ THE SOFTWARE.
   onChange.initEvent('change', true, false);
 
   if (document.readyState == 'loading')
-    document.addEventListener('DOMContentLoaded', initialize, true);
+    { document.addEventListener('DOMContentLoaded', initialize, true); }
   else
-    initialize();
+    { initialize(); }
 
-
-
-
-  function initialize() {
+  function initialize () {
     // create initial sliders
     Array.forEach(document.querySelectorAll('input[type=range]'), transform);
     // create sliders on-the-fly
     document.addEventListener('DOMNodeInserted', onNodeInserted, true);
   }
 
-
-
-
-  function onNodeInserted(e) {
+  function onNodeInserted (e) {
     check(e.target);
     if (e.target.querySelectorAll)
-      Array.forEach(e.target.querySelectorAll('input'), check);
+      { Array.forEach(e.target.querySelectorAll('input'), check); }
   }
 
-
-
-
-  function check(input, async) {
+  function check (input, async) {
     if (input.localName != 'input' || input.type == 'range');
     else if (input.getAttribute('type') == 'range')
-      transform(input);
+      { transform(input); }
     else if (!async)
-      setTimeout(check, 0, input, true);
+      { setTimeout(check, 0, input, true); }
   }
 
-
-
-
-  function transform(slider) {
-    var isValueSet, areAttrsSet, isChanged, isClick, prevValue, rawValue, prevX;
+  function transform (slider) {
+    var isValueSet, areAttrsSet, isChanged, isClick, prevValue, rawValue,
+      prevX;
     var min, max, step, range, value = slider.value;
 
     // lazily create shared slider affordance
@@ -126,14 +107,11 @@ THE SOFTWARE.
       document.mozSetImageElement('__sliderthumb__', scale);
     }
 
-
-
-
     // reimplement value and type properties
     var getValue = function () {
       return '' + value;
     };
-    var setValue = function setValue(val) {
+    var setValue = function setValue (val) {
       value = '' + val;
       isValueSet = true;
       draw();
@@ -155,12 +133,13 @@ THE SOFTWARE.
       'step'
     ].forEach(function (prop) {
       if (slider.hasAttribute(prop))
-        areAttrsSet = true;
+        { areAttrsSet = true; }
       slider.__defineGetter__(prop, function () {
         return this.hasAttribute(prop) ? this.getAttribute(prop) : '';
       });
       slider.__defineSetter__(prop, function (val) {
-        val === null ? this.removeAttribute(prop) : this.setAttribute(prop, val);
+        val === null ? this.removeAttribute(prop) : this.setAttribute(
+          prop, val);
       });
     });
 
@@ -175,10 +154,10 @@ THE SOFTWARE.
         value = e.newValue;
         draw();
       } else if (~[
-          'min',
-          'max',
-          'step'
-        ].indexOf(e.attrName)) {
+        'min',
+        'max',
+        'step'
+      ].indexOf(e.attrName)) {
         update();
         areAttrsSet = true;
       }
@@ -189,19 +168,20 @@ THE SOFTWARE.
     slider.addEventListener('focus', onFocus, true);
     slider.addEventListener('blur', onBlur, true);
 
-    function onDragStart(e) {
+    function onDragStart (e) {
       isClick = true;
       setTimeout(function () {
         isClick = false;
       }, 0);
       if (e.button || !range)
-        return;
+        { return; }
       var width = parseFloat(getComputedStyle(this, 0).width);
       var multiplier = (width - thumb.width) / range;
       if (!multiplier)
-        return;
+        { return; }
       // distance between click and center of thumb
-      var dev = e.clientX - this.getBoundingClientRect().left - thumb.width / 2 - (value - min) * multiplier;
+      var dev = e.clientX - this.getBoundingClientRect().left - thumb.width /
+        2 - (value - min) * multiplier;
       // if click was not on thumb, move thumb to click location
       if (Math.abs(dev) > thumb.radius) {
         isChanged = true;
@@ -213,32 +193,23 @@ THE SOFTWARE.
       this.addEventListener('mouseup', onDragEnd, true);
     }
 
-
-
-
-    function onDrag(e) {
+    function onDrag (e) {
       var width = parseFloat(getComputedStyle(this, 0).width);
       var multiplier = (width - thumb.width) / range;
       if (!multiplier)
-        return;
+        { return; }
       rawValue += (e.clientX - prevX) / multiplier;
       prevX = e.clientX;
       isChanged = true;
       this.value = rawValue;
     }
 
-
-
-
-    function onDragEnd() {
+    function onDragEnd () {
       this.removeEventListener('mousemove', onDrag, true);
       this.removeEventListener('mouseup', onDragEnd, true);
     }
 
-
-
-
-    function onKeyDown(e) {
+    function onKeyDown (e) {
       if (e.keyCode > 36 && e.keyCode < 41) {
         // 37-40: left, up, right, down
         onFocus.call(this);
@@ -247,92 +218,63 @@ THE SOFTWARE.
       }
     }
 
-
-
-
-    function onFocus() {
+    function onFocus () {
       if (!isClick)
-        this.style.boxShadow = !isMac ? '0 0 0 2px #fb0' : '0 0 2px 1px -moz-mac-focusring, inset 0 0 1px -moz-mac-focusring';
+        { this.style.boxShadow = !isMac ? '0 0 0 2px #fb0' :
+        '0 0 2px 1px -moz-mac-focusring, inset 0 0 1px -moz-mac-focusring'; }
     }
 
-
-
-
-    function onBlur() {
+    function onBlur () {
       this.style.boxShadow = '';
     }
 
-
-
-
     // determines whether value is valid number in attribute form
-    function isAttrNum(value) {
+    function isAttrNum (value) {
       return !isNaN(value) && +value == parseFloat(value);
     }
 
-
-
-
     // validates min, max, and step attributes and redraws
-    function update() {
+    function update () {
       min = isAttrNum(slider.min) ? +slider.min : 0;
       max = isAttrNum(slider.max) ? +slider.max : 100;
       if (max < min)
-        max = min > 100 ? min : 100;
+        { max = min > 100 ? min : 100; }
       step = isAttrNum(slider.step) && slider.step > 0 ? +slider.step : 1;
       range = max - min;
       draw(true);
     }
 
-
-
-
     // recalculates value property
-    function calc() {
+    function calc () {
       if (!isValueSet && !areAttrsSet)
-        value = slider.getAttribute('value');
+        { value = slider.getAttribute('value'); }
       if (!isAttrNum(value))
-        value = (min + max) / 2;
-      ;
+        { value = (min + max) / 2; } ;
       // snap to step intervals (WebKit sometimes does not - bug?)
       value = Math.round((value - min) / step) * step + min;
       if (value < min)
-        value = min;
+        { value = min; }
       else if (value > max)
-        value = min + ~~(range / step) * step;
+        { value = min + ~~(range / step) * step; }
     }
 
-
-
-
     // renders slider using CSS background ;)
-    function draw(attrsModified) {
+    function draw (attrsModified) {
       calc();
       if (isChanged && value != prevValue)
-        slider.dispatchEvent(onChange);
+        { slider.dispatchEvent(onChange); }
       isChanged = false;
       if (!attrsModified && value == prevValue)
-        return;
+        { return; }
       prevValue = value;
       var position = range ? (value - min) / range * 100 : 0;
       var bg = '-moz-element(#__sliderthumb__) ' + position + '% no-repeat, ';
       style(slider, { background: bg + track });
     }
-
-
-
-
   }
 
-
-
-
-  function style(element, styles) {
+  function style (element, styles) {
     for (var prop in styles)
-      element.style.setProperty(prop, styles[prop], 'important');
+      { element.style.setProperty(prop, styles[prop], 'important'); }
   }
-
-
-
-
 }());

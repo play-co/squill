@@ -22,7 +22,7 @@ import PubSub from 'lib/PubSub';
  * instance of a Selection instance.
  */
 exports = class extends PubSub {
-  constructor(opts) {
+  constructor (opts) {
     super();
 
     this._parent = opts.parent;
@@ -32,49 +32,49 @@ exports = class extends PubSub {
     this._currentSelectionCount = 0;
     this._lastSelected = null;
   }
-  getType() {
+  getType () {
     return this._type;
   }
-  isSelected(id) {
+  isSelected (id) {
     if (typeof id == 'object') {
       id = id[this._parent.getDataSource().key];
     }
     return this._selection.isSelected(id);
   }
-  toggle(item) {
-    this._setSelected(item, !this.isSelected(item[this._parent.getDataSource().key]));
+  toggle (item) {
+    this._setSelected(item, !this.isSelected(item[this._parent.getDataSource()
+      .key]));
   }
-  select(item) {
-    if (this._currentSelectionCount < this._maxSelections || this._type == 'single') {
+  select (item) {
+    if (this._currentSelectionCount < this._maxSelections || this._type ==
+      'single') {
       this._setSelected(item, true);
     }
   }
-  deselect(item) {
+  deselect (item) {
     this._setSelected(item, false);
   }
-  deselectAll() {
+  deselectAll () {
     this._selection.deselectAll();
     this._currentSelectionCount = 0;
   }
-  get() {
+  get () {
     if (this._maxSelections == 1) {
       return Object.keys(this._selection.get())[0];
     } else {
       return Object.keys(this._selection.get());
     }
   }
-  getSelectionCount() {
+  getSelectionCount () {
     return this._currentSelectionCount;
   }
-  _setSelected(item, isSelected) {
+  _setSelected (item, isSelected) {
     if (!item) {
       return;
     }
 
-
-
-
-    var dataSource = this._parent.getDataSource(), key = dataSource.key;
+    var dataSource = this._parent.getDataSource(),
+      key = dataSource.key;
     if (typeof item == 'string') {
       item = dataSource.get(item);
       if (!item) {
@@ -92,9 +92,6 @@ exports = class extends PubSub {
           this.publish('Deselect', this._lastSelected, lastID);
         }
 
-
-
-
         this._lastSelected = item;
         this._selection.select(id);
         this._currentSelectionCount++;
@@ -103,9 +100,6 @@ exports = class extends PubSub {
         this._currentSelectionCount--;
       }
 
-
-
-
       this.publish(isSelected ? 'Select' : 'Deselect', item, id);
     }
   }
@@ -113,22 +107,22 @@ exports = class extends PubSub {
 
 exports.prototype.clear = exports.prototype.deselectAll;
 exports.LocalStore = class {
-  constructor() {
+  constructor () {
     this._store = {};
   }
-  get() {
+  get () {
     return merge({}, this._store);
   }
-  select(id) {
+  select (id) {
     this._store[id] = true;
   }
-  deselect(id) {
+  deselect (id) {
     delete this._store[id];
   }
-  deselectAll(id) {
+  deselectAll (id) {
     this._store = {};
   }
-  isSelected(id) {
+  isSelected (id) {
     if (id !== undefined) {
       return !!this._store[id];
     } else {
@@ -139,6 +133,5 @@ exports.LocalStore = class {
     }
   }
 };
-
 
 export default exports;

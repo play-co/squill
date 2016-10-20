@@ -6,14 +6,14 @@ import browser from 'util/browser';
 let $ = browser.$;
 
 exports = class extends Button {
-  buildWidget() {
+  buildWidget () {
     var el = this._el;
     $.setText(el, this.getI18n('label') || this.getI18n('text'));
 
     this.initMouseEvents(el);
     this.initKeyEvents(el);
   }
-  setLabel(label) {
+  setLabel (label) {
     this._opts.label = label;
     if (this._el) {
       $.setText(this._el, label);

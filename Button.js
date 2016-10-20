@@ -12,7 +12,7 @@ import Widget from './Widget';
 import hint from './hint';
 
 exports = class extends Widget {
-  constructor(params) {
+  constructor (params) {
     params = merge(params, {
       tag: 'button',
       isEnabled: true
@@ -21,7 +21,7 @@ exports = class extends Widget {
     super(params);
     this._hint = params.hint;
   }
-  create() {
+  create () {
     this._opts.style = merge(this._opts.style, {
       whiteSpace: 'nowrap',
       display: 'inline-block'
@@ -29,7 +29,7 @@ exports = class extends Widget {
 
     super.create(...arguments);
   }
-  buildWidget() {
+  buildWidget () {
     var el = this._el;
 
     this.initMouseEvents(el);
@@ -42,7 +42,7 @@ exports = class extends Widget {
     // Safari
     el.unselectable = 'on';
   }
-  _setHintTimeout(e) {
+  _setHintTimeout (e) {
     if (!this._hint) {
       return;
     }
@@ -51,58 +51,52 @@ exports = class extends Widget {
       hint.show(e.pageX + 12, e.pageY + 14, this._hint);
     }), 300);
   }
-  onMouseOver(e) {
+  onMouseOver (e) {
     this._setHintTimeout(e);
   }
-  onMouseMove(e) {
+  onMouseMove (e) {
     this._setHintTimeout(e);
   }
-  onMouseOut(e) {
+  onMouseOut (e) {
     hint.hide();
     this._hintTimeout && clearTimeout(this._hintTimeout);
   }
-  onClick(e) {
+  onClick (e) {
     $.stopEvent(e);
     if (!this._isEnabled) {
       return;
     }
 
-
-
-
     if (this._opts.onClick) {
       this._opts.onClick(e, this);
     }
 
-
-
-
     super.onClick(...arguments);
   }
-  captureOnEnter(widget) {
+  captureOnEnter (widget) {
     widget.subscribe('KeyDown', this, 'onKeyDown');
     widget.subscribe('KeyUp', this, 'onKeyUp');
   }
-  onKeyDown(e) {
+  onKeyDown (e) {
     if (e.keyCode == 13) {
       $.stopEvent(e);
       this.onMouseDown();
     }
   }
-  onKeyUp(e) {
+  onKeyUp (e) {
     if (e.keyCode == 13) {
       $.stopEvent(e);
       this.onMouseUp();
       this.onClick(e);
     }
   }
-  blur() {
+  blur () {
     this._el && this._el.blur();
   }
-  focus() {
+  focus () {
     this._el && this._el.focus();
   }
-  setEnabled(isEnabled) {
+  setEnabled (isEnabled) {
     if (this._isEnabled != isEnabled) {
       this._isEnabled = isEnabled;
       if (!isEnabled) {
@@ -116,6 +110,5 @@ exports = class extends Widget {
 exports.prototype._css = 'btn';
 exports.prototype._type = 'button';
 var Button = exports;
-
 
 export default exports;

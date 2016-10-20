@@ -3,14 +3,14 @@ let exports = {};
 import PubSub from 'lib/PubSub';
 
 exports = class extends PubSub {
-  constructor(opts) {
+  constructor (opts) {
     super(...arguments);
 
     this.key = this._key = opts.key;
     this._channel = opts.channel;
     this._hasRemote = opts.hasRemote;
   }
-  getKey() {
+  getKey () {
     return this._key;
   }
 };

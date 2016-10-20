@@ -8,14 +8,15 @@ import Widget from './Widget';
 
 import jscolor from './jscolor/jscolor';
 
-var alphaSelect = false, alphaIndicator;
+var alphaSelect = false,
+  alphaIndicator;
 
 exports = class extends Widget {
-  constructor(params) {
+  constructor (params) {
     params = merge(params, { tag: 'input' });
     super(params);
   }
-  buildWidget() {
+  buildWidget () {
     var el = this._el;
 
     el.widget = this;
@@ -72,16 +73,13 @@ exports = class extends Widget {
       ctx.fillRect(0, 0, 20, 100);
     }
   }
-  _showIndicator(alpha) {
+  _showIndicator (alpha) {
     if (alpha < 0) {
       alpha = 0;
     }
     if (alpha > 100) {
       alpha = 100;
     }
-
-
-
 
     $.style(alphaIndicator, {
       position: 'absolute',
@@ -92,11 +90,12 @@ exports = class extends Widget {
 
     return alpha;
   }
-  _showMouseAlpha(evt) {
+  _showMouseAlpha (evt) {
     alphaSelect.target.value = 100 - this._showIndicator(evt.offsetY);
-    alphaSelect.widget.publish('Change', parseInt(alphaSelect.target.value, 10));
+    alphaSelect.widget.publish('Change', parseInt(alphaSelect.target.value,
+      10));
   }
-  _onChange(evt) {
+  _onChange (evt) {
     var value = this._el.value;
     if (!isNaN(value)) {
       value = parseInt(value, 10);
@@ -105,8 +104,11 @@ exports = class extends Widget {
       }
     }
   }
-  _onFocus(evt) {
-    var alpha, style = alphaSelect.style, rect = this._el.getBoundingClientRect(), x = rect.right + 4, y = rect.top;
+  _onFocus (evt) {
+    var alpha, style = alphaSelect.style,
+      rect = this._el.getBoundingClientRect(),
+      x = rect.right + 4,
+      y = rect.top;
 
     if (y + 122 > window.innerHeight) {
       y = rect.bottom - 122;
@@ -114,9 +116,6 @@ exports = class extends Widget {
     if (x + 44 > window.innerWidth) {
       x = rect.left - 48;
     }
-
-
-
 
     $.style(alphaSelect, {
       position: 'absolute',
@@ -138,41 +137,40 @@ exports = class extends Widget {
     }
     this._showIndicator(100 - alpha);
   }
-  _onBlur(evt) {
+  _onBlur (evt) {
     alphaSelect.style.display = 'none';
   }
-  _onSelect(evt) {
+  _onSelect (evt) {
     $.stopEvent(evt);
   }
-  _onMouseDown(evt) {
+  _onMouseDown (evt) {
     $.stopEvent(evt);
     this._showMouseAlpha(evt);
     this._mouseDown = true;
   }
-  _onMouseMove(evt) {
+  _onMouseMove (evt) {
     if (this._mouseDown) {
       this._showMouseAlpha(evt);
     }
     $.stopEvent(evt);
   }
-  _onMouseOut(evt) {
+  _onMouseOut (evt) {
     this._mouseDown = false;
     $.stopEvent(evt);
   }
-  _onMouseUp(evt) {
+  _onMouseUp (evt) {
     this._mouseDown = false;
     $.stopEvent(evt);
   }
-  setValue(value) {
+  setValue (value) {
     this._el.value = value;
   }
-  getValue() {
+  getValue () {
     return this._el.value;
   }
 };
 exports.prototype._css = 'lph';
 exports.prototype._type = 'text';
 var Alpha = exports;
-
 
 export default exports;
