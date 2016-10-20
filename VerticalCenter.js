@@ -1,3 +1,5 @@
+import { merge } from 'base';
+
 import Widget from './Widget';
 import browser from 'util/browser';
 let $ = browser.$;

@@ -1,3 +1,5 @@
+import { bind } from 'base';
+
 import PubSub from 'lib/PubSub';
 import Animation from 'util/Animation';
 import browser from 'util/browser';

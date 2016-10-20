@@ -1,3 +1,9 @@
+import {
+  merge,
+  isArray,
+  logger
+} from 'base';
+
 import Callback from 'lib/Callback';
 import BasicDataSource from './BasicDataSource';
 

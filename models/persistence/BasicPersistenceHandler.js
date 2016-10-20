@@ -1,3 +1,5 @@
+import { isArray } from 'base';
+
 import PubSub from 'lib/PubSub';
 
 var BasicPersistanceHandler = exports = Class(PubSub, function (supr) {

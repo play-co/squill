@@ -1,3 +1,9 @@
+import {
+  merge,
+  delay,
+  bind
+} from 'base';
+
 import Window from './Window';
 import Widget from './Widget';
 import browser from 'util/browser';

@@ -1,3 +1,9 @@
+import {
+  merge,
+  isArray,
+  bind
+} from 'base';
+
 import BasicDataSource from './BasicDataSource';
 
 var TreeDataSourceNode = Class(function () {

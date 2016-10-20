@@ -1,3 +1,5 @@
+import { merge } from 'base';
+
 import PubSub from 'lib/PubSub';
 import Point from 'math/geom/Point';
 import browser from 'util/browser';

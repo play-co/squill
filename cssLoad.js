@@ -1,3 +1,8 @@
+import {
+  logger,
+  bind
+} from 'base';
+
 import uri from 'std/uri';
 import ajax from 'util/ajax';
 import browser from 'util/browser';

@@ -1,3 +1,8 @@
+import {
+  merge,
+  bind
+} from 'base';
+
 import Resource from './Resource';
 import Widget from './Widget';
 import Selection from '../Selection';

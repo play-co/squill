@@ -1,3 +1,5 @@
+import { bind } from 'base';
+
 /**
  * jscolor, JavaScript Color Picker
  *

@@ -1,3 +1,5 @@
+import { bind } from 'base';
+
 import PubSub from 'lib/PubSub';
 
 var Transition = Class(PubSub, function () {

@@ -8,6 +8,12 @@
  *
  * The final version should only send the updates to the server.
 **/
+import {
+  isArray,
+  bind,
+  merge
+} from 'base';
+
 import ajax from 'util/ajax';
 
 import BasicPersistenceHandler from './BasicPersistenceHandler';

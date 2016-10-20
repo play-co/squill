@@ -1,3 +1,5 @@
+import { bind } from 'base';
+
 import browser from 'util/browser';
 let $ = browser.$;
 jsio('import .TextButton, .Widget');

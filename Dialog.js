@@ -1,3 +1,5 @@
+import { bind } from 'base';
+
 import Widget from './Widget';
 import Point from 'math/geom/Point';
 import browser from 'util/browser';

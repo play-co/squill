@@ -1,3 +1,5 @@
+import { bind } from 'base';
+
 var RE_BINDING = /(^|[^%])%\((.*?)\)([ +0-]?)(\d*)(\.?\d*)([dfcs])/g;
 
 exports.parseFormat = function (widget, format) {

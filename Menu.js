@@ -1,3 +1,5 @@
+import { bind } from 'base';
+
 import PubSub from 'lib/PubSub';
 import Widget from './Widget';
 import Delegate from './Delegate';

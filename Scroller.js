@@ -1,3 +1,8 @@
+import {
+  merge,
+  bind
+} from 'base';
+
 import Drag from './Drag';
 import Widget from './Widget';
 import transforms from './transforms';

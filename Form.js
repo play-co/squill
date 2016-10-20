@@ -1,3 +1,9 @@
+import {
+  merge,
+  bind,
+  logger
+} from 'base';
+
 import Element from './Element';
 import Widget from './Widget';
 

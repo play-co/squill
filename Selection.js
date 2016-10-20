@@ -1,3 +1,5 @@
+import { merge } from 'base';
+
 import PubSub from 'lib/PubSub';
 
 /**

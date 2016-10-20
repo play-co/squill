@@ -1,3 +1,8 @@
+import {
+  merge,
+  bind
+} from 'base';
+
 import Widget from './Widget';
 import DataSource from 'squill/models/DataSource';
 

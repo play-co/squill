@@ -1,3 +1,5 @@
+import { logger } from 'base';
+
 import Callback from 'lib/Callback';
 
 var _cache = {};
