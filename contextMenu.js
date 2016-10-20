@@ -27,6 +27,8 @@ function clearMenu() {
 }
 
 
+
+
 function clickOption(evt) {
   var option = contextMenu.options[evt.target.optionIndex];
   if (option) {
@@ -68,6 +70,8 @@ function showMenu(menu, x, y) {
   }
 
 
+
+
   contextMenu.options = menu.options;
 
   $.addClass(contextMenu.overlay, 'contextMenuOverlay');
@@ -95,14 +99,20 @@ function showMenu(menu, x, y) {
       }
 
 
+
+
       if (option.selected === true) {
         className += ' selectedOption';
       }
 
 
+
+
       if (option.className) {
         className += ' ' + option.className;
       }
+
+
 
 
       element = $({
@@ -117,6 +127,8 @@ function showMenu(menu, x, y) {
     }
     contextMenu.elements.push(element);
   }
+
+
 
 
   $.style(contextMenu.overlay, { display: 'block' });

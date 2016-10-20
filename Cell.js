@@ -6,11 +6,9 @@ import DataItem from './models/DataItem';
 import browser from 'util/browser';
 let $ = browser.$;
 
-exports = Class(Widget, function (supr) {
-  this._css = 'cell';
-
-  this.init = function (opts) {
-    supr(this, 'init', arguments);
+exports = class extends Widget {
+  constructor(opts) {
+    super(...arguments);
 
     if (opts.item) {
       if (opts.item instanceof DataItem) {
@@ -19,45 +17,39 @@ exports = Class(Widget, function (supr) {
         this.setItem(opts.item);
       }
     }
-  };
-
-  this.buildWidget = function (el) {
+  }
+  buildWidget(el) {
     this.initMouseEvents();
-  };
-
-  this.isSelected = function () {
+  }
+  isSelected() {
     return this._widgetParent.selection && this._widgetParent.selection.isSelected(this._item);
-  };
-
-  this.select = function () {
+  }
+  select() {
     this._widgetParent.selection && this._widgetParent.selection.select(this._item);
-  };
-
-  this.deselect = function () {
+  }
+  deselect() {
     this._widgetParent.selection && this._widgetParent.selection.deselect(this._item);
-  };
-
-  this.setItem = function (data, item) {
+  }
+  setItem(data, item) {
     this.setModel(data);
     this._data = data;
     this._item = item || data;
     this.updateSelected();
-  };
-
-  this.getData = function () {
+  }
+  getData() {
     return this._data;
-  };
-  this.getItem = function () {
+  }
+  getItem() {
     return this._item;
-  };
-
-  this.render = function () {
-  };
-
-  this.onClick = this.onSelect = function () {
+  }
+  render() {
+  }
+  onSelect() {
     if (!this._widgetParent.selection) {
       return;
     }
+
+
 
 
     var type = this._widgetParent.selection.getType();
@@ -70,9 +62,8 @@ exports = Class(Widget, function (supr) {
     } else if (type == 'single') {
       this.select();
     }
-  };
-
-  this.updateSelected = function () {
+  }
+  updateSelected() {
     var isSelected = this.isSelected();
     if (isSelected) {
       $.addClass(this._el, 'selected');
@@ -80,8 +71,10 @@ exports = Class(Widget, function (supr) {
       $.removeClass(this._el, 'selected');
     }
     return isSelected;
-  };
-});
+  }
+};
+exports.prototype._css = 'cell';
+exports.prototype.onClick = exports.prototype.onSelect;
 var Cell = exports;
 
 exports.Selectable = exports;

@@ -2,20 +2,11 @@ let exports = {};
 
 import Widget from './Widget';
 
-exports = Class(Widget, function (supr) {
-  this._def = {
-    children: [{
-        id: 'contents',
-        tag: 'table',
-        style: { borderSpacing: 0 }
-      }]
-  };
-
-  this.getContainer = function () {
+exports = class extends Widget {
+  getContainer() {
     return this.contents;
-  };
-
-  this.buildChildren = function (children) {
+  }
+  buildChildren(children) {
     if (Array.isArray(children[0])) {
       var args = Array.prototype.slice.call(arguments);
       var gridChildren = args[0] = [];
@@ -33,11 +24,18 @@ exports = Class(Widget, function (supr) {
           };
         }
       }
-      return supr(this, 'buildChildren', args);
+      return super.buildChildren(...args);
     } else {
-      return supr(this, 'buildChildren', arguments);
+      return super.buildChildren(...arguments);
     }
-  };
-});
+  }
+};
 
+exports.prototype._def = {
+  children: [{
+      id: 'contents',
+      tag: 'table',
+      style: { borderSpacing: 0 }
+    }]
+};
 export default exports;

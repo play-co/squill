@@ -14,6 +14,8 @@ function cancelEvent(e) {
 }
 
 
+
+
 var _activeDocuments = [];
 _activeDocuments.add = function (doc) {
   $.addClass(doc.body, 'squill-drop-hover');
@@ -28,10 +30,14 @@ _activeDocuments.add = function (doc) {
   }
 
 
+
+
   if (!docWrapper) {
     docWrapper = { doc: doc };
     this.push(docWrapper);
   }
+
+
 
 
   if (!docWrapper.handler) {
@@ -44,6 +50,8 @@ _activeDocuments.add = function (doc) {
   }
 
 
+
+
   return docWrapper;
 };
 
@@ -54,6 +62,8 @@ _activeDocuments.remove = function (doc) {
       if (this[i].timeout) {
         clearTimeout(this[i].timeout);
       }
+
+
 
 
       $.removeClass(doc.body, 'squill-drop-hover');
@@ -107,11 +117,13 @@ function registerDocument(doc) {
 }
 
 
+
+
 registerDocument(document);
 
-exports = Class(Widget, function (supr) {
-  this.buildWidget = function () {
-    supr(this, 'buildWidget', arguments);
+exports = class extends Widget {
+  buildWidget() {
+    super.buildWidget(...arguments);
 
     this._hoverClass = this._opts.hoverClass || 'over';
 
@@ -165,10 +177,9 @@ exports = Class(Widget, function (supr) {
         reader.readAsDataURL(file);
       }
     }), false);
-  };
-
-  this.onDrop = function () {
-  };
-});
+  }
+  onDrop() {
+  }
+};
 
 export default exports;

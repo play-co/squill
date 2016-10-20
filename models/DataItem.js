@@ -1,6 +1,6 @@
-module.exports = Class(function () {
-  this.init = function (id, data) {
+module.exports = class {
+  constructor(id, data) {
     this.id = id;
     this.data = data;
-  };
-});
+  }
+};

@@ -35,9 +35,17 @@ THE SOFTWARE.
 
 
 
+
+
+
+
+
+
   // test for required property support
   if (!document.mozSetImageElement || !('MozAppearance' in test.style))
     return;
+
+
 
 
   var scale;
@@ -68,12 +76,16 @@ THE SOFTWARE.
     initialize();
 
 
+
+
   function initialize() {
     // create initial sliders
     Array.forEach(document.querySelectorAll('input[type=range]'), transform);
     // create sliders on-the-fly
     document.addEventListener('DOMNodeInserted', onNodeInserted, true);
   }
+
+
 
 
   function onNodeInserted(e) {
@@ -83,6 +95,8 @@ THE SOFTWARE.
   }
 
 
+
+
   function check(input, async) {
     if (input.localName != 'input' || input.type == 'range');
     else if (input.getAttribute('type') == 'range')
@@ -90,6 +104,8 @@ THE SOFTWARE.
     else if (!async)
       setTimeout(check, 0, input, true);
   }
+
+
 
 
   function transform(slider) {
@@ -109,6 +125,8 @@ THE SOFTWARE.
       });
       document.mozSetImageElement('__sliderthumb__', scale);
     }
+
+
 
 
     // reimplement value and type properties
@@ -196,6 +214,8 @@ THE SOFTWARE.
     }
 
 
+
+
     function onDrag(e) {
       var width = parseFloat(getComputedStyle(this, 0).width);
       var multiplier = (width - thumb.width) / range;
@@ -208,10 +228,14 @@ THE SOFTWARE.
     }
 
 
+
+
     function onDragEnd() {
       this.removeEventListener('mousemove', onDrag, true);
       this.removeEventListener('mouseup', onDragEnd, true);
     }
+
+
 
 
     function onKeyDown(e) {
@@ -224,10 +248,14 @@ THE SOFTWARE.
     }
 
 
+
+
     function onFocus() {
       if (!isClick)
         this.style.boxShadow = !isMac ? '0 0 0 2px #fb0' : '0 0 2px 1px -moz-mac-focusring, inset 0 0 1px -moz-mac-focusring';
     }
+
+
 
 
     function onBlur() {
@@ -235,10 +263,14 @@ THE SOFTWARE.
     }
 
 
+
+
     // determines whether value is valid number in attribute form
     function isAttrNum(value) {
       return !isNaN(value) && +value == parseFloat(value);
     }
+
+
 
 
     // validates min, max, and step attributes and redraws
@@ -251,6 +283,8 @@ THE SOFTWARE.
       range = max - min;
       draw(true);
     }
+
+
 
 
     // recalculates value property
@@ -269,6 +303,8 @@ THE SOFTWARE.
     }
 
 
+
+
     // renders slider using CSS background ;)
     function draw(attrsModified) {
       calc();
@@ -284,13 +320,19 @@ THE SOFTWARE.
     }
 
 
+
+
   }
+
+
 
 
   function style(element, styles) {
     for (var prop in styles)
       element.style.setProperty(prop, styles[prop], 'important');
   }
+
+
 
 
 }());

@@ -20,8 +20,8 @@ var defaults = {
 };
 
 
-exports = Class(Widget, function (supr) {
-  this.init = function (opts) {
+exports = class extends Widget {
+  constructor(opts) {
     opts = opts || {};
     opts = merge(opts, defaults);
 
@@ -43,6 +43,8 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     this._def = {
       id: this._wrapperId,
       className: 'browser',
@@ -56,10 +58,9 @@ exports = Class(Widget, function (supr) {
     this._root = null;
     this._itemByKey = {};
 
-    supr(this, 'init', arguments);
-  };
-
-  this._initClasses = function (opts) {
+    super(...arguments);
+  }
+  _initClasses(opts) {
     this._classNames = {
       nodeWrapper: opts.nodeWrapper || 'browserNodeWrapper',
       nodeWrapperHidden: opts.nodeWrapperHidden || 'browserNodeWrapperHidden',
@@ -70,9 +71,8 @@ exports = Class(Widget, function (supr) {
       // Selected node...
       nodeActiveChild: opts.nodeActiveChild || 'browserNodeActiveChild'
     };
-  };
-
-  this._clearItem = function (item) {
+  }
+  _clearItem(item) {
     var parent, children, i, j;
 
     if (item.children) {
@@ -81,6 +81,8 @@ exports = Class(Widget, function (supr) {
         this._clearItem(children.pop());
       }
     }
+
+
 
 
     if (item.parent) {
@@ -100,19 +102,19 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     $.remove(item.node);
     item.group && $.remove(item.group);
-  };
-
-  this._createMenuId = function (inc) {
+  }
+  _createMenuId(inc) {
     var menuId = this._menuId;
     if (inc) {
       this._menuId++;
     }
     return this._elementIDPrefix + menuId;
-  };
-
-  this._createGroup = function (visible) {
+  }
+  _createGroup(visible) {
     var menuId = this._createMenuId(true), node = $({
         parent: $({
           parent: $.id(this._contentId),
@@ -124,9 +126,8 @@ exports = Class(Widget, function (supr) {
 
     node.menuId = menuId;
     return node;
-  };
-
-  this._createItem = function (item, group) {
+  }
+  _createItem(item, group) {
     var id = this._createMenuId(true);
 
     item.node = $({
@@ -136,9 +137,8 @@ exports = Class(Widget, function (supr) {
       text: item[this._label]
     });
     $.onEvent(id, 'click', this, 'onClick', item);
-  };
-
-  this.buildWidget = function () {
+  }
+  buildWidget() {
     this._menuId = 0;
     this._menuById = [];
     this._menuStack = [];
@@ -147,9 +147,8 @@ exports = Class(Widget, function (supr) {
     if (this._dataSource !== null) {
       this._dataSource.each(bind(this, this.onCreateItem));
     }
-  };
-
-  this._removeFromStack = function (depth) {
+  }
+  _removeFromStack(depth) {
     var menuStack = this._menuStack, info = null;
 
     while (menuStack.length && menuStack[menuStack.length - 1].depth >= depth) {
@@ -165,10 +164,11 @@ exports = Class(Widget, function (supr) {
     }
 
 
-    return info;
-  };
 
-  this.applyNodeStyle = function (item) {
+
+    return info;
+  }
+  applyNodeStyle(item) {
     if (item.children && item.children.length) {
       $.addClass(item.node, this._classNames.nodeChildren);
     } else {
@@ -181,6 +181,8 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     if (item.removeCustomClass !== undefined && item.removeCustomClass) {
       $.removeClass(item.node, item.removeCustomClass);
     }
@@ -188,9 +190,8 @@ exports = Class(Widget, function (supr) {
       $.removeClass(item.node, item.customClass);
       $.addClass(item.node, item.customClass);
     }
-  };
-
-  this._addToStack = function (item) {
+  }
+  _addToStack(item) {
     this._menuStack.push(item);
     this.applyNodeStyle(item);
 
@@ -213,9 +214,8 @@ exports = Class(Widget, function (supr) {
       $.addClass(item.group.menuId, this._classNames.nodeWrapper);
       $.removeClass(item.group.menuId, this._classNames.nodeWrapperHidden);
     }
-  };
-
-  this.onClick = function (item) {
+  }
+  onClick(item) {
     var menuStack = this._menuStack;
     var lastItem = null;
     var id;
@@ -231,12 +231,16 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     if (menuStack.length && item.depth <= menuStack[menuStack.length - 1].depth) {
       lastItem = this._removeFromStack(item.depth);
     }
     if (lastItem !== item) {
       this._addToStack(item);
     }
+
+
 
 
     this._menuActiveItem = item;
@@ -249,9 +253,8 @@ exports = Class(Widget, function (supr) {
       }
       $.id(this._contentId).style.width = i * 200 + this._leaveWidth + 'px';
     }
-  };
-
-  this.onUpdateItem = function (item, key) {
+  }
+  onUpdateItem(item, key) {
     var treeItem = {
         title: item[this._label],
         toString: function () {
@@ -265,6 +268,8 @@ exports = Class(Widget, function (supr) {
       }
       return;
     }
+
+
 
 
     if (item.parent === null || item.parent === -1) {
@@ -320,15 +325,15 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     treeItem.data = item;
     this._itemByKey[key] = treeItem;
-  };
-
-  this.onCreateItem = function (item) {
+  }
+  onCreateItem(item) {
     this.onUpdateItem(item, item[this._key]);
-  };
-
-  this.onRemoveItem = function (item, key) {
+  }
+  onRemoveItem(item, key) {
     var treeItem = this._itemByKey[key];
     var lastChild;
     var treeParent;
@@ -350,21 +355,18 @@ exports = Class(Widget, function (supr) {
         this.applyNodeStyle(treeItem);
       }
     }
-  };
-
-  this.showItem = function (item) {
+  }
+  showItem(item) {
     var treeItem = this.getTreeNode(item);
     this.publish('DisplayItem', item, treeItem);
     this.applyNodeStyle(treeItem);
-  };
-
-  this.setDataSource = function (dataSource) {
+  }
+  setDataSource(dataSource) {
     this._dataSource = dataSource;
     this._dataSource.subscribe('Update', this, this.onUpdateItem);
     this._dataSource.subscribe('Remove', this, this.onRemoveItem);
-  };
-
-  this.getPathString = function (separator) {
+  }
+  getPathString(separator) {
     var result = '', menuStack = this._menuStack, i, j;
 
     separator = separator || ' ';
@@ -376,13 +378,14 @@ exports = Class(Widget, function (supr) {
     }
 
 
-    return result;
-  };
 
-  this.getTreeNode = function (item) {
+
+    return result;
+  }
+  getTreeNode(item) {
     return this._itemByKey[item[this._dataSource.key]];
-  };
-});
+  }
+};
 var TreeList = exports;
 
 export default exports;

@@ -8,8 +8,8 @@ import {
 
 import BasicDataSource from './BasicDataSource';
 
-var TreeDataSourceNode = Class(function () {
-  this.init = function (opts) {
+class TreeDataSourceNode {
+  constructor(opts) {
     this.key = opts.key;
     this.parentKey = opts.parentKey;
 
@@ -32,26 +32,23 @@ var TreeDataSourceNode = Class(function () {
         data.__defineGetter__(f, this._createGetter(dataContainer, f)());
       }
     }
-  };
-
-  this._createSetter = function (dataContainer, field, signalUpdate) {
+  }
+  _createSetter(dataContainer, field, signalUpdate) {
     return function () {
       return function (value) {
         dataContainer['_' + field] = value;
         signalUpdate('UPDATE_NODE', this);
       };
     };
-  };
-
-  this._createGetter = function (dataContainer, field) {
+  }
+  _createGetter(dataContainer, field) {
     return function () {
       return function () {
         return dataContainer['_' + field];
       };
     };
-  };
-
-  this.clear = function () {
+  }
+  clear() {
     var children = this._children, child, data, i;
 
     this._signalUpdate('REMOVE', this._data);
@@ -61,9 +58,8 @@ var TreeDataSourceNode = Class(function () {
       data = child.getData();
       child.clear();
     }
-  };
-
-  this.removeChild = function (node) {
+  }
+  removeChild(node) {
     var children = this._children;
     var i, j;
 
@@ -77,18 +73,17 @@ var TreeDataSourceNode = Class(function () {
     }
 
 
+
+
     return false;
-  };
-
-  this.remove = function () {
+  }
+  remove() {
     return this._parent && this._parent.removeChild(this);
-  };
-
-  this.addChild = function (node) {
+  }
+  addChild(node) {
     this._children.push(node);
-  };
-
-  this.callback = function (cb) {
+  }
+  callback(cb) {
     var children = this._children;
     var i, j;
 
@@ -96,9 +91,8 @@ var TreeDataSourceNode = Class(function () {
     for (i = 0, j = children.length; i < j; i++) {
       children[i].callback(cb);
     }
-  };
-
-  this.sort = function () {
+  }
+  sort() {
     var children = this._children;
     var i, j;
 
@@ -106,25 +100,20 @@ var TreeDataSourceNode = Class(function () {
     for (i = 0, j = children.length; i < j; i++) {
       children[i].sort();
     }
-  };
-
-  this.getData = function () {
+  }
+  getData() {
     return this._data;
-  };
-
-  this.setData = function (data) {
+  }
+  setData(data) {
     this._data = data;
-  };
-
-  this.getParent = function () {
+  }
+  getParent() {
     return this._parent;
-  };
-
-  this.getChildren = function () {
+  }
+  getChildren() {
     return this._children;
-  };
-
-  this.toJSONData = function (list, singleItem) {
+  }
+  toJSONData(list, singleItem) {
     list = list || [];
 
     var children = this._children, node = {}, data = this._data, i, j;
@@ -144,6 +133,8 @@ var TreeDataSourceNode = Class(function () {
     }
 
 
+
+
     if (singleItem) {
       return node;
     } else {
@@ -155,13 +146,14 @@ var TreeDataSourceNode = Class(function () {
     }
 
 
-    return list;
-  };
 
-  this.toJSON = function () {
+
+    return list;
+  }
+  toJSON() {
     return this.toJSONData([], false);
-  };
-});
+  }
+}
 
 
 var defaults = {
@@ -174,8 +166,8 @@ var toStringSort = function () {
 };
 
 
-exports = Class(BasicDataSource, function (supr) {
-  this.init = function (opts) {
+exports = class extends BasicDataSource {
+  constructor(opts) {
     opts = opts || {};
     opts = merge(opts, defaults);
 
@@ -185,17 +177,15 @@ exports = Class(BasicDataSource, function (supr) {
     this._nodeByKey = {};
     this._root = null;
 
-    supr(this, 'init', [opts]);
-  };
-
-  this._saveChanges = function (type, key) {
+    super(opts);
+  }
+  _saveChanges(type, key) {
     if (this._changeDataSave && !this._changeData[type + 'Hash'][key]) {
       this._changeData[type + 'Hash'][key] = true;
       this._changeData[type].push(key);
     }
-  };
-
-  this.signalUpdate = function (type, node) {
+  }
+  signalUpdate(type, node) {
     var key = this.key, keyValue = node[key], channel = this._channel, data;
 
     switch (type) {
@@ -204,10 +194,14 @@ exports = Class(BasicDataSource, function (supr) {
       this._nodeByKey[node[key]].setData(node);
 
 
+
+
     case 'UPDATE':
       this._saveChanges('updated', keyValue);
       this.publish('Update', node, keyValue);
       break;
+
+
 
 
     case 'REMOVE':
@@ -216,9 +210,8 @@ exports = Class(BasicDataSource, function (supr) {
       delete this._nodeByKey[keyValue];
       break;
     }
-  };
-
-  this.add = function (node) {
+  }
+  add(node) {
     var parent = node[this.parentKey] || null, internalParent, internalNode, key, i;
 
     if (isArray(node)) {
@@ -235,9 +228,17 @@ exports = Class(BasicDataSource, function (supr) {
 
 
 
+
+
+
+
+
+
       if (!isNaN(parseInt(node[key], 10))) {
         this._maxKey = Math.max(this._maxKey, parseInt(node[key], 10));
       }
+
+
 
 
       internalParent = parent ? this._nodeByKey[parent[key]] : null;
@@ -259,6 +260,8 @@ exports = Class(BasicDataSource, function (supr) {
       }
 
 
+
+
       this.signalUpdate('UPDATE', internalNode.getData());
 
       if (this._sorter) {
@@ -268,10 +271,11 @@ exports = Class(BasicDataSource, function (supr) {
     }
 
 
-    return node;
-  };
 
-  this.remove = function (node) {
+
+    return node;
+  }
+  remove(node) {
     var key = node[this.key], internalNode = this._nodeByKey[key];
 
     if (internalNode) {
@@ -279,22 +283,21 @@ exports = Class(BasicDataSource, function (supr) {
     }
 
 
-    return this;
-  };
 
-  this.clear = function () {
+
+    return this;
+  }
+  clear() {
     this._maxKey = -1;
     if (this._root !== null) {
       this._root.clear();
       this._root = null;
     }
-  };
-
-  this.getRoot = function () {
+  }
+  getRoot() {
     return this._root;
-  };
-
-  this.toJSON = function () {
+  }
+  toJSON() {
     var result = {
       key: this.key,
       parentKey: this.parentKey,
@@ -302,25 +305,8 @@ exports = Class(BasicDataSource, function (supr) {
     };
 
     return result;
-  };
-
-  /**
-  var demoData = {
-      key: 'id',
-      parentKey: 'parent',
-      items: [
-        {id: 1, parent: null, title: 'Example item 0', test: 'A'},
-
-        {id: 2, parent: 1, title: 'Example item 1', test: 'B'},
-        {id: 3, parent: 1, title: 'Example item 2', test: 'C'},
-
-        {id: 4, parent: 3, title: 'Example item 3', test: 'D'},
-        {id: 5, parent: 3, title: 'Example item 4', test: 'E'}
-      ]
-    };
-
-  **/
-  this.fromJSON = function (data) {
+  }
+  fromJSON(data) {
     this.key = data.key;
     this.parentKey = data.parentKey;
 
@@ -341,6 +327,8 @@ exports = Class(BasicDataSource, function (supr) {
     }
 
 
+
+
     for (i = 0, j = items.length; i < j; i++) {
       item = items[i];
       if (item) {
@@ -348,18 +336,15 @@ exports = Class(BasicDataSource, function (supr) {
         this.add(item);
       }
     }
-  };
-
-  this.each = function (cb) {
+  }
+  each(cb) {
     this._root && this._root.callback(cb);
-  };
-
-  this.genKey = function () {
+  }
+  genKey() {
     this._maxKey + 1;
     return this._maxKey;
-  };
-
-  this.beginChanges = function () {
+  }
+  beginChanges() {
     this._changeDataSave = true;
     this._changeData = {
       updated: [],
@@ -367,9 +352,8 @@ exports = Class(BasicDataSource, function (supr) {
       removed: [],
       removedHash: {}
     };
-  };
-
-  this.saveChanges = function () {
+  }
+  saveChanges() {
     this._changeDataSave = false;
     if (this._persistence) {
       var changeData = this._changeData, i, j;
@@ -385,28 +369,23 @@ exports = Class(BasicDataSource, function (supr) {
       }
 
 
+
+
       this._persistence.commit();
     }
-  };
-
-  this.setSorter = function (sorter) {
+  }
+  setSorter(sorter) {
     this._sorter = sorter;
-  };
-
-
-  // this.onCommitFinished = function() {
-  // };
-  this.getByKey = function (id) {
+  }
+  getByKey(id) {
     return this._nodeByKey[id] || null;
-  };
-
-  this.sort = function () {
+  }
+  sort() {
     if (this._root) {
       this._root.sort();
     }
-  };
-
-  this.load = function (onLoad) {
+  }
+  load(onLoad) {
     if (this._persistence) {
       this.clear();
 
@@ -419,12 +398,11 @@ exports = Class(BasicDataSource, function (supr) {
         onLoad && onLoad();
       }), bind(this, this._reportError));
     }
-  };
-
-  this._reportError = function (message) {
+  }
+  _reportError(message) {
     this.publish('Error', message);
-  };
-});
+  }
+};
 var TreeDataSource = exports;
 
 export default exports;

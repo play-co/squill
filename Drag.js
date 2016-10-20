@@ -18,6 +18,8 @@ function resolveMouse(e) {
   }
 
 
+
+
   if ('pageX' in e) {
     gCurrentMouse.x = e.pageX;
     gCurrentMouse.y = e.pageY;
@@ -31,6 +33,8 @@ function resolveMouse(e) {
 }
 
 
+
+
 var _active = false;
 
 function gAddItem(item) {
@@ -38,6 +42,8 @@ function gAddItem(item) {
   gCurrentDrag.push(item);
   _active = true;
 }
+
+
 
 
 function gRemoveItem(item) {
@@ -49,10 +55,14 @@ function gRemoveItem(item) {
   }
 
 
+
+
   if (!gCurrentDrag[0]) {
     _active = false;
   }
 }
+
+
 
 
 function onMove(e) {
@@ -61,13 +71,19 @@ function onMove(e) {
   }
 
 
+
+
   resolveMouse(e);
   for (var i = 0; i < gCurrentDrag.length; ++i) {
     gCurrentDrag[i].onMouseMove(e);
   }
 
 
+
+
 }
+
+
 
 
 function onUp(e) {
@@ -76,10 +92,14 @@ function onUp(e) {
   }
 
 
+
+
   for (var i = 0; i < gCurrentDrag.length; ++i) {
     gCurrentDrag[i].onMouseUp(e);
   }
 }
+
+
 
 
 function registerWindow(win) {
@@ -98,20 +118,20 @@ function registerWindow(win) {
 
 
 
-exports = Class(PubSub, function (supr) {
-  this.init = function (params) {
+
+
+
+
+exports = class extends PubSub {
+  constructor(params) {
+    super();
+
     this._isActive = false;
-  };
-
-  this.isDragging = function () {
+  }
+  isDragging() {
     return this._isActive;
-  };
-
-  // data is an optional object that will be added to dragEvt.data.
-  // This allows the caller of startDrag to pass along arbitrary objects
-  // to the DragStart, Drag, and DragStop events, since the receiver
-  // can just read data off of the event object (first argument).
-  this.startDrag = function (params, data) {
+  }
+  startDrag(params, data) {
     var e = this._evt = new exports.DragEvent();
     this._evt.data = data;
     this._evt.params = merge(params, {
@@ -123,9 +143,8 @@ exports = Class(PubSub, function (supr) {
     e.srcPt = new Point(gCurrentMouse);
     e.currPt = new Point(gCurrentMouse);
     gAddItem(this);
-  };
-
-  this.onMouseMove = function (moveEvt) {
+  }
+  onMouseMove(moveEvt) {
     var dragEvt = this._evt;
     var absDelta = Point.subtract(gCurrentMouse, dragEvt.srcPt);
 
@@ -138,6 +157,8 @@ exports = Class(PubSub, function (supr) {
     }
 
 
+
+
     if (this._isActive) {
       $.stopEvent(moveEvt);
 
@@ -145,9 +166,8 @@ exports = Class(PubSub, function (supr) {
       dragEvt.currPt = new Point(gCurrentMouse);
       this.publish('Drag', dragEvt, moveEvt, Point.subtract(dragEvt.currPt, dragEvt.prevPt));
     }
-  };
-
-  this.onMouseUp = function (upEvt) {
+  }
+  onMouseUp(upEvt) {
     gRemoveItem(this);
     if (this._isActive) {
       $.stopEvent(upEvt);
@@ -156,12 +176,13 @@ exports = Class(PubSub, function (supr) {
       this.publish('DragStop', this._evt, upEvt);
       return true;
     }
-  };
-
-  this.disableIframes = function (doc) {
+  }
+  disableIframes(doc) {
     if (!this._disabledFrames) {
       this._disabledFrames = [];
     }
+
+
 
 
     $('iframe', doc).forEach(function (iframe) {
@@ -175,19 +196,19 @@ exports = Class(PubSub, function (supr) {
       } catch (e) {
       }
     }, this);
-  };
-
-  this.enableIframes = function () {
+  }
+  enableIframes() {
     this._disabledFrames.splice(0, this._disabledFrames.length).forEach(function (item) {
       item.frame.style.pointerEvents = item.pointerEvents;
     });
-  };
-});
+  }
+};
 
 exports.registerWindow = registerWindow;
 
-exports.DragEvent = Class(function () {
-});
+exports.DragEvent = class {
+
+};
 
 var win = window;
 registerWindow(win);
@@ -198,5 +219,6 @@ while (win.parent != win) {
   } catch (e) {
   }
 }
+
 
 export default exports;

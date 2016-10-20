@@ -4,21 +4,22 @@ import { bind } from 'base';
 
 import PubSub from 'lib/PubSub';
 
-var Transition = Class(PubSub, function () {
-  this.init = function (opts) {
+class Transition extends PubSub {
+  constructor(opts) {
+    super();
+
     this._target = opts.target;
     this._start = opts.start;
     this._end = opts.end;
 
     setTimeout(bind(this, 'run'), 0);
-  };
+  }
+  run() {
+  }
+}
 
-  this.run = function () {
-  };
-});
-
-var CSSTransition = Class(Transition, function () {
-  this.run = function () {
+class CSSTransition extends Transition {
+  run() {
     var target = this._target;
     this._start && this._start(target);
 
@@ -30,15 +31,16 @@ var CSSTransition = Class(Transition, function () {
     }
 
 
-    setTimeout(bind(this, 'end'), duration);
-  };
 
-  this.end = function () {
+
+    setTimeout(bind(this, 'end'), duration);
+  }
+  end() {
     var target = this._target;
     this._end && this._end(target);
     this.emit('end', target);
-  };
-});
+  }
+}
 
 exports.Transition = Transition;
 exports.CSSTransition = CSSTransition;

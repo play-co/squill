@@ -9,33 +9,28 @@ let $ = browser.$;
 import Widget from './Widget';
 import transforms from './transforms';
 
-exports = Class(Widget, function (supr) {
-  this._def = { className: 'menuController' };
-
-  this.init = function (opts) {
-    supr(this, 'init', arguments);
+exports = class extends Widget {
+  constructor(opts) {
+    super(...arguments);
     this._stack = [];
     this._isVisible = false;
-  };
-
-  this.isVisible = function () {
+  }
+  isVisible() {
     return this._isVisible;
-  };
-  this.setVisible = function (isVisible) {
+  }
+  setVisible(isVisible) {
     if (this._isVisible != isVisible) {
       this._isVisible = isVisible;
       this.publish('VisibleChange', isVisible);
     }
-  };
-
-  this.getCurrentView = function () {
+  }
+  getCurrentView() {
     if (!this._stack.length) {
       return null;
     }
     return this._stack[this._stack.length - 1];
-  };
-
-  this.push = function (view, dontAnimate) {
+  }
+  push(view, dontAnimate) {
     for (var i = 0, v; v = this._stack[i]; ++i) {
       if (view == v) {
         this.popTo(view);
@@ -44,10 +39,14 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     // don't animate the first (base) view of a stackview unless explicitly asked to
     if (!this._stack[0] && dontAnimate !== false) {
       dontAnimate = true;
     }
+
+
 
 
     view.controller = this;
@@ -70,10 +69,13 @@ exports = Class(Widget, function (supr) {
 
 
 
-    return view;
-  };
 
-  this._hide = function (view, dontAnimate, backward) {
+
+
+
+    return view;
+  }
+  _hide(view, dontAnimate, backward) {
     var el = view.getElement(), w = el.offsetWidth, onFinish = bind(this, function () {
         $.remove(el);
         view.onHide();
@@ -90,9 +92,8 @@ exports = Class(Widget, function (supr) {
     } else {
       onFinish();
     }
-  };
-
-  this._show = function (view, dontAnimate, backward) {
+  }
+  _show(view, dontAnimate, backward) {
     // hidden side effect: will build the menu for menus that haven't been built yet
     var el = view.getElement();
 
@@ -118,9 +119,8 @@ exports = Class(Widget, function (supr) {
     } else {
       onFinish();
     }
-  };
-
-  this.fadeOut = function (dontAnimate) {
+  }
+  fadeOut(dontAnimate) {
     var view = this._stack[this._stack.length - 1], el = this.getElement();
 
     this.setVisible(false);
@@ -129,6 +129,8 @@ exports = Class(Widget, function (supr) {
       view.onBeforeHide();
       view.publish('BeforeHide');
     }
+
+
 
 
     var onFinish = bind(this, function () {
@@ -153,9 +155,8 @@ exports = Class(Widget, function (supr) {
     } else {
       onFinish();
     }
-  };
-
-  this.fadeIn = function (dontAnimate) {
+  }
+  fadeIn(dontAnimate) {
     var view = this._stack[this._stack.length - 1], el = this.getElement(), onFinish = function () {
         $.style(el, { opacity: 1 });
         if (view) {
@@ -188,20 +189,20 @@ exports = Class(Widget, function (supr) {
     } else {
       onFinish();
     }
-  };
-
-  this.popTo = function (view, dontAnimate) {
+  }
+  popTo(view, dontAnimate) {
     var n = this._stack.length;
     if (n && this._stack[n - 1] != view) {
       this.subscribeOnce('DidPop', this, 'popTo', view, dontAnimate);
       this.pop(dontAnimate);
     }
-  };
-
-  this.pop = function (dontAnimate) {
+  }
+  pop(dontAnimate) {
     if (!this._stack.length) {
       return false;
     }
+
+
 
 
     var view = this._stack.pop();
@@ -221,14 +222,18 @@ exports = Class(Widget, function (supr) {
 
 
 
-    return view;
-  };
 
-  this.popAll = function (dontAnimate) {
+
+
+
+    return view;
+  }
+  popAll(dontAnimate) {
     while (this._stack[1]) {
       this.pop(dontAnimate);
     }
-  };
-});
+  }
+};
 
+exports.prototype._def = { className: 'menuController' };
 export default exports;

@@ -9,16 +9,16 @@ exports.get = function (key) {
   return gLang && gLang.get(key);
 };
 
-exports.Language = Class(function () {
-  this.init = function (dict) {
+exports.Language = class {
+  constructor(dict) {
     this._dict = dict;
-  };
-  this.add = function (key, value) {
+  }
+  add(key, value) {
     this._dict[key] = value;
-  };
-  this.get = function (key) {
+  }
+  get(key) {
     return this._dict[key];
-  };
-});
+  }
+};
 
 export default exports;

@@ -11,10 +11,8 @@ import transforms from './transforms';
 import browser from 'util/browser';
 let $ = browser.$;
 
-exports = Class(Widget, function (supr) {
-  this._css = 'scroller';
-
-  this.init = function (opts) {
+exports = class extends Widget {
+  constructor(opts) {
     opts = merge(opts, { momentum: true });
 
     this._scrollTop = 0;
@@ -26,10 +24,9 @@ exports = Class(Widget, function (supr) {
 
     this._hasMomentum = opts.momentum;
 
-    supr(this, 'init', [opts]);
-  };
-
-  this.buildContent = function () {
+    super(opts);
+  }
+  buildContent() {
     var el = this._el;
 
     $.style(el, { height: '100%' });
@@ -51,6 +48,8 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     if (this._def) {
       var def = this._def;
       this._def = null;
@@ -63,31 +62,31 @@ exports = Class(Widget, function (supr) {
 
 
 
-    return supr(this, 'buildContent', arguments);
-  };
 
-  this.getScrollTop = function () {
+
+
+
+    return super.buildContent(...arguments);
+  }
+  getScrollTop() {
     return this._scrollTop;
-  };
-  this.getContainer = this.getScrollPane = function () {
+  }
+  getScrollPane() {
     return this._scrollPane;
-  };
-
-  this.onTouchStart = function () {
+  }
+  onTouchStart() {
     if (this._momentum) {
       clearInterval(this._momentum);
     }
-  };
-
-  this.onDragStart = function (dragEvt, mouseEvt) {
+  }
+  onDragStart(dragEvt, mouseEvt) {
     this._height = this._scrollPane.offsetHeight - this._el.offsetHeight;
     this._lastDelta.when = +new Date();
     if (this._momentum) {
       clearInterval(this._momentum);
     }
-  };
-
-  this.onDrag = function (dragEvt, moveEvt, delta) {
+  }
+  onDrag(dragEvt, moveEvt, delta) {
     var now = +new Date(), d = this._lastDelta;
 
     d.diff = delta.y;
@@ -95,9 +94,8 @@ exports = Class(Widget, function (supr) {
     d.when = now;
 
     this.scrollTo(this._scrollTop + delta.y);
-  };
-
-  this.scrollTo = function (y, animate) {
+  }
+  scrollTo(y, animate) {
     this._scrollTop = y;
     if (this._scrollTop < -this._height) {
       this._scrollTop = -this._height;
@@ -105,6 +103,8 @@ exports = Class(Widget, function (supr) {
     if (this._scrollTop > 0) {
       this._scrollTop = 0;
     }
+
+
 
 
     this._el.setAttribute('squill-scroller-top', -this._scrollTop);
@@ -123,9 +123,8 @@ exports = Class(Widget, function (supr) {
       transforms.move(this._scrollPane, 0, this._scrollTop);
       onFinish();
     }
-  };
-
-  this.onDragStop = function (dragEvt, selectEvt) {
+  }
+  onDragStop(dragEvt, selectEvt) {
     $.stopEvent(selectEvt);
     if (this._hasMomentum && this._lastDelta.duration != 0) {
       var d = this._lastDelta, speed = d.diff / d.duration, start = d.when, time = d.when, dir = speed > 0 ? 1 : -1, dur = 2;
@@ -144,7 +143,9 @@ exports = Class(Widget, function (supr) {
         time = now;
       }), 10);
     }
-  };
-});
+  }
+};
 
+exports.prototype._css = 'scroller';
+exports.prototype.getContainer = exports.prototype.getScrollPane;
 export default exports;

@@ -9,20 +9,17 @@ import {
 import Element from './Element';
 import Widget from './Widget';
 
-exports = Class(Widget, function (supr) {
-  this.isValid = true;
-
-  this.init = function (opts) {
+exports = class extends Widget {
+  constructor(opts) {
     opts = merge(opts, {});
-    supr(this, 'init', [opts]);
+    super(opts);
 
     this._items = [];
     if (opts.items) {
       this.addItems(opts.items);
     }
-  };
-
-  this.buildContent = function () {
+  }
+  buildContent() {
     this.each(bind(this, function (item) {
       if ($.isElement(item)) {
         this._el.appendChild(item);
@@ -30,9 +27,8 @@ exports = Class(Widget, function (supr) {
         item.appendTo(this._el);
       }
     }));
-  };
-
-  this.validate = function () {
+  }
+  validate() {
     this.each(bind(this, function (item) {
       if (item.isValid) {
         if (!item.isValid()) {
@@ -41,25 +37,20 @@ exports = Class(Widget, function (supr) {
       }
     }));
     return this.isValid;
-  };
-
-  this.each = function (cb) {
+  }
+  each(cb) {
     for (var i = 0, w; w = this._items[i]; ++i) {
       cb(w);
     }
   }
 
-;
-
-
-  this.addItems = function (items) {
+  addItems(items) {
     for (var i = 0, len = items.length; i < len; ++i) {
       var def = items[i];
       this.add(def);
     }
-  };
-
-  this.add = function (item) {
+  }
+  add(item) {
     if ($.isElement(item)) {
       if (this._el) {
         this._el.appendChild(item);
@@ -94,11 +85,59 @@ exports = Class(Widget, function (supr) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     this._items.push(item);
-  };
+  }
+  removeByName(name) {
+  }
+};
 
-  this.removeByName = function (name) {
-  };
-});
-
+exports.prototype.isValid = true;
 export default exports;

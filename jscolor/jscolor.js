@@ -53,6 +53,8 @@ var jscolor = {
     }
 
 
+
+
     var e = document.getElementsByTagName('script');
     for (var i = 0; i < e.length; i += 1) {
       if (e[i].src && /(^|\/)jscolor\.js([?#].*)?$/i.test(e[i].src)) {
@@ -283,9 +285,13 @@ var jscolor = {
       }
 
 
+
+
       if (r.scheme !== null && r.scheme.toLowerCase() === base.scheme.toLowerCase()) {
         r.scheme = null;
       }
+
+
 
 
       if (r.scheme !== null) {
@@ -352,9 +358,13 @@ var jscolor = {
     }
 
 
+
+
     if (uri) {
       this.parse(uri);
     }
+
+
 
 
   },
@@ -426,6 +436,10 @@ var jscolor = {
         this[p] = prop[p];
       }
     }
+
+
+
+
 
 
 
@@ -610,6 +624,10 @@ var jscolor = {
 
 
 
+
+
+
+
     function HSV_RGB(h, s, v) {
       if (h === null) {
         return [
@@ -666,10 +684,18 @@ var jscolor = {
 
 
 
+
+
+
+
     function removePicker() {
       delete jscolor.picker.owner;
       document.getElementsByTagName('body')[0].removeChild(jscolor.picker.boxB);
     }
+
+
+
+
 
 
 
@@ -707,6 +733,8 @@ var jscolor = {
         jscolor.picker.box.appendChild(jscolor.picker.btn);
         jscolor.picker.boxB.appendChild(jscolor.picker.box);
       }
+
+
 
 
       var p = jscolor.picker;
@@ -816,6 +844,12 @@ var jscolor = {
 
 
 
+
+
+
+
+
+
       // "close" button
       function setBtnBorder() {
         var insetColors = THIS.pickerInsetColor.split(/\s+/);
@@ -871,6 +905,10 @@ var jscolor = {
 
 
 
+
+
+
+
     function getPickerDims(o) {
       var dims = [
         2 * o.pickerInset + 2 * o.pickerFace + jscolor.images.pad[0] + (o.slider ? 2 * o.pickerInset + 2 * jscolor.images.arrow[0] + jscolor.images.sld[0] : 0),
@@ -878,6 +916,10 @@ var jscolor = {
       ];
       return dims;
     }
+
+
+
+
 
 
 
@@ -972,6 +1014,10 @@ var jscolor = {
 
 
 
+
+
+
+
     function redrawSld() {
       // redraw the slider pointer
       switch (modeID) {
@@ -989,9 +1035,17 @@ var jscolor = {
 
 
 
+
+
+
+
     function isPickerOwner() {
       return jscolor.picker && jscolor.picker.owner === THIS;
     }
+
+
+
+
 
 
 
@@ -1008,11 +1062,19 @@ var jscolor = {
 
 
 
+
+
+
+
     function blurValue() {
       if (valueElement !== target) {
         THIS.importColor();
       }
     }
+
+
+
+
 
 
 
@@ -1034,6 +1096,10 @@ var jscolor = {
 
 
 
+
+
+
+
     function setSld(e) {
       var mpos = jscolor.getRelMousePos(e);
       var y = mpos.y - THIS.pickerFace - THIS.pickerInset;
@@ -1050,6 +1116,10 @@ var jscolor = {
 
 
 
+
+
+
+
     function dispatchImmediateChange() {
       if (THIS.onImmediateChange) {
         if (typeof THIS.onImmediateChange === 'string') {
@@ -1059,6 +1129,10 @@ var jscolor = {
         }
       }
     }
+
+
+
+
 
 
 
@@ -1100,6 +1174,8 @@ var jscolor = {
     }
 
 
+
+
     // styleElement
     if (styleElement) {
       styleElement.jscStyle = {
@@ -1107,6 +1183,8 @@ var jscolor = {
         color: styleElement.style.color
       };
     }
+
+
 
 
     // require images

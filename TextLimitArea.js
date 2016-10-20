@@ -5,9 +5,9 @@ let $ = browser.$;
 import Widget from './Widget';
 import TextArea from './TextArea';
 
-exports = Class(TextArea, function (supr) {
-  this.buildWidget = function () {
-    supr(this, 'buildWidget', arguments);
+exports = class extends TextArea {
+  buildWidget() {
+    super.buildWidget(...arguments);
     this._limit = this._opts.limit || 140;
     this._limitLabel = $({
       text: this._limit,
@@ -15,10 +15,9 @@ exports = Class(TextArea, function (supr) {
     });
 
     this.initKeyEvents(this._textarea);
-  };
-
-  this.onKeyUp = function () {
-    supr(this, 'onKeyUp', arguments);
+  }
+  onKeyUp() {
+    super.onKeyUp(...arguments);
     this.validate();
     var val = this._limitLabel.innerHTML;
     val = this._limit - this._textarea.value.length;
@@ -28,26 +27,22 @@ exports = Class(TextArea, function (supr) {
     } else {
       this._limitLabel.className = this._limitLabel.className.replace(/\binvalid\b/g, '');
     }
-  };
-
-  this.validators = [
-    {
-      validator: function () {
-        return this._textarea.value.length <= this._limit;
-      },
-      message: 'over the char limit'
+  }
+};
+exports.prototype.validators = [
+  {
+    validator: function () {
+      return this._textarea.value.length <= this._limit;
     },
-    {
-      validator: function () {
-        return this._textarea.value != '';
-      },
-      message: 'must enter a value'
-    }
-  ];
-
-
-
-});
+    message: 'over the char limit'
+  },
+  {
+    validator: function () {
+      return this._textarea.value != '';
+    },
+    message: 'must enter a value'
+  }
+];
 var TextLimitArea = exports;
 
 Widget.register(TextLimitArea, 'TextLimitArea');

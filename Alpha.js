@@ -10,16 +10,12 @@ import jscolor from './jscolor/jscolor';
 
 var alphaSelect = false, alphaIndicator;
 
-exports = Class(Widget, function (supr) {
-  this._css = 'lph';
-  this._type = 'text';
-
-  this.init = function (params) {
+exports = class extends Widget {
+  constructor(params) {
     params = merge(params, { tag: 'input' });
-    supr(this, 'init', [params]);
-  };
-
-  this.buildWidget = function () {
+    super(params);
+  }
+  buildWidget() {
     var el = this._el;
 
     el.widget = this;
@@ -75,15 +71,16 @@ exports = Class(Widget, function (supr) {
       ctx.fillStyle = linearGradient;
       ctx.fillRect(0, 0, 20, 100);
     }
-  };
-
-  this._showIndicator = function (alpha) {
+  }
+  _showIndicator(alpha) {
     if (alpha < 0) {
       alpha = 0;
     }
     if (alpha > 100) {
       alpha = 100;
     }
+
+
 
 
     $.style(alphaIndicator, {
@@ -94,14 +91,12 @@ exports = Class(Widget, function (supr) {
     });
 
     return alpha;
-  };
-
-  this._showMouseAlpha = function (evt) {
+  }
+  _showMouseAlpha(evt) {
     alphaSelect.target.value = 100 - this._showIndicator(evt.offsetY);
     alphaSelect.widget.publish('Change', parseInt(alphaSelect.target.value, 10));
-  };
-
-  this._onChange = function (evt) {
+  }
+  _onChange(evt) {
     var value = this._el.value;
     if (!isNaN(value)) {
       value = parseInt(value, 10);
@@ -109,9 +104,8 @@ exports = Class(Widget, function (supr) {
         alphaSelect.widget.publish('Change', value);
       }
     }
-  };
-
-  this._onFocus = function (evt) {
+  }
+  _onFocus(evt) {
     var alpha, style = alphaSelect.style, rect = this._el.getBoundingClientRect(), x = rect.right + 4, y = rect.top;
 
     if (y + 122 > window.innerHeight) {
@@ -120,6 +114,8 @@ exports = Class(Widget, function (supr) {
     if (x + 44 > window.innerWidth) {
       x = rect.left - 48;
     }
+
+
 
 
     $.style(alphaSelect, {
@@ -141,47 +137,41 @@ exports = Class(Widget, function (supr) {
       alpha = parseInt(alphaSelect.target.value, 10);
     }
     this._showIndicator(100 - alpha);
-  };
-
-  this._onBlur = function (evt) {
+  }
+  _onBlur(evt) {
     alphaSelect.style.display = 'none';
-  };
-
-  this._onSelect = function (evt) {
+  }
+  _onSelect(evt) {
     $.stopEvent(evt);
-  };
-
-  this._onMouseDown = function (evt) {
+  }
+  _onMouseDown(evt) {
     $.stopEvent(evt);
     this._showMouseAlpha(evt);
     this._mouseDown = true;
-  };
-
-  this._onMouseMove = function (evt) {
+  }
+  _onMouseMove(evt) {
     if (this._mouseDown) {
       this._showMouseAlpha(evt);
     }
     $.stopEvent(evt);
-  };
-
-  this._onMouseOut = function (evt) {
+  }
+  _onMouseOut(evt) {
     this._mouseDown = false;
     $.stopEvent(evt);
-  };
-
-  this._onMouseUp = function (evt) {
+  }
+  _onMouseUp(evt) {
     this._mouseDown = false;
     $.stopEvent(evt);
-  };
-
-  this.setValue = function (value) {
+  }
+  setValue(value) {
     this._el.value = value;
-  };
-
-  this.getValue = function () {
+  }
+  getValue() {
     return this._el.value;
-  };
-});
+  }
+};
+exports.prototype._css = 'lph';
+exports.prototype._type = 'text';
 var Alpha = exports;
 
 

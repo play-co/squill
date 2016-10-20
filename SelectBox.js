@@ -11,37 +11,29 @@ import DataSource from 'squill/models/DataSource';
 import browser from 'util/browser';
 let $ = browser.$;
 
-exports = Class(Widget, function (supr) {
-  this._css = 'select';
-
-  this._def = {
-    tag: 'label',
-    style: { display: 'inline-block' },
-    children: [{
-        id: '_select',
-        tag: 'select'
-      }]
-  };
-
-  this.init = function (opts) {
+exports = class extends Widget {
+  constructor(opts) {
     opts = merge(opts, { renderer: bind(this, 'defaultRenderer') });
 
     this._items = {};
     if (opts.dataSource) {
       this.setDataSource(opts.dataSource);
     }
-    supr(this, 'init', arguments);
-  };
-
-  this.buildWidget = function () {
+    super(...arguments);
+  }
+  buildWidget() {
     if (this._opts.name) {
       this.setName(this._opts.name);
     }
 
 
+
+
     if (!this._dataSource) {
       this.setDataSource(new DataSource());
     }
+
+
 
 
     if (this._opts.items) {
@@ -58,12 +50,16 @@ exports = Class(Widget, function (supr) {
           }
 
 
+
+
           return item;
         }
       });
 
       this._dataSource.add(items);
     }
+
+
 
 
     if ('value' in this._opts) {
@@ -73,22 +69,23 @@ exports = Class(Widget, function (supr) {
 
 
 
+
+
+
+
     this.initMouseEvents(this._el);
     $.onEvent(this._select, 'change', this, '_onSelect');
-  };
-
-  this._onSelect = function () {
+  }
+  _onSelect() {
     var item = this._dataSource.get(this.getValue());
     if (item) {
       this.publish('change', item);
     }
-  };
-
-  this.getDataSource = function () {
+  }
+  getDataSource() {
     return this._dataSource;
-  };
-
-  this.setDataSource = function (dataSource) {
+  }
+  setDataSource(dataSource) {
     if (this._dataSource) {
       this._dataSource.unsubscribe('Update', this);
       this._dataSource.unsubscribe('Remove', this);
@@ -99,14 +96,12 @@ exports = Class(Widget, function (supr) {
     this._dataSource.forEach(function (item, key) {
       this.onUpdateItem(key, item);
     }, this);
-  };
-
-  this.defaultRenderer = function (item) {
+  }
+  defaultRenderer(item) {
     var key = this._dataSource.getKey();
     return item.displayName || item.label || item.title || item.text || item[key];
-  };
-
-  this.onUpdateItem = function (id, item) {
+  }
+  onUpdateItem(id, item) {
     var el = this._items[id];
     var keyField = this._dataSource.getKey();
 
@@ -117,19 +112,22 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     if (!el) {
       var el = this._items[id] = $.create({ tag: 'option' });
       $.insertBefore(this._select, el);
     }
 
 
+
+
     el.setAttribute('value', item[keyField]);
     var renderer = this._opts.renderer;
     el.innerText = typeof renderer === 'string' ? item[renderer] : renderer(item);
     el.value = item[keyField];
-  };
-
-  this.onRemoveItem = function (id) {
+  }
+  onRemoveItem(id) {
     var el = this._items[id];
     var prevValue = this.getValue();
     if (el) {
@@ -142,21 +140,25 @@ exports = Class(Widget, function (supr) {
     }
   }
 
-;
-
-
-  // the old value was removed, so select a new one
-  this.setName = function (name) {
+  setName(name) {
     this._select.name = name;
-  };
-  this.setValue = function (value) {
+  }
+  setValue(value) {
     this._select.value = value;
-  };
-
-  this.getValue = function () {
+  }
+  getValue() {
     return this._select.value;
-  };
-});
+  }
+};
+exports.prototype._css = 'select';
+exports.prototype._def = {
+  tag: 'label',
+  style: { display: 'inline-block' },
+  children: [{
+      id: '_select',
+      tag: 'select'
+    }]
+};
 var SelectBox = exports;
 
 export default exports;

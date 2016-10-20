@@ -4,35 +4,21 @@ import Widget from './Widget';
 import browser from 'util/browser';
 let $ = browser.$;
 
-exports = Class(Widget, function (supr) {
-  this._css = 'checkbox';
-
-  this._def = {
-    tag: 'label',
-    children: [
-      {
-        id: 'checkbox',
-        tag: 'input',
-        attrs: { type: 'checkbox' }
-      },
-      {
-        tag: 'span',
-        id: 'label',
-        text: ''
-      }
-    ]
-  };
-
-  this.buildWidget = function () {
+exports = class extends Widget {
+  buildWidget() {
     this.setLabel(this._opts.label || '');
     if (this._opts.name) {
       this.setName(this._opts.name);
     }
 
 
+
+
     if (this._opts.value) {
       this.setValue(this._opts.value);
     }
+
+
 
 
     this.initMouseEvents(this.checkbox);
@@ -41,35 +27,47 @@ exports = Class(Widget, function (supr) {
     if (this._opts.__result) {
       this._opts.__result.addSubscription(this, 'Select', this._opts.id);
     }
-  };
-
-  this._onCheck = function () {
+  }
+  _onCheck() {
     this.publish('Check', this.isChecked());
     this.emit('change', this.isChecked());
-  };
-
-  this.setLabel = function (label) {
+  }
+  setLabel(label) {
     $.setText(this.label, label);
-  };
-  this.setName = function (name) {
+  }
+  setName(name) {
     this.checkbox.name = name;
-  };
-
-  this.setData = this.setValue = function (value) {
+  }
+  setValue(value) {
     this.checkbox.checked = !!value;
-  };
-
-  this.isChecked = function () {
+  }
+  isChecked() {
     return this.checkbox.checked;
-  };
-  this.setChecked = function (isChecked) {
+  }
+  setChecked(isChecked) {
     this.checkbox.checked = isChecked;
-  };
-
-  this.getValue = function () {
+  }
+  getValue() {
     return this.isChecked() ? this.checkbox.value : null;
-  };
-});
+  }
+};
+exports.prototype._css = 'checkbox';
+exports.prototype._def = {
+  tag: 'label',
+  children: [
+    {
+      id: 'checkbox',
+      tag: 'input',
+      attrs: { type: 'checkbox' }
+    },
+    {
+      tag: 'span',
+      id: 'label',
+      text: ''
+    }
+  ]
+};
+exports.prototype.setData = exports.prototype.setValue;
 var CheckBox = exports;
 
 export default exports;

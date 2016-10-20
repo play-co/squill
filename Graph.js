@@ -11,13 +11,10 @@ import Widget from './Widget';
 
 import hint from './hint';
 
-exports = Class(Widget, function (supr) {
-  this._css = 'cnvs';
-  this._type = 'canvas';
-
-  this.init = function (opts) {
+exports = class extends Widget {
+  constructor(opts) {
     params = merge(opts, { tag: 'canvas' });
-    supr(this, 'init', arguments);
+    super(...arguments);
 
     this.setSettings(opts.settings || {});
 
@@ -29,9 +26,8 @@ exports = Class(Widget, function (supr) {
 
     $.onEvent(this._el, 'mousemove', this, this._onMouseMove);
     $.onEvent(this._el, 'mouseout', this, this._onMouseOut);
-  };
-
-  this._onMouseMove = function (evt) {
+  }
+  _onMouseMove(evt) {
     var rectangles = this._rectangles, rectangle, found = false, i = rectangles.length;
 
     while (i) {
@@ -43,25 +39,24 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     if (found) {
       hint.show(evt.pageX + 15, evt.pageY + 15, rectangle.label);
     } else {
       hint.hide();
     }
-  };
-
-  this._onMouseOut = function (evt) {
+  }
+  _onMouseOut(evt) {
     hint.hide();
-  };
-
-  this.buildWidget = function () {
+  }
+  buildWidget() {
     var el = this._el;
 
     this.initMouseEvents(el);
     this.initKeyEvents(el);
-  };
-
-  this._renderBackground = function (ctx) {
+  }
+  _renderBackground(ctx) {
     var el = this._el, width = el.width, height = el.height;
 
     this._currentWidth = width;
@@ -73,9 +68,8 @@ exports = Class(Widget, function (supr) {
     } else {
       ctx.clearRect(0, 0, width, height);
     }
-  };
-
-  this._calculateSegments = function (ctx, data) {
+  }
+  _calculateSegments(ctx, data) {
     var settings = this._settings, max = 0, maxLabel = 0, i, j = data.length, k, l;
 
     for (i = 0; i < j; i++) {
@@ -88,6 +82,8 @@ exports = Class(Widget, function (supr) {
         max = Math.max(item.points[k], max);
       }
     }
+
+
 
 
     var steps = [
@@ -107,6 +103,8 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     stepCount = Math.ceil(max / (steps[stepIndex] * factor));
     return {
       steps: stepCount,
@@ -115,9 +113,8 @@ exports = Class(Widget, function (supr) {
       maxLabel: maxLabel + 4,
       factor: factor
     };
-  };
-
-  this._trimLabel = function (segmentInfo, ctx, label) {
+  }
+  _trimLabel(segmentInfo, ctx, label) {
     if (ctx.measureText(label).width > segmentInfo.maxLabel) {
       while (ctx.measureText(label + '...').width > segmentInfo.maxLabel) {
         label = label.substr(0, label.length - 1);
@@ -125,9 +122,8 @@ exports = Class(Widget, function (supr) {
       label += '...';
     }
     return label;
-  };
-
-  this._renderHorizontalAxis = function (segmentInfo, ctx, data) {
+  }
+  _renderHorizontalAxis(segmentInfo, ctx, data) {
     var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - valueSpace, height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel, step = width / data.length, label, hasDecimal, x, y, i, j, k;
 
     ctx.strokeStyle = settings.barBackground;
@@ -138,6 +134,8 @@ exports = Class(Widget, function (supr) {
       ctx.lineTo(x, mainPadding + height);
       ctx.stroke();
     }
+
+
 
 
     ctx.textAlign = 'right';
@@ -160,6 +158,8 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     ctx.strokeStyle = this._settings.lineColor;
     ctx.fillStyle = '#000000';
 
@@ -178,6 +178,8 @@ exports = Class(Widget, function (supr) {
       i = Math.ceil(i - height / segmentInfo.steps);
       j++;
     }
+
+
 
 
     i = height;
@@ -205,6 +207,8 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     ctx.textAlign = 'left';
 
     label = settings.mainLabel + ' x' + segmentInfo.factor;
@@ -228,9 +232,8 @@ exports = Class(Widget, function (supr) {
     ctx.lineTo(i + 7.5, j);
     ctx.lineTo(i + 11.5, j + 5.5);
     ctx.stroke();
-  };
-
-  this._renderVerticalBars = function (segmentInfo, ctx, data) {
+  }
+  _renderVerticalBars(segmentInfo, ctx, data) {
     var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - valueSpace, height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel, step = width / data.length, barWidth = step - settings.barPadding * 2, barWidthSeg, barHeight, barX, item, points, i, j, k, l;
 
     ctx.globalAlpha = 0.9;
@@ -250,9 +253,8 @@ exports = Class(Widget, function (supr) {
       }
     }
     ctx.globalAlpha = 1;
-  };
-
-  this._renderVerticalPoints = function (segmentInfo, ctx, data) {
+  }
+  _renderVerticalPoints(segmentInfo, ctx, data) {
     var settings = this._settings, renderPoints = settings.types.indexOf('points') !== -1, renderLines = settings.types.indexOf('lines') !== -1, renderArea = settings.types.indexOf('area') !== -1, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - valueSpace, height = this._currentHeight - mainPadding * 2 - segmentInfo.maxLabel, step = width / data.length, pointWidth = step - settings.barPadding * 2, pointX, pointY, points, point, pointList = [], hasLast, item, i, j, k, l;
 
     pointYLast = null;
@@ -283,6 +285,8 @@ exports = Class(Widget, function (supr) {
         }
 
 
+
+
         if (hasLast && renderLines) {
           ctx.beginPath();
           ctx.moveTo(pointXLast, pointYLast[k]);
@@ -291,10 +295,14 @@ exports = Class(Widget, function (supr) {
         }
 
 
+
+
         pointYLast[k] = pointY;
       }
       pointXLast = pointX;
     }
+
+
 
 
     if (renderArea) {
@@ -313,9 +321,8 @@ exports = Class(Widget, function (supr) {
       }
       ctx.globalAlpha = 1;
     }
-  };
-
-  this._renderVerticalAxis = function (segmentInfo, ctx, data) {
+  }
+  _renderVerticalAxis(segmentInfo, ctx, data) {
     var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel, height = this._currentHeight - mainPadding * 2 - valueSpace, step = height / data.length, label, hasDecimal, x, y, i, j, k;
 
     ctx.strokeStyle = settings.barBackground;
@@ -326,6 +333,8 @@ exports = Class(Widget, function (supr) {
       ctx.lineTo(mainPadding + segmentInfo.maxLabel + width, y);
       ctx.stroke();
     }
+
+
 
 
     ctx.textAlign = 'right';
@@ -351,6 +360,8 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     ctx.textAlign = 'center';
 
     ctx.strokeStyle = this._settings.lineColor;
@@ -370,9 +381,13 @@ exports = Class(Widget, function (supr) {
       }
 
 
+
+
       i = Math.floor(i + width / segmentInfo.steps);
       j++;
     }
+
+
 
 
     i = 0;
@@ -394,12 +409,16 @@ exports = Class(Widget, function (supr) {
       }
 
 
+
+
       ctx.fillStyle = this._settings.textColor;
       ctx.fillText(label, mainPadding + segmentInfo.maxLabel + i, mainPadding + height + 2);
 
       i = Math.floor(i + width / segmentInfo.steps);
       j++;
     }
+
+
 
 
     ctx.textAlign = 'left';
@@ -423,9 +442,8 @@ exports = Class(Widget, function (supr) {
     ctx.lineTo(i + settings.itemSize, j + 7.5);
     ctx.lineTo(i + settings.itemSize - 4, j + 11.5);
     ctx.stroke();
-  };
-
-  this._renderHorizontalBars = function (segmentInfo, ctx, data) {
+  }
+  _renderHorizontalBars(segmentInfo, ctx, data) {
     var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel, height = this._currentHeight - mainPadding * 2 - valueSpace, step = height / data.length, barWidth, barHeight = step - settings.barPadding * 2, barHeightSeg, barX, barY, item, points, i, j, k, l;
 
     ctx.globalAlpha = 0.9;
@@ -445,9 +463,8 @@ exports = Class(Widget, function (supr) {
       }
     }
     ctx.globalAlpha = 1;
-  };
-
-  this._renderHorizontalPoints = function (segmentInfo, ctx, data) {
+  }
+  _renderHorizontalPoints(segmentInfo, ctx, data) {
     var settings = this._settings, renderPoints = settings.types.indexOf('points') !== -1, renderLines = settings.types.indexOf('lines') !== -1, renderArea = settings.types.indexOf('area') !== -1, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel, height = this._currentHeight - mainPadding * 2 - valueSpace, step = height / data.length, pointHeight = step - settings.barPadding * 2, pointX, pointY, points, point, pointList = [], hasLast, item, i, j, k, l;
 
     pointXLast = null;
@@ -478,6 +495,8 @@ exports = Class(Widget, function (supr) {
         }
 
 
+
+
         if (hasLast && renderLines) {
           ctx.beginPath();
           ctx.moveTo(pointXLast[k], pointYLast);
@@ -486,10 +505,14 @@ exports = Class(Widget, function (supr) {
         }
 
 
+
+
         pointXLast[k] = pointX;
       }
       pointYLast = pointY;
     }
+
+
 
 
     if (renderArea) {
@@ -508,9 +531,8 @@ exports = Class(Widget, function (supr) {
       }
       ctx.globalAlpha = 1;
     }
-  };
-
-  this.setData = function (data) {
+  }
+  setData(data) {
     var el = this._el, ctx = el.getContext('2d'), settings = this._settings, types = settings.types, axisRenderMethod = function () {
       }, barsRenderMethod = function () {
       }, pointsRenderMethod = function () {
@@ -524,6 +546,8 @@ exports = Class(Widget, function (supr) {
       barsRenderMethod = bind(this, this._renderHorizontalBars);
       pointsRenderMethod = bind(this, this._renderHorizontalPoints);
       break;
+
+
 
 
     case 'vertical':
@@ -553,10 +577,11 @@ exports = Class(Widget, function (supr) {
     }
 
 
-    this._data = data;
-  };
 
-  this.setSettings = function (settings) {
+
+    this._data = data;
+  }
+  setSettings(settings) {
     settings.mainLabel = settings.mainLabel || '';
     settings.textColor = settings.textColor || '#000000';
     settings.fillColor = settings.fillColor === undefined ? '#FFFFFF' : settings.fillColor;
@@ -577,12 +602,13 @@ exports = Class(Widget, function (supr) {
     settings.itemSize = settings.itemSize || 50;
 
     this._settings = settings;
-  };
-
-  this.update = function () {
+  }
+  update() {
     this._data && this.setData(this._data);
-  };
-});
+  }
+};
+exports.prototype._css = 'cnvs';
+exports.prototype._type = 'canvas';
 var Graph = exports;
 
 export default exports;

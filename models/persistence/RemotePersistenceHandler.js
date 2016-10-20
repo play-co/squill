@@ -20,26 +20,26 @@ import ajax from 'util/ajax';
 
 import BasicPersistenceHandler from './BasicPersistenceHandler';
 
-exports = Class(BasicPersistenceHandler, function (supr) {
-  this.init = function (opts) {
-    supr(this, 'init', arguments);
+exports = class extends BasicPersistenceHandler {
+  constructor(opts) {
+    super(...arguments);
 
     this._loadURL = opts && opts.loadURL;
     this._saveURL = opts && opts.saveURL;
-  };
-
-  this._checkChangeData = function () {
+  }
+  _checkChangeData() {
     if (!this._updateList) {
       this._updateList = [];
     }
 
 
+
+
     if (!this._removeList) {
       this._removeList = [];
     }
-  };
-
-  this.update = function (data) {
+  }
+  update(data) {
     var i, j;
 
     if (isArray(data)) {
@@ -52,9 +52,8 @@ exports = Class(BasicPersistenceHandler, function (supr) {
 
       this._data[data[this._key]] = data;
     }
-  };
-
-  this.remove = function (data) {
+  }
+  remove(data) {
     var i, j;
 
     if (isArray(data)) {
@@ -67,13 +66,16 @@ exports = Class(BasicPersistenceHandler, function (supr) {
 
       delete this._data[data];
     }
-  };
-
-  this.load = function (dataSource, cb) {
+  }
+  load(dataSource, cb) {
     if (this._loadURL === null) {
       cb && cb({ NoURL: 'Loading URL is not set.' });
       return;
     }
+
+
+
+
 
 
 
@@ -89,6 +91,8 @@ exports = Class(BasicPersistenceHandler, function (supr) {
       }
 
 
+
+
       if (!errorMessage) {
         try {
           receivedData = JSON.parse(response);
@@ -98,12 +102,16 @@ exports = Class(BasicPersistenceHandler, function (supr) {
       }
 
 
+
+
       if (receivedData.error !== false) {
         errorMessage = 'The server reported a problem fetching the data: ' + receivedData.message;
       }
       if (!errorMessage && receivedData.data === undefined) {
         errorMessage = 'Data missing';
       }
+
+
 
 
       if (!errorMessage) {
@@ -122,6 +130,8 @@ exports = Class(BasicPersistenceHandler, function (supr) {
       }
 
 
+
+
       if (errorMessage) {
         cb && cb({ LoadingError: 'Loading error: ' + errorMessage });
       } else {
@@ -132,12 +142,13 @@ exports = Class(BasicPersistenceHandler, function (supr) {
         cb && cb();
       }
     }));
-  };
-
-  this.commit = function () {
+  }
+  commit() {
     if (this._saveURL === null) {
       return;
     }
+
+
 
 
     var data = {}, i, j;
@@ -147,6 +158,8 @@ exports = Class(BasicPersistenceHandler, function (supr) {
         data[this._data[i][this._key]] = this._data[i];
       }
     }
+
+
 
 
     this._checkChangeData();
@@ -164,17 +177,14 @@ exports = Class(BasicPersistenceHandler, function (supr) {
       this._updateList = [];
       this.publish('CommitFinished');
     }));
-  };
-
-
-  this.setLoadURL = function (loadURL) {
+  }
+  setLoadURL(loadURL) {
     this._loadURL = loadURL;
-  };
-
-  this.setSaveURL = function (saveURL) {
+  }
+  setSaveURL(saveURL) {
     this._saveURL = saveURL;
-  };
-});
+  }
+};
 var RemotePersistenceHandler = exports;
 
 export default exports;

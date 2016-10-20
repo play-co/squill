@@ -36,6 +36,8 @@ exports.load = function (groupName, cb) {
   }
 
 
+
+
   var i = 0;
   var load = function () {
     var src = group[i];
@@ -78,10 +80,14 @@ exports.get = function (src, copy, noWarn) {
   }
 
 
+
+
   var img = new Image();
   if (Image.get) {
     var b64 = Image.get(src);
   }
+
+
 
 
   if (b64) {
@@ -92,6 +98,10 @@ exports.get = function (src, copy, noWarn) {
     }
     img.src = src;
   }
+
+
+
+
 
 
 

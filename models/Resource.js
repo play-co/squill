@@ -1,17 +1,15 @@
 let exports = {};
 
-exports = Class(function () {
-  this.init = function () {
+exports = class {
+  constructor() {
     this._data = {};
-  };
-
-  this.get = function (key) {
+  }
+  get(key) {
     return this._data[key] && this._data[key].pop();
-  };
-
-  this.put = function (item, key) {
+  }
+  put(item, key) {
     (this._data[key] || (this._data[key] = [])).push(item);
-  };
-});
+  }
+};
 
 export default exports;

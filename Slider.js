@@ -4,11 +4,8 @@ import browser from 'util/browser';
 let $ = browser.$;
 import Widget from './Widget';
 
-exports = Class(Widget, function (supr) {
-  this._css = 'rng';
-  this._type = 'range';
-
-  this.init = function (params) {
+exports = class extends Widget {
+  constructor(params) {
     this._width = params.width || 100;
     this._padding = 12;
     this._hover = false;
@@ -26,10 +23,9 @@ exports = Class(Widget, function (supr) {
         }]
     };
 
-    supr(this, 'init', [params]);
-  };
-
-  this._render = function () {
+    super(params);
+  }
+  _render() {
     var width = this._width, padding = this._padding, ctx = this._ctx, radialGradient, v;
 
     ctx.clearRect(0, 0, width, padding * 2);
@@ -57,6 +53,8 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     v = ~~((width - padding * 2) * (this.value - this.min) / (this.max - this.min));
 
     ctx.beginPath();
@@ -71,9 +69,8 @@ exports = Class(Widget, function (supr) {
     ctx.fill();
 
     ctx.restore();
-  };
-
-  this.buildWidget = function () {
+  }
+  buildWidget() {
     var el = this._el;
     canvas = el.firstChild;
 
@@ -93,27 +90,23 @@ exports = Class(Widget, function (supr) {
     this._checkRange();
     this._ctx = canvas.getContext('2d');
     this._render();
-  };
-
-  this.setValue = function (value) {
+  }
+  setValue(value) {
     this.value = value;
     this._render();
-  };
-
-  this._onChange = function () {
+  }
+  _onChange() {
     this.publish('Change', this.value);
-  };
-
-  this._checkRange = function () {
+  }
+  _checkRange() {
     if (this.value < this.min) {
       this.value = this.min;
     }
     if (this.value > this.max) {
       this.value = this.max;
     }
-  };
-
-  this._checkMouse = function (evt) {
+  }
+  _checkMouse(evt) {
     var mouseX = evt.offsetX, mouseY = evt.offsetY, width = this._width, padding = this._padding, hover = this._hover, value;
 
     if (this._mouseDown) {
@@ -134,31 +127,31 @@ exports = Class(Widget, function (supr) {
       }
 
 
+
+
       if (this._hover !== hover) {
         this._render();
       }
     }
-  };
-
-  this._onMouseOut = function (evt) {
+  }
+  _onMouseOut(evt) {
     this._mouseDown = false;
     this._hover = false;
     this._render();
-  };
-
-  this._onMouseDown = function (evt) {
+  }
+  _onMouseDown(evt) {
     this._mouseDown = true;
     this._checkMouse(evt);
-  };
-
-  this._onMouseUp = function (evt) {
+  }
+  _onMouseUp(evt) {
     this._mouseDown = false;
-  };
-
-  this._onMouseMove = function (evt) {
+  }
+  _onMouseMove(evt) {
     this._checkMouse(evt);
-  };
-});
+  }
+};
+exports.prototype._css = 'rng';
+exports.prototype._type = 'range';
 var Slider = exports;
 
 

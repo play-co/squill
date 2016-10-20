@@ -7,39 +7,14 @@ let $ = browser.$;
 import Widget from './Widget';
 import sort from 'lib/sort';
 
-exports = Class(Widget, function (supr) {
-  this._def = {
-    className: 'tabbedPane',
-    activeTabClassName: 'selected',
-    children: [
-      {
-        id: 'tabContainerWrapper',
-        className: 'tabContainerWrapper',
-        children: [{
-            id: 'tabContainer',
-            className: 'tabContainer',
-            tagName: 'ul'
-          }]
-      },
-      {
-        id: 'tabContentsWrapper',
-        className: 'tabContentsWrapper',
-        children: [{
-            id: 'tabContent',
-            className: 'tabContents'
-          }]
-      }
-    ]
-  };
-
-  this.init = function (opts) {
+exports = class extends Widget {
+  constructor(opts) {
     opts = opts || {};
     this._panes = [];
 
-    supr(this, 'init', arguments);
-  };
-
-  this.buildWidget = function (el, result) {
+    super(...arguments);
+  }
+  buildWidget(el, result) {
     var opts = this._opts;
 
     this._container = this.tabContent;
@@ -49,9 +24,13 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     if (opts.panes) {
       this.buildPanes(opts.panes, result);
     }
+
+
 
 
     if (opts.paneClassName) {
@@ -59,9 +38,13 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     if (opts.containerWrapperClassName) {
       $.addClass(this.tabContainerWrapper, opts.containerWrapperClassName);
     }
+
+
 
 
     if (opts.contentsWrapperClassName) {
@@ -69,50 +52,51 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     if (opts.tabContainerClassName) {
       $.addClass(this.tabContainer, opts.tabContainerClassName);
     }
-  };
-
-  this.buildTabChildren = function (tabChildren, results) {
+  }
+  buildTabChildren(tabChildren, results) {
     for (var i = 0, def; def = tabChildren[i]; ++i) {
       this.addTabWidget(def, results);
     }
-  };
-
-  this.getContainer = function () {
+  }
+  getContainer() {
     return this._container || this._el;
-  };
-
-  this.addTabWidget = function (def, results) {
+  }
+  addTabWidget(def, results) {
     return this.addWidget(def, this.tabContainer, results);
-  };
-
-  this.addWidget = function (def, parent, results) {
-    var el = supr(this, 'addWidget', arguments);
+  }
+  addWidget(def, parent, results) {
+    var el = super.addWidget(...arguments);
     if (el instanceof exports.Pane) {
       this._addPane(el);
     }
 
 
-    return el;
-  };
 
-  this.buildPanes = function (def, result) {
+
+    return el;
+  }
+  buildPanes(def, result) {
     def.forEach(function (opts) {
       this.newPane(opts, result);
     }, this);
-  };
-
-  this.newPane = function (def, res) {
+  }
+  newPane(def, res) {
     return this.addWidget(merge({ type: exports.Pane }, def, { tabPaneClassName: this._opts.tabPaneClassName }), null, res);
-  };
-
-  this._addPane = function (pane) {
+  }
+  _addPane(pane) {
     var title = pane.getTitle();
     if (title) {
       this._panes[title] = pane;
     }
+
+
+
+
 
 
 
@@ -132,39 +116,39 @@ exports = Class(Widget, function (supr) {
 
 
 
-    return this;
-  };
 
-  this.clear = function () {
+
+
+
+    return this;
+  }
+  clear() {
     this._panes.length = 0;
     this._selectedTab = null;
     this.tabContent.innerHTML = '';
     this.tabContainer.innerHTML = '';
-  };
-
-  this.getTabs = function () {
+  }
+  getTabs() {
     return this._tabs;
-  };
-
-  this.getPanes = function () {
+  }
+  getPanes() {
     return this._panes;
-  };
-
-  this.selectPane = function (pane) {
+  }
+  selectPane(pane) {
     if (this._selectedTab !== pane.tab) {
       this.publish('SelectPane', pane);
     }
     this.showPane(pane);
-  };
-
-  this.getSelectedPane = function () {
+  }
+  getSelectedPane() {
     return this._selectedPane;
-  };
-
-  this.showPane = function (pane) {
+  }
+  showPane(pane) {
     if (!pane) {
       return;
     }
+
+
 
 
     var tab = pane.tab;
@@ -176,21 +160,46 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     this._selectedPane = pane;
     pane.show();
     this.publish('ShowPane', pane);
-  };
-});
+  }
+};
+exports.prototype._def = {
+  className: 'tabbedPane',
+  activeTabClassName: 'selected',
+  children: [
+    {
+      id: 'tabContainerWrapper',
+      className: 'tabContainerWrapper',
+      children: [{
+          id: 'tabContainer',
+          className: 'tabContainer',
+          tagName: 'ul'
+        }]
+    },
+    {
+      id: 'tabContentsWrapper',
+      className: 'tabContentsWrapper',
+      children: [{
+          id: 'tabContent',
+          className: 'tabContents'
+        }]
+    }
+  ]
+};
 var TabbedPane = exports;
 
 
 var sortID = 0;
 
-exports.Pane = Class(Widget, function (supr) {
-  this.getTitle = function () {
+exports.Pane = class extends Widget {
+  getTitle() {
     return this._opts.title;
-  };
-  this.init = function (opts) {
+  }
+  constructor(opts) {
     this._sortIndex = ++sortID;
 
     this._def = {
@@ -207,12 +216,11 @@ exports.Pane = Class(Widget, function (supr) {
       className: 'tab'
     });
 
-    supr(this, 'init', arguments);
-  };
-
-  this.setSortIndex = function (sortIndex) {
+    super(...arguments);
+  }
+  setSortIndex(sortIndex) {
     this._sortIndex = sortIndex;
-  };
-});
+  }
+};
 
 export default exports;

@@ -19,29 +19,30 @@ function pollHash() {
 
 
 
-var Poller = Class(PubSub, function () {
-  this._lastTag = null;
 
-  this.start = function (initial, frequency) {
+
+
+
+class Poller extends PubSub {
+  start(initial, frequency) {
     this._lastTag = initial;
     setInterval(bind(this, pollHash), frequency || 500);
     setTimeout(bind(this, pollHash), 0);
-  };
-
-  this.getPrev = function () {
+  }
+  getPrev() {
     return this._lastTag;
-  };
-});
+  }
+}
 
+Poller.prototype._lastTag = null;
 exports.Poller = new Poller();
 
-exports.BasicPager = Class(function () {
-  this.init = function (prefix) {
+exports.BasicPager = class {
+  constructor(prefix) {
     this._prefix = prefix;
     exports.Poller.subscribe('Change', this, 'goto');
-  };
-
-  this.goto = function (page, lastPage) {
+  }
+  goto(page, lastPage) {
     lastPage = lastPage || exports.Poller.getPrev();
 
     window.location.hash = page;
@@ -52,11 +53,13 @@ exports.BasicPager = Class(function () {
     }
 
 
+
+
     var next = document.getElementById(this._prefix + page);
     if (next) {
       next.style.display = 'block';
     }
-  };
-});
+  }
+};
 
 export default exports;

@@ -27,8 +27,8 @@ exports.parseData = function (widget, data) {
   new Binding(widget, data);
 };
 
-var Binding = Class(function () {
-  this.init = function (widget, key, src, subs) {
+class Binding {
+  constructor(widget, key, src, subs) {
     var res = widget.getOpts().__result;
     var baseWidget = res && res.getTarget() || widget;
 
@@ -47,9 +47,8 @@ var Binding = Class(function () {
     // }
     widget.on('change', bind(this, '_updateModel'));
     baseWidget.on('model', bind(this, '_connect'));
-  };
-
-  this._connect = function (model) {
+  }
+  _connect(model) {
     if (this._model) {
       this._disconnect();
     }
@@ -68,18 +67,16 @@ var Binding = Class(function () {
       model.subscribe(this._key, this, '_updateKey');
       this._updateKey(model.get(this._key));
     }
-  };
-
-  this._disconnect = function () {
+  }
+  _disconnect() {
     var model = this._model;
     this._subs && this._subs.forEach(function (sub) {
       model.unsubscribe(sub.key, this);
     }, this);
 
     this._key && model.unsubscribe(this._key, this);
-  };
-
-  this._update = function (key, value) {
+  }
+  _update(key, value) {
     var str = this._src;
     this._subs.forEach(function (sub) {
       if (key && sub.key == key) {
@@ -89,32 +86,41 @@ var Binding = Class(function () {
     }, this);
 
     this._widget.setData(str);
-  };
-
-  this._updateKey = function (value) {
+  }
+  _updateKey(value) {
     this._widget.setData(value);
-  };
-
-  this._updateModel = function (value) {
+  }
+  _updateModel(value) {
     if (this._model && this._key) {
       this._model.set(this._key, value);
     }
-  };
-});  /*
+  }
+}
+
+
+
+
+
+
+
+
+/*
 
 var bindings = require('./bindings');
 bindings.parseFormat({}, "Hello world %(format.this) 4d %(format.that)06.2f")
 
 */
-
-
-
-
-
-
-
-
 export default exports;
+
+
+
+
+
+
+
+
+
+
 
 
 

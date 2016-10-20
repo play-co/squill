@@ -8,13 +8,12 @@ let $ = browser.$;
 
 var defaults = { className: 'pillButtons' };
 
-exports = Class(Widget, function (supr) {
-  this.init = function (opts) {
+exports = class extends Widget {
+  constructor(opts) {
     opts = merge(opts, defaults);
-    supr(this, 'init', [opts]);
-  };
-
-  this.buildWidget = function (el) {
+    super(opts);
+  }
+  buildWidget(el) {
     this._options = {};
 
     var opts = this._opts.options, len = opts.length;
@@ -34,19 +33,21 @@ exports = Class(Widget, function (supr) {
       }
 
 
+
+
       $.onEvent(optionEl, 'mousedown', this, 'onSelect', optionEl, opts[i].value);
       this._options[opts[i].value] = optionEl;
     }
-  };
-
-  this.setValue = function (value) {
+  }
+  setValue(value) {
     this.onSelect(this._options[value], value);
-  };
-
-  this.onSelect = function (optionEl, value, evt) {
+  }
+  onSelect(optionEl, value, evt) {
     if (value === this._selected.value) {
       return;
     }
+
+
 
 
     $.removeClass(this._selected.optionEl, 'selected');
@@ -58,8 +59,8 @@ exports = Class(Widget, function (supr) {
     };
 
     this.publish('Select', value);
-  };
-});
+  }
+};
 var PillButtons = exports;
 
 export default exports;

@@ -18,6 +18,8 @@ exports.get = function (opts, cb) {
   }
 
 
+
+
   var win = opts.win || window;
   var doc = win.document;
   var loc = win.location;
@@ -45,6 +47,10 @@ exports.get = function (opts, cb) {
       cb && cb();
     }, 500);
   }
+
+
+
+
 
 
 

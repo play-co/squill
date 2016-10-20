@@ -2,14 +2,13 @@ let exports = {};
 
 import BasicPersistenceHandler from './BasicPersistenceHandler';
 
-exports = Class(BasicPersistenceHandler, function (supr) {
-  this.init = function (opts) {
-    supr(this, 'init', arguments);
+exports = class extends BasicPersistenceHandler {
+  constructor(opts) {
+    super(...arguments);
 
     this._storageKey = opts.storageKey;
-  };
-
-  this.load = function (dataSource, cb) {
+  }
+  load(dataSource, cb) {
     var dataStr = localStorage.getItem(this._storageKey);
     if (dataStr) {
       try {
@@ -21,12 +20,11 @@ exports = Class(BasicPersistenceHandler, function (supr) {
     } else {
       return cb && cb({ 'NoData': true });
     }
-  };
-
-  this.save = function (dataSource) {
+  }
+  save(dataSource) {
     localStorage.setItem(this._storageKey, JSON.stringify(dataSource));
-  };
-});
+  }
+};
 var LocalPersistenceHandler = exports;
 
 export default exports;

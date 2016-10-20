@@ -6,21 +6,16 @@ import browser from 'util/browser';
 let $ = browser.$;
 import Widget from './Widget';
 
-exports = Class(Widget, function (supr) {
-  this._css = 'cnvs';
-  this._type = 'canvas';
-
-  this.init = function (params) {
+exports = class extends Widget {
+  constructor(params) {
     params = merge(params, { tag: 'canvas' });
     this._isEnabled = params.isEnabled;
-    supr(this, 'init', [params]);
-  };
-
-  this.create = function () {
-    supr(this, 'create', arguments);
-  };
-
-  this.buildWidget = function () {
+    super(params);
+  }
+  create() {
+    super.create(...arguments);
+  }
+  buildWidget() {
     var el = this._el;
 
     el.width = this._opts.width;
@@ -30,10 +25,14 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     this.initMouseEvents(el);
     this.initKeyEvents(el);
-  };
-});
+  }
+};
+exports.prototype._css = 'cnvs';
+exports.prototype._type = 'canvas';
 var Canvas = exports;
 
 

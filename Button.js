@@ -11,30 +11,25 @@ import Widget from './Widget';
 
 import hint from './hint';
 
-exports = Class(Widget, function (supr) {
-  this._css = 'btn';
-  this._type = 'button';
-
-  this.init = function (params) {
+exports = class extends Widget {
+  constructor(params) {
     params = merge(params, {
       tag: 'button',
       isEnabled: true
     });
     this._isEnabled = params.isEnabled;
-    supr(this, 'init', [params]);
+    super(params);
     this._hint = params.hint;
-  };
-
-  this.create = function () {
+  }
+  create() {
     this._opts.style = merge(this._opts.style, {
       whiteSpace: 'nowrap',
       display: 'inline-block'
     });
 
-    supr(this, 'create', arguments);
-  };
-
-  this.buildWidget = function () {
+    super.create(...arguments);
+  }
+  buildWidget() {
     var el = this._el;
 
     this.initMouseEvents(el);
@@ -46,10 +41,8 @@ exports = Class(Widget, function (supr) {
     el.style.KhtmlUserSelect = 'none';
     // Safari
     el.unselectable = 'on';
-  };
-
-  // IE
-  this._setHintTimeout = function (e) {
+  }
+  _setHintTimeout(e) {
     if (!this._hint) {
       return;
     }
@@ -57,26 +50,24 @@ exports = Class(Widget, function (supr) {
     this._hintTimeout = setTimeout(bind(this, function () {
       hint.show(e.pageX + 12, e.pageY + 14, this._hint);
     }), 300);
-  };
-
-  this.onMouseOver = function (e) {
+  }
+  onMouseOver(e) {
     this._setHintTimeout(e);
-  };
-
-  this.onMouseMove = function (e) {
+  }
+  onMouseMove(e) {
     this._setHintTimeout(e);
-  };
-
-  this.onMouseOut = function (e) {
+  }
+  onMouseOut(e) {
     hint.hide();
     this._hintTimeout && clearTimeout(this._hintTimeout);
-  };
-
-  this.onClick = function (e) {
+  }
+  onClick(e) {
     $.stopEvent(e);
     if (!this._isEnabled) {
       return;
     }
+
+
 
 
     if (this._opts.onClick) {
@@ -84,37 +75,34 @@ exports = Class(Widget, function (supr) {
     }
 
 
-    supr(this, 'onClick', arguments);
-  };
 
-  this.captureOnEnter = function (widget) {
+
+    super.onClick(...arguments);
+  }
+  captureOnEnter(widget) {
     widget.subscribe('KeyDown', this, 'onKeyDown');
     widget.subscribe('KeyUp', this, 'onKeyUp');
-  };
-
-  this.onKeyDown = function (e) {
+  }
+  onKeyDown(e) {
     if (e.keyCode == 13) {
       $.stopEvent(e);
       this.onMouseDown();
     }
-  };
-
-  this.onKeyUp = function (e) {
+  }
+  onKeyUp(e) {
     if (e.keyCode == 13) {
       $.stopEvent(e);
       this.onMouseUp();
       this.onClick(e);
     }
-  };
-
-  this.blur = function () {
+  }
+  blur() {
     this._el && this._el.blur();
-  };
-  this.focus = function () {
+  }
+  focus() {
     this._el && this._el.focus();
-  };
-
-  this.setEnabled = function (isEnabled) {
+  }
+  setEnabled(isEnabled) {
     if (this._isEnabled != isEnabled) {
       this._isEnabled = isEnabled;
       if (!isEnabled) {
@@ -123,8 +111,10 @@ exports = Class(Widget, function (supr) {
         $.removeClass(this._el, 'disabled');
       }
     }
-  };
-});
+  }
+};
+exports.prototype._css = 'btn';
+exports.prototype._type = 'button';
 var Button = exports;
 
 

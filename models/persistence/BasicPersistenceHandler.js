@@ -4,24 +4,21 @@ import { isArray } from 'base';
 
 import PubSub from 'lib/PubSub';
 
-exports = Class(PubSub, function (supr) {
-  this.init = function (opts) {
-    supr(this, 'init', arguments);
+exports = class extends PubSub {
+  constructor(opts) {
+    super(...arguments);
 
     this._params = opts.params || {};
     this._key = opts.key;
-  };
-
-  this.clear = function () {
+  }
+  clear() {
     this._data = {};
-  };
-
-  this.load = function () {
-  };
-  this.commit = function () {
-  };
-
-  this.update = function (data) {
+  }
+  load() {
+  }
+  commit() {
+  }
+  update(data) {
     var i, j;
 
     if (isArray(data)) {
@@ -31,13 +28,11 @@ exports = Class(PubSub, function (supr) {
     } else {
       this._data[data[this._key]] = data;
     }
-  };
-
-  this.setSource = function (dataSource) {
+  }
+  setSource(dataSource) {
     this._dataSource = dataSource;
-  };
-
-  this.remove = function (data) {
+  }
+  remove(data) {
     var i, j;
 
     if (isArray(data)) {
@@ -47,13 +42,11 @@ exports = Class(PubSub, function (supr) {
     } else {
       delete this._data[data];
     }
-  };
-
-  this.setParams = function (params) {
+  }
+  setParams(params) {
     this._params = params;
-  };
-
-});
+  }
+};
 var BasicPersistanceHandler = exports;
 
 export default exports;

@@ -21,62 +21,57 @@ import PubSub from 'lib/PubSub';
  * the squill.List class contains a public proprty .selection that is an
  * instance of a Selection instance.
  */
-exports = Class(PubSub, function () {
-  this.init = function (opts) {
+exports = class extends PubSub {
+  constructor(opts) {
+    super();
+
     this._parent = opts.parent;
     this._type = opts.type || false;
     this._selection = opts.selectionStore || new exports.LocalStore();
     this._maxSelections = opts.maxSelections || 1;
     this._currentSelectionCount = 0;
     this._lastSelected = null;
-  };
-
-  this.getType = function () {
+  }
+  getType() {
     return this._type;
-  };
-
-  this.isSelected = function (id) {
+  }
+  isSelected(id) {
     if (typeof id == 'object') {
       id = id[this._parent.getDataSource().key];
     }
     return this._selection.isSelected(id);
-  };
-
-  this.toggle = function (item) {
+  }
+  toggle(item) {
     this._setSelected(item, !this.isSelected(item[this._parent.getDataSource().key]));
-  };
-
-  this.select = function (item) {
+  }
+  select(item) {
     if (this._currentSelectionCount < this._maxSelections || this._type == 'single') {
       this._setSelected(item, true);
     }
-  };
-
-  this.deselect = function (item) {
+  }
+  deselect(item) {
     this._setSelected(item, false);
-  };
-
-  this.clear = this.deselectAll = function () {
+  }
+  deselectAll() {
     this._selection.deselectAll();
     this._currentSelectionCount = 0;
-  };
-
-  this.get = function () {
+  }
+  get() {
     if (this._maxSelections == 1) {
       return Object.keys(this._selection.get())[0];
     } else {
       return Object.keys(this._selection.get());
     }
-  };
-
-  this.getSelectionCount = function () {
+  }
+  getSelectionCount() {
     return this._currentSelectionCount;
-  };
-
-  this._setSelected = function (item, isSelected) {
+  }
+  _setSelected(item, isSelected) {
     if (!item) {
       return;
     }
+
+
 
 
     var dataSource = this._parent.getDataSource(), key = dataSource.key;
@@ -98,6 +93,8 @@ exports = Class(PubSub, function () {
         }
 
 
+
+
         this._lastSelected = item;
         this._selection.select(id);
         this._currentSelectionCount++;
@@ -107,33 +104,31 @@ exports = Class(PubSub, function () {
       }
 
 
+
+
       this.publish(isSelected ? 'Select' : 'Deselect', item, id);
     }
-  };
-});
+  }
+};
 
-exports.LocalStore = Class(function () {
-  this.init = function () {
+exports.prototype.clear = exports.prototype.deselectAll;
+exports.LocalStore = class {
+  constructor() {
     this._store = {};
-  };
-
-  this.get = function () {
+  }
+  get() {
     return merge({}, this._store);
-  };
-
-  this.select = function (id) {
+  }
+  select(id) {
     this._store[id] = true;
-  };
-
-  this.deselect = function (id) {
+  }
+  deselect(id) {
     delete this._store[id];
-  };
-
-  this.deselectAll = function (id) {
+  }
+  deselectAll(id) {
     this._store = {};
-  };
-
-  this.isSelected = function (id) {
+  }
+  isSelected(id) {
     if (id !== undefined) {
       return !!this._store[id];
     } else {
@@ -142,8 +137,8 @@ exports.LocalStore = Class(function () {
       }
       return false;
     }
-  };
-});
+  }
+};
 
 
 export default exports;

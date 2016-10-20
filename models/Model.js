@@ -8,12 +8,16 @@ function copy(obj) {
 }
 
 
+
+
 var PATH_SEP = /[\[.,]/;
 function parsePath(path) {
   return path.split(PATH_SEP).map(function (piece) {
     return piece[piece.length - 1] == ']' ? parseInt(piece) : piece;
   });
 }
+
+
 
 
 function matchPath(p1, p2) {
@@ -35,8 +39,26 @@ function matchPath(p1, p2) {
 
 
 
-exports = Class(PubSub, function (supr) {
-  this.init = function (opts) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exports = class extends PubSub {
+  constructor(opts) {
+    super();
+
     var obj;
 
     if (opts instanceof Model) {
@@ -45,6 +67,8 @@ exports = Class(PubSub, function (supr) {
 
       obj = cloneFrom._data;
     }
+
+
 
 
     this._data = {};
@@ -64,6 +88,8 @@ exports = Class(PubSub, function (supr) {
     }
 
 
+
+
     this.setObject(obj || {});
 
     if (opts) {
@@ -75,6 +101,8 @@ exports = Class(PubSub, function (supr) {
       }
 
 
+
+
       // default values
       if (opts.defaults) {
         Object.keys(opts.defaults).forEach(function (key) {
@@ -84,28 +112,23 @@ exports = Class(PubSub, function (supr) {
         }, this);
       }
     }
-  };
-
-  this.setObject = function (obj) {
+  }
+  setObject(obj) {
     this._data = obj;
     this.emit();
     this.persist();
     return this;
-  };
-
-  this.toObject = function () {
+  }
+  toObject() {
     return copy(this._data);
-  };
-
-  this.clone = function () {
+  }
+  clone() {
     return new Model(this.getObject());
-  };
-
-  this.has = function (path) {
+  }
+  has(path) {
     return this.get(path) !== undefined;
-  };
-
-  this.get = function (path) {
+  }
+  get(path) {
     var segments = parsePath(path);
     var n = segments.length;
     var i = 0;
@@ -117,14 +140,16 @@ exports = Class(PubSub, function (supr) {
 
 
 
+
+
+
+
     return o;
-  };
-
-  this.getObject = function (path) {
+  }
+  getObject(path) {
     return copy(this.get(path) || {});
-  };
-
-  this.set = function (path, value) {
+  }
+  set(path, value) {
     var segments = parsePath(path);
     var n = segments.length - 1;
     var i = 0;
@@ -136,8 +161,12 @@ exports = Class(PubSub, function (supr) {
       }
 
 
+
+
       o = o[s];
     }
+
+
 
 
     var prevValue = o[segments[n]];
@@ -149,36 +178,37 @@ exports = Class(PubSub, function (supr) {
 
 
 
+
+
+
+
     this.persist();
     return this;
-  };
-
-  this.emit = function (path, value) {
+  }
+  emit(path, value) {
     if (path) {
-      supr(this, 'emit', arguments);
+      super.emit(...arguments);
     }
+
+
 
 
     if (this._subscribers) {
       Object.keys(this._subscribers).forEach(function (key) {
         if (!path || key != path && matchPath(key, path)) {
-          supr(this, 'emit', [
-            key,
-            this.get(key)
-          ]);
+          super.emit(key, this.get(key));
         }
       }, this);
     }
     return this;
-  };
-
-  this.persist = function () {
+  }
+  persist() {
     if (this._storageKey) {
       localStorage.setItem(this._storageKey, JSON.stringify(this._data));
     }
     return this;
-  };
-});
+  }
+};
 var Model = exports;
 
 export default exports;

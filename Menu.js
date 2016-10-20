@@ -9,45 +9,26 @@ import Delegate from './Delegate';
 import browser from 'util/browser';
 let $ = browser.$;
 
-exports = Class(Widget, function (supr) {
-  // this.init = function(params) {
-  //  var params = JS.merge(params, {parent: $.id('wrapper')});
-  //  supr(this, 'init', [params]);
-  // }
-  this._css = 'menu';
-
-  this._def = { children: [{ id: 'container' }] };
-
-  // the default menu delegate just forwards to the menu controller
-  this.delegate = new Delegate(function (on) {
-    on.call = function (ctx, name) {
-      var delegate = ctx.controller.delegate;
-      delegate.call.apply(delegate, [ctx.controller].concat(Array.prototype.slice.call(arguments, 1)));
-    };
-  });
-
-  this.getContainer = function () {
+exports = class extends Widget {
+  getContainer() {
     return this.container;
-  };
-
-  this.onBeforeShow = function () {
-  };
-  this.onShow = function () {
-  };
-  this.onBeforeHide = function () {
-  };
-  this.onHide = function () {
-  };
-
-  this.toggle = function () {
+  }
+  onBeforeShow() {
+  }
+  onShow() {
+  }
+  onBeforeHide() {
+  }
+  onHide() {
+  }
+  toggle() {
     if (this._isShowing) {
       this.hide();
     } else {
       this.show();
     }
-  };
-
-  this.show = function () {
+  }
+  show() {
     this._isShowing = true;
 
     var menuEl = this._el;
@@ -59,13 +40,19 @@ exports = Class(Widget, function (supr) {
         }
 
 
+
+
         if (/squill-checkbox/.test(el.className)) {
           return false;
         }
 
 
+
+
         el = el.parentNode;
       }
+
+
 
 
       // close menu
@@ -96,15 +83,22 @@ exports = Class(Widget, function (supr) {
 
     this.emit('open');
     Menu.emit('open', this);
-  };
-
-  this.hide = function () {
+  }
+  hide() {
     this._isShowing = false;
 
     $.hide(this._el);
 
     this.emit('close');
     Menu.emit('close', this);
+  }
+};
+exports.prototype._css = 'menu';
+exports.prototype._def = { children: [{ id: 'container' }] };
+exports.prototype.delegate = new Delegate(function (on) {
+  on.call = function (ctx, name) {
+    var delegate = ctx.controller.delegate;
+    delegate.call.apply(delegate, [ctx.controller].concat(Array.prototype.slice.call(arguments, 1)));
   };
 });
 var Menu = exports;
@@ -121,6 +115,8 @@ function trapIframes() {
   }
 
 
+
+
   _trappedFrames = Array.prototype.map.call(document.getElementsByTagName('iframe'), function (el) {
     var retVal = {
       el: el,
@@ -134,10 +130,13 @@ function trapIframes() {
 }
 
 
+
+
 function untrapIframes() {
   _trappedFrames.forEach(function (item) {
     item.el.style.pointerEvents = item.set;
   });
 }
+
 
 export default exports;

@@ -10,8 +10,8 @@ import PubSub from 'lib/PubSub';
 var SLICE = Array.prototype.slice;
 var isMobile = /(iPod|iPhone|iPad|Android)/i.test(navigator.userAgent);
 
-exports = Class(PubSub, function () {
-  this.event = function (el, name, handler) {
+exports = class extends PubSub {
+  event(el, name, handler) {
     if (!this._eventEnabled) {
       this._eventEnabled = {};
     }
@@ -26,19 +26,19 @@ exports = Class(PubSub, function () {
         return handler.apply(this, arguments);
       }
     });
-  };
-
-  this.isDragging = function () {
+  }
+  isDragging() {
     return this._isDragging || false;
-  };
-
-  this.initDragEvents = function (el) {
+  }
+  initDragEvents(el) {
     if (!this.__drag) {
       var d = this.__drag = new Drag();
       d.subscribe('DragStart', this, 'onDragStart');
       d.subscribe('Drag', this, 'onDrag');
       d.subscribe('DragStop', this, 'onDragStop');
     }
+
+
 
 
     var startDrag = bind(this.__drag, 'startDrag');
@@ -49,9 +49,8 @@ exports = Class(PubSub, function () {
       el.addEventListener('touchstart', startDrag, true);
     }
     $.onEvent(el, 'mousedown', startDrag);
-  };
-
-  this.initMouseEvents = function (el) {
+  }
+  initMouseEvents(el) {
     el = el || this._el;
 
     if (isMobile) {
@@ -67,103 +66,91 @@ exports = Class(PubSub, function () {
     }
 
 
+
+
     var opts = this._opts;
     if (opts && opts.__result) {
       opts.__result.addSubscription(this, 'Select');
     }
 
 
-    return this;
-  };
 
-  this.initFocusEvents = function (el) {
+
+    return this;
+  }
+  initFocusEvents(el) {
     el = el || this._el;
     this.event(el, 'focus', 'onFocus');
     this.event(el, 'blur', 'onBlur');
     return this;
-  };
-
-  this.initKeyEvents = function (el) {
+  }
+  initKeyEvents(el) {
     el = el || this._el;
     this.event(el, 'keydown', 'onKeyDown');
     this.event(el, 'keypress', 'onKeyPress');
     this.event(el, 'keyup', 'onKeyUp');
     return this;
-  };
-
-  this._onTouchStart = function (e) {
+  }
+  _onTouchStart(e) {
     this.onMouseOver(e);
     this.onMouseDown(e);
-  };
-
-  this._onTouchEnd = function (e) {
+  }
+  _onTouchEnd(e) {
     this.onMouseUp(e);
     this.onClick(e);
     this.onMouseOut(e);
-  };
-
-  this.onMouseOver = function (e) {
+  }
+  onMouseOver(e) {
     if (!this._enableMouseEvents)
       this._isOver = true;
     this.publish('Over', e);
-  };
-
-  this.onMouseMove = function (e) {
+  }
+  onMouseMove(e) {
     if (!this._enableMouseEvents)
       this.publish('Move', e);
-  };
-
-  this.onMouseOut = function (e) {
+  }
+  onMouseOut(e) {
     this._isOver = false;
     this.publish('Out', e);
-  };
-
-  this.onMouseDown = function (e) {
+  }
+  onMouseDown(e) {
     this._isDown = true;
     this.publish('Down', e);
     return false;
-  };
-
-  this.onMouseUp = function (e) {
+  }
+  onMouseUp(e) {
     this._isDown = false;
     this.publish('Up', e);
     return false;
-  };
-
-  this.onClick = function (e) {
+  }
+  onClick(e) {
     this.publish('Select', e);
     this.emit('click', e);
     return false;
-  };
-
-  this.onFocus = function (e) {
+  }
+  onFocus(e) {
     this._isFocused = true;
     this.publish('Focus', e);
-  };
-
-  this.onBlur = function (e) {
+  }
+  onBlur(e) {
     this._isFocused = false;
     this.publish('Blur', e);
-  };
-
-  this.onKeyUp = function (e) {
+  }
+  onKeyUp(e) {
     this.publish('KeyUp', e);
-  };
-
-  this.onKeyPress = function (e) {
+  }
+  onKeyPress(e) {
     this.publish('KeyPress', e);
-  };
-
-  this.onKeyDown = function (e) {
+  }
+  onKeyDown(e) {
     this.publish('KeyDown', e);
-  };
-
-  this.onDragStart = function (dragEvt) {
-  };
-  this.onDrag = function (dragEvt, moveEvt) {
-  };
-  this.onDragStop = function (dragEvt, upEvt) {
-  };
-});
+  }
+  onDragStart(dragEvt) {
+  }
+  onDrag(dragEvt, moveEvt) {
+  }
+  onDragStop(dragEvt, upEvt) {
+  }
+};
 
 export default exports;

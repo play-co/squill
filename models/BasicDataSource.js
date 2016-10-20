@@ -2,19 +2,18 @@ let exports = {};
 
 import PubSub from 'lib/PubSub';
 
-exports = Class(PubSub, function (supr) {
-  this.init = function (opts) {
-    supr(this, 'init', arguments);
+exports = class extends PubSub {
+  constructor(opts) {
+    super(...arguments);
 
     this.key = this._key = opts.key;
     this._channel = opts.channel;
     this._hasRemote = opts.hasRemote;
-  };
-
-  this.getKey = function () {
+  }
+  getKey() {
     return this._key;
-  };
-});
+  }
+};
 var BasicDataSource = exports;
 
 export default exports;

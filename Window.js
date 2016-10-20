@@ -9,33 +9,30 @@ let $ = browser.$;
 
 var UNIQUE_ID = '__squill__window_id';
 
-exports = Class(PubSub, function () {
-  this.init = function (win) {
+exports = class extends PubSub {
+  constructor(win) {
+    super();
+
     this._win = win || window;
     this._location = new uri(this._win.location);
     this._dim = $(this._win);
     $.onEvent(this._win, 'resize', this, 'onViewportChange');
     $.onEvent(this._win, 'scroll', this, 'onViewportChange');
-  };
-
-  this.onViewportChange = function (e) {
+  }
+  onViewportChange(e) {
     this._dim = $(this._win);
     this.publish('ViewportChange', e, this._dim);
-  };
-
-  this.getDim = this.getViewport = function () {
+  }
+  getViewport() {
     return this._dim;
-  };
-
-  this.query = function (key) {
+  }
+  query(key) {
     return this._location.query(key);
-  };
-
-  this.hash = function (key) {
+  }
+  hash(key) {
     return this._location.query(key);
-  };
-
-  this.center = function (el, opts) {
+  }
+  center(el, opts) {
     opts = merge(opts, { subscribe: true });
 
     var width = 'width' in opts ? opts.width : el.offsetWidth, height = 'height' in opts ? opts.height : el.offsetHeight;
@@ -46,8 +43,9 @@ exports = Class(PubSub, function () {
     if (opts.subscribe) {
       this.subscribe('ViewportChange', this, 'center', el, merge({ subscribe: false }, opts));
     }
-  };
-});
+  }
+};
+exports.prototype.getDim = exports.prototype.getViewport;
 var Window = exports;
 
 var gWin = {};
@@ -55,6 +53,8 @@ exports.get = function (win) {
   if (!win) {
     win = window;
   }
+
+
 
 
   if (win[UNIQUE_ID]) {

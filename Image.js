@@ -3,29 +3,25 @@ let exports = {};
 import Widget from 'squill/Widget';
 import bindings from 'squill/models/bindings';
 
-exports = Class(Widget, function () {
-  this._css = 'image';
-  this._def = { tag: 'img' };
-
-  this.buildWidget = function () {
+exports = class extends Widget {
+  buildWidget() {
     var opts = this._opts;
     if (opts.format) {
       bindings.parseFormat(this, opts.format);
     }
-  };
-
-  Object.defineProperty(this, 'src', {
-    set: function (src) {
-      this._el.src = src;
-    },
-    get: function () {
-      return this._el.src;
-    }
-  });
-
-  this.setData = this.setSrc = function (src) {
+  }
+  set src(src) {
+    this._el.src = src;
+  }
+  get src() {
+    return this._el.src;
+  }
+  setSrc(src) {
     this.src = src;
-  };
-});
+  }
+};
 
+exports.prototype._css = 'image';
+exports.prototype._def = { tag: 'img' };
+exports.prototype.setData = exports.prototype.setSrc;
 export default exports;

@@ -2,25 +2,23 @@ let exports = {};
 
 import Widget from './Widget';
 
-exports = Class(Widget, function (supr) {
-  this.init = function (params) {
-    supr(this, 'init', arguments);
-  };
-
-  this.setRecycleID = function (id) {
+exports = class extends Widget {
+  constructor(params) {
+    super(...arguments);
+  }
+  setRecycleID(id) {
     this._recycleID = id;
-  };
-  this.setResource = function (resource) {
+  }
+  setResource(resource) {
     this._resource = resource;
-  };
-
-  this.recycle = function () {
+  }
+  recycle() {
     this.publish('Recycle');
     if (this._resource) {
       this._resource.put(this._view, this._recycleID);
     }
-  };
-});
+  }
+};
 var Cell = exports;
 
 export default exports;

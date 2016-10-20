@@ -31,25 +31,23 @@ function shallowCopy(p) {
 }
 
 
-var WidgetSet = Class(function () {
-  this.init = function (target) {
+
+
+class WidgetSet {
+  constructor(target) {
     this._target = target;
     this.events = [];
-  };
-
-  this.getTarget = function () {
+  }
+  getTarget() {
     return this._target;
-  };
-
-  this.hasWidget = function (id) {
+  }
+  hasWidget(id) {
     return !!this._target[id];
-  };
-
-  this.addWidget = function (id, widget) {
+  }
+  addWidget(id, widget) {
     this._target[id] = widget;
-  };
-
-  this.addSubscription = function (widget, signal)
+  }
+  addSubscription(widget, signal)
     /* ... args */
     {
       if (this._target.dispatchEvent) {
@@ -60,8 +58,8 @@ var WidgetSet = Class(function () {
           widget.getId()
         ].concat(Array.prototype.slice.call(arguments, 2)));
       }
-    };
-});
+    }
+}
 
 
 function _replaceNode(id) {
@@ -72,11 +70,8 @@ function _replaceNode(id) {
 ;
 
 
-exports = Class(Element, function () {
-  this._css = 'widget';
-  this._name = '';
-
-  this.__getDef__ = function () {
+exports = class extends Element {
+  __getDef__() {
     var cls = this.constructor;
     var def = {};
 
@@ -90,6 +85,8 @@ exports = Class(Element, function () {
     if (this.hasOwnProperty('_def')) {
       copyDef(this._def);
     }
+
+
 
 
     function copyDef(src) {
@@ -113,10 +110,15 @@ exports = Class(Element, function () {
 
 
 
-    return def;
-  };
 
-  this.init = function (opts) {
+
+
+
+    return def;
+  }
+  constructor(opts) {
+    super();
+
     opts = opts || {};
 
     this._children = [];
@@ -136,14 +138,20 @@ exports = Class(Element, function () {
     }
 
 
+
+
     if (def.attrs) {
       opts.attrs = merge(opts.attrs, def.attrs);
     }
 
 
+
+
     if (def.style) {
       opts.style = merge(opts.style, def.style);
     }
+
+
 
 
     // opts take precedence over def
@@ -153,6 +161,12 @@ exports = Class(Element, function () {
         opts[name] = def[name];
       }
     }
+
+
+
+
+
+
 
 
 
@@ -170,11 +184,15 @@ exports = Class(Element, function () {
     }
 
 
+
+
     var widgetParent;
     var buildNow = false;
     if (opts.widgetParent) {
       widgetParent = opts.widgetParent;
     }
+
+
 
 
     this.controller = opts.controller || widgetParent;
@@ -188,6 +206,8 @@ exports = Class(Element, function () {
         }
 
 
+
+
         opts.parent = parent.getContainer();
       } else if (!parent.appendChild) {
         delete opts.parent;
@@ -195,22 +215,21 @@ exports = Class(Element, function () {
     }
 
 
+
+
     if (widgetParent) {
       widgetParent.addWidget(this);
     } else if (opts.parent || opts.el) {
       this.build(opts.el);
     }
-  };
-
-  this.getOpts = function () {
+  }
+  getOpts() {
     return this._opts;
-  };
-
-  this.getId = function () {
+  }
+  getId() {
     return this._id || this._el && this._el.id;
-  };
-
-  this.build = function (el) {
+  }
+  build(el) {
     if (!this._el || this._el != el) {
       var opts = this._opts;
       var children = opts.children;
@@ -224,35 +243,37 @@ exports = Class(Element, function () {
       }
 
 
+
+
       this.buildContent();
     }
 
 
 
 
+
+
+
+
     return this;
-  };
-
-  this.getParent = function () {
+  }
+  getParent() {
     return this._el && this._el.parentNode;
-  };
-  this.getWidgetParent = function () {
+  }
+  getWidgetParent() {
     return this._widgetParent;
-  };
-
-  this.setWidgetParent = function (parent) {
+  }
+  setWidgetParent(parent) {
     if (this._widgetParent != parent) {
       this._widgetParent.removeWidget(this);
       parent.addWidget(this);
       this._widgetParent = parent;
     }
-  };
-
-  this.getChildren = function () {
+  }
+  getChildren() {
     return this._children;
-  };
-
-  this.forEachDescend = function (cb, ctx) {
+  }
+  forEachDescend(cb, ctx) {
     var n = this._children.length;
     for (var i = 0; i < n; ++i) {
       var child = this._children[i];
@@ -261,24 +282,22 @@ exports = Class(Element, function () {
         child.forEachDescend(cb, ctx);
       }
     }
-  };
-
-  this.getFirstChild = function () {
+  }
+  getFirstChild() {
     return this._children && this._children.length ? this._children[0] : null;
-  };
-
-  this.dispatchEvent = function (id, evt) {
+  }
+  dispatchEvent(id, evt) {
     this.delegate.apply(this, arguments);
-  };
-
-  this.addElement = function (el) {
+  }
+  addElement(el) {
     this._el.appendChild(el);
-  };
-
-  this.addChild = this.addWidget = function (def, parent, result) {
+  }
+  addWidget(def, parent, result) {
     if (!this._el) {
       this.build();
     }
+
+
 
 
     parent = def.parent || parent || this.getContainer() || this._el;
@@ -296,10 +315,14 @@ exports = Class(Element, function () {
       }
 
 
+
+
       var el;
       if ('type' in opts && !opts.type) {
         logger.warn('Did you forget to provide a type?', opts);
       }
+
+
 
 
       if (!opts.type || typeof opts.type == 'string') {
@@ -320,12 +343,16 @@ exports = Class(Element, function () {
       }
 
 
+
+
       if (result && opts.id && !result.hasWidget(opts.id)) {
         result.addWidget(opts.id, el);
       }
     } else {
       el = def;
     }
+
+
 
 
     if (el instanceof Widget) {
@@ -336,20 +363,28 @@ exports = Class(Element, function () {
         }
 
 
+
+
         el._widgetParent = this;
         if (!el.controller) {
           el.controller = this;
         }
 
 
+
+
         this._children.push(el);
       }
+
+
 
 
       if (el.getParent() != parent) {
         el.setParent(parent);
       }
     }
+
+
 
 
     if (children) {
@@ -366,36 +401,36 @@ exports = Class(Element, function () {
     }
 
 
-    return el;
-  };
 
-  this.removeChild = function (widget) {
+
+    return el;
+  }
+  removeChild(widget) {
     if (widget.remove) {
       widget.remove();
     }
 
 
-    this.removeWidget(widget);
-  };
 
-  this.removeWidget = function (widget) {
+
+    this.removeWidget(widget);
+  }
+  removeWidget(widget) {
     var index = this._children.indexOf(widget);
     if (index >= 0) {
       this._children.splice(index, 1);
     }
-  };
-
-  this.getContainer = function () {
+  }
+  getContainer() {
     return this._el;
-  };
-  this.getName = function () {
+  }
+  getName() {
     return this._name;
-  };
-  this.setName = function (name) {
+  }
+  setName(name) {
     this._name = name;
-  };
-
-  this.buildContent = function () {
+  }
+  buildContent() {
     var opts = this._opts;
 
     if (global.getWidgetPrefix() !== null) {
@@ -403,9 +438,13 @@ exports = Class(Element, function () {
     }
 
 
+
+
     if (!this.delegate) {
       this.delegate = new Delegate();
     }
+
+
 
 
     // TODO: what's this doing here?
@@ -416,6 +455,8 @@ exports = Class(Element, function () {
         parent: this._el
       });
     }
+
+
 
 
     // def items always go on the widget
@@ -431,6 +472,8 @@ exports = Class(Element, function () {
     }
 
 
+
+
     // primary target for opts children is the result passed in
     var result = opts.__result || localRes || new WidgetSet(this);
 
@@ -440,80 +483,75 @@ exports = Class(Element, function () {
     }
 
 
+
+
     if (opts.data && this.setData) {
       bindings.parseData(this, opts.data);
     }
 
 
-    this.buildWidget(this._el, result);
-  };
 
-  this.buildChildren = function (children, parent, result) {
+
+    this.buildWidget(this._el, result);
+  }
+  buildChildren(children, parent, result) {
     if (!parent) {
       parent = this.getContainer() || this._el;
     }
 
 
+
+
     for (var i = 0, n = children.length; i < n; ++i) {
       this.addWidget(children[i], parent, result);
     }
-  };
-
-  this.buildWidget = function () {
-  };
-
-  // TODO: what's this doing here?
-  this.errors = function () {
+  }
+  buildWidget() {
+  }
+  errors() {
     return this.validators.map(function (item) {
       if (item.isValid == false) {
         return item.message;
       }
     });
-  };
-
-  // TODO: what's this doing here?
-  this.validate = function () {
+  }
+  validate() {
     var isValid = true;
     for (var i = 0, len = this.validators.length; i < len; ++i) {
       var v = this.validators[i];
       isValid = isValid && (v.isValid = v.call(this));
     }
     return this._isValid = isValid;
-  };
-
-  // TODO: what's this doing here?
-  this._isValid = true;
-  this.isValid = function () {
+  }
+  isValid() {
     return this._isValid;
-  };
-  this.validators = [];
-
-  this.getI18n = function (key, id) {
+  }
+  getI18n(key, id) {
     var src = key in this._opts ? this._opts : i18n.get(id || this._opts.id);
 
     return src && src[key] || '';
-  };
-
-  this.getElement = function () {
+  }
+  getElement() {
     if (!this._el) {
       this.build();
     }
     return this._el;
-  };
-
-  this.addClass = function (cls) {
+  }
+  addClass(cls) {
     $.addClass(this._el, cls);
-  };
-  this.removeClass = function (cls) {
+  }
+  removeClass(cls) {
     $.removeClass(this._el, cls);
-  };
-  this.hasClass = function (cls) {
+  }
+  hasClass(cls) {
     return (' ' + this._el.className + ' ').indexOf(cls) >= 0;
-  };
-  this.toggleClass = function (cls, isToggled) {
+  }
+  toggleClass(cls, isToggled) {
     if (isToggled === undefined) {
       isToggled = !this.hasClass(cls);
     }
+
+
 
 
     if (isToggled) {
@@ -521,39 +559,33 @@ exports = Class(Element, function () {
     } else {
       this.removeClass(cls);
     }
-  };
-
-  this.onBeforeShow = function () {
+  }
+  onBeforeShow() {
     for (var i = 0, child; child = this._children[i]; ++i) {
       child.onBeforeShow.apply(child, arguments);
     }
-  };
-
-  this.onShow = function () {
+  }
+  onShow() {
     this._isShowing = true;
     for (var i = 0, child; child = this._children[i]; ++i) {
       child.onShow.apply(child, arguments);
     }
-  };
-
-  this.onBeforeHide = function () {
+  }
+  onBeforeHide() {
     for (var i = 0, child; child = this._children[i]; ++i) {
       child.onBeforeHide.apply(child, arguments);
     }
-  };
-
-  this.onHide = function () {
+  }
+  onHide() {
     this._isShowing = false;
     for (var i = 0, child; child = this._children[i]; ++i) {
       child.onHide.apply(child, arguments);
     }
-  };
-
-  this.isShowing = function () {
+  }
+  isShowing() {
     return this._visibleState == 'beforeVisible' || this._visibleState == 'visible';
-  };
-
-  this.show = function () {
+  }
+  show() {
     this._visibleState = 'beforeVisible';
 
     var el = this.getElement();
@@ -573,9 +605,8 @@ exports = Class(Element, function () {
 
     this.onShow && transition.on('end', bind(this, 'onShow'));
     return transition;
-  };
-
-  this.hide = function () {
+  }
+  hide() {
     this._visibleState = 'beforeHidden';
 
     var el = this.getElement();
@@ -589,25 +620,21 @@ exports = Class(Element, function () {
 
     this.onHide && transition.on('end', bind(this, 'onHide'));
     return transition;
-  };
-
-  this.removeChildren = function () {
+  }
+  removeChildren() {
     this._children.forEach(function (child) {
       child.remove();
     });
-  };
-
-  this.remove = function () {
+  }
+  remove() {
     this.onBeforeHide();
     $.remove(this.getElement());
     this.onHide();
-  };
-
-  this.getModel = function () {
+  }
+  getModel() {
     return this.__model;
-  };
-
-  this.setModel = function (path, value) {
+  }
+  setModel(path, value) {
     if (arguments.length == 1) {
       this.__model.setObject(path);
     } else {
@@ -617,13 +644,18 @@ exports = Class(Element, function () {
 
 
 
-    return this;
-  };
 
-  this.putHere = function () {
+
+
+
+    return this;
+  }
+  putHere() {
     if (!this._el) {
       this.build();
     }
+
+
 
 
     var id = 'jsioWidgetId' + ++uid;
@@ -631,9 +663,8 @@ exports = Class(Element, function () {
     setTimeout(bind(this, _replaceNode, id), 0);
 
     return this;
-  };
-
-  this.appendTo = this.setParent = function (parent) {
+  }
+  setParent(parent) {
     var el = parent && (parent.getContainer && parent.getContainer() || parent.appendChild && parent || $.id(parent));
 
     if (el) {
@@ -646,9 +677,17 @@ exports = Class(Element, function () {
     }
 
 
+
+
     return this;
-  };
-});
+  }
+};
+exports.prototype._css = 'widget';
+exports.prototype._name = '';
+exports.prototype.addChild = exports.prototype.addWidget;
+exports.prototype._isValid = true;
+exports.prototype.validators = [];
+exports.prototype.appendTo = exports.prototype.setParent;
 var Widget = exports;
 
 // Mix in Events
@@ -656,6 +695,8 @@ var Widget = exports;
 for (let k in Events) {
   Widget.prototype[k] = Events.prototype[k];
 }
+
+
 
 
 var map = {};
