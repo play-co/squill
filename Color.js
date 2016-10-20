@@ -1,7 +1,8 @@
-jsio('from util.browser import $');
-jsio('import .Widget');
+import browser from 'util/browser';
+let $ = browser.$;
+import Widget from './Widget';
 
-jsio('import .jscolor.jscolor as jscolor');
+import jscolor from './jscolor/jscolor';
 
 var Color = exports = Class(Widget, function (supr) {
   this._css = 'clr';

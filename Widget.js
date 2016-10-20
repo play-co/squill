@@ -1,12 +1,14 @@
-jsio('from util.browser import $');
+import browser from 'util/browser';
+let $ = browser.$;
 jsio('import .Element, .Events, .global');
-jsio('import .i18n');
-jsio('import .Delegate');
-jsio('import .models.Model as Model');
-jsio('import .models.bindings as bindings');
-jsio('import .transitions');
+import i18n from './i18n';
+import Delegate from './Delegate';
+import Model from './models/Model';
+import bindings from './models/bindings';
+import transitions from './transitions';
 
-jsio('from .__imports__ import classes as WIDGET_CLASSES');
+import __imports__ from './__imports__';
+let WIDGET_CLASSES = __imports__.classes;
 
 var uid = 0;
 
@@ -29,8 +31,7 @@ var WidgetSet = Class(function () {
 
   this.getTarget = function () {
     return this._target;
-  }
-;
+  };
 
   this.hasWidget = function (id) {
     return !!this._target[id];
@@ -102,9 +103,10 @@ var Widget = exports = Class(Element, function () {
     }
 
 
+
+
     return def;
-  }
-;
+  };
 
   this.init = function (opts) {
     opts = opts || {};
@@ -194,13 +196,11 @@ var Widget = exports = Class(Element, function () {
 
   this.getOpts = function () {
     return this._opts;
-  }
-;
+  };
 
   this.getId = function () {
     return this._id || this._el && this._el.id;
-  }
-;
+  };
 
   this.build = function (el) {
     if (!this._el || this._el != el) {
@@ -220,17 +220,17 @@ var Widget = exports = Class(Element, function () {
     }
 
 
+
+
     return this;
-  }
-;
+  };
 
   this.getParent = function () {
     return this._el && this._el.parentNode;
   };
   this.getWidgetParent = function () {
     return this._widgetParent;
-  }
-;
+  };
 
   this.setWidgetParent = function (parent) {
     if (this._widgetParent != parent) {
@@ -238,8 +238,7 @@ var Widget = exports = Class(Element, function () {
       parent.addWidget(this);
       this._widgetParent = parent;
     }
-  }
-;
+  };
 
   this.getChildren = function () {
     return this._children;
@@ -266,8 +265,7 @@ var Widget = exports = Class(Element, function () {
 
   this.addElement = function (el) {
     this._el.appendChild(el);
-  }
-;
+  };
 
   this.addChild = this.addWidget = function (def, parent, result) {
     if (!this._el) {
@@ -377,8 +375,7 @@ var Widget = exports = Class(Element, function () {
     if (index >= 0) {
       this._children.splice(index, 1);
     }
-  }
-;
+  };
 
   this.getContainer = function () {
     return this._el;
@@ -516,8 +513,7 @@ var Widget = exports = Class(Element, function () {
     } else {
       this.removeClass(cls);
     }
-  }
-;
+  };
 
   this.onBeforeShow = function () {
     for (var i = 0, child; child = this._children[i]; ++i) {
@@ -591,8 +587,7 @@ var Widget = exports = Class(Element, function () {
     this._children.forEach(function (child) {
       child.remove();
     });
-  }
-;
+  };
 
   this.remove = function () {
     this.onBeforeHide();
@@ -602,8 +597,7 @@ var Widget = exports = Class(Element, function () {
 
   this.getModel = function () {
     return this.__model;
-  }
-;
+  };
 
   this.setModel = function (path, value) {
     if (arguments.length == 1) {
@@ -613,9 +607,10 @@ var Widget = exports = Class(Element, function () {
     }
 
 
+
+
     return this;
-  }
-;
+  };
 
   this.putHere = function () {
     if (!this._el) {
@@ -666,7 +661,6 @@ Widget.register = function (cls, name) {
 
 Widget.get = function (name) {
   return lowerCaseMap[name.toLowerCase()];
-}
-;
+};
 
 Widget.WidgetSet = WidgetSet;

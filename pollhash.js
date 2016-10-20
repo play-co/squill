@@ -1,4 +1,4 @@
-jsio('import lib.PubSub');
+import PubSub from 'lib/PubSub';
 
 function pollHash() {
   try {
@@ -13,15 +13,16 @@ function pollHash() {
 }
 
 
-var Poller = Class(lib.PubSub, function () {
+
+
+var Poller = Class(PubSub, function () {
   this._lastTag = null;
 
   this.start = function (initial, frequency) {
     this._lastTag = initial;
     setInterval(bind(this, pollHash), frequency || 500);
     setTimeout(bind(this, pollHash), 0);
-  }
-;
+  };
 
   this.getPrev = function () {
     return this._lastTag;
@@ -34,8 +35,7 @@ exports.BasicPager = Class(function () {
   this.init = function (prefix) {
     this._prefix = prefix;
     exports.Poller.subscribe('Change', this, 'goto');
-  }
-;
+  };
 
   this.goto = function (page, lastPage) {
     lastPage = lastPage || exports.Poller.getPrev();

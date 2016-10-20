@@ -1,6 +1,7 @@
-jsio('import std.uri');
-jsio('import util.ajax');
-jsio('from util.browser import $');
+import uri from 'std/uri';
+import ajax from 'util/ajax';
+import browser from 'util/browser';
+let $ = browser.$;
 
 logger.setLevel(0);
 
@@ -39,7 +40,9 @@ exports.get = function (opts, cb) {
   }
 
 
-  var url = std.uri.relativeTo(opts.url, window.location.toString());
+
+
+  var url = uri.relativeTo(opts.url, window.location.toString());
 
   exports._styleTags.push({
     el: el,
@@ -48,13 +51,12 @@ exports.get = function (opts, cb) {
 
   parent.appendChild(el);
   el.href = url;
-}
-;
+};
 
 exports._styleTags = [];
 exports.reloadCSS = function () {
   for (var i = 0, s; s = exports._styleTags[i]; ++i) {
-    util.ajax.get({ url: s.src }, bind(this, function (s, err, content) {
+    ajax.get({ url: s.src }, bind(this, function (s, err, content) {
       if (!err) {
         $.setText(s.el, content);
       }

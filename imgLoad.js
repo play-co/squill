@@ -1,4 +1,4 @@
-jsio('import lib.Callback');
+import Callback from 'lib/Callback';
 
 var _cache = {};
 var _groups = {};
@@ -13,13 +13,11 @@ exports.register = function (baseDir, groups) {
       _groups[name].push(baseDir + g[i]);
     }
   }
-}
-;
+};
 
 exports.getGroups = function () {
   return _groups;
-}
-;
+};
 
 // The callback is called for each image in the group with the image
 // source that loaded and whether there was an error.
@@ -65,11 +63,10 @@ exports.load = function (groupName, cb) {
     }
   };
 
-  var callback = new lib.Callback();
+  var callback = new Callback();
   setTimeout(load, 0);
   return callback;
-}
-;
+};
 
 exports.get = function (src, copy, noWarn) {
   if (!copy && _cache[src]) {

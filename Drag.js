@@ -1,6 +1,7 @@
-jsio('import lib.PubSub');
-jsio('import math.geom.Point as Point');
-jsio('from util.browser import $');
+import PubSub from 'lib/PubSub';
+import Point from 'math/geom/Point';
+import browser from 'util/browser';
+let $ = browser.$;
 
 var gCurrentDrag = [], gCurrentMouse = {
     x: 0,
@@ -91,16 +92,16 @@ function registerWindow(win) {
 }
 
 
-exports = Class(lib.PubSub, function (supr) {
+
+
+exports = Class(PubSub, function (supr) {
   this.init = function (params) {
     this._isActive = false;
-  }
-;
+  };
 
   this.isDragging = function () {
     return this._isActive;
-  }
-;
+  };
 
   // data is an optional object that will be added to dragEvt.data.
   // This allows the caller of startDrag to pass along arbitrary objects
@@ -118,8 +119,7 @@ exports = Class(lib.PubSub, function (supr) {
     e.srcPt = new Point(gCurrentMouse);
     e.currPt = new Point(gCurrentMouse);
     gAddItem(this);
-  }
-;
+  };
 
   this.onMouseMove = function (moveEvt) {
     var dragEvt = this._evt;
@@ -141,8 +141,7 @@ exports = Class(lib.PubSub, function (supr) {
       dragEvt.currPt = new Point(gCurrentMouse);
       this.publish('Drag', dragEvt, moveEvt, Point.subtract(dragEvt.currPt, dragEvt.prevPt));
     }
-  }
-;
+  };
 
   this.onMouseUp = function (upEvt) {
     gRemoveItem(this);
@@ -153,8 +152,7 @@ exports = Class(lib.PubSub, function (supr) {
       this.publish('DragStop', this._evt, upEvt);
       return true;
     }
-  }
-;
+  };
 
   this.disableIframes = function (doc) {
     if (!this._disabledFrames) {
@@ -173,8 +171,7 @@ exports = Class(lib.PubSub, function (supr) {
       } catch (e) {
       }
     }, this);
-  }
-;
+  };
 
   this.enableIframes = function () {
     this._disabledFrames.splice(0, this._disabledFrames.length).forEach(function (item) {

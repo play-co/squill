@@ -1,4 +1,4 @@
-jsio('import lib.PubSub');
+import PubSub from 'lib/PubSub';
 
 /**
  * The Selection class connects a selection storage to a UI element.
@@ -17,7 +17,7 @@ jsio('import lib.PubSub');
  * the squill.List class contains a public proprty .selection that is an
  * instance of a Selection instance.
  */
-exports = Class(lib.PubSub, function () {
+exports = Class(PubSub, function () {
   this.init = function (opts) {
     this._parent = opts.parent;
     this._type = opts.type || false;
@@ -111,28 +111,23 @@ exports = Class(lib.PubSub, function () {
 exports.LocalStore = Class(function () {
   this.init = function () {
     this._store = {};
-  }
-;
+  };
 
   this.get = function () {
     return merge({}, this._store);
-  }
-;
+  };
 
   this.select = function (id) {
     this._store[id] = true;
-  }
-;
+  };
 
   this.deselect = function (id) {
     delete this._store[id];
-  }
-;
+  };
 
   this.deselectAll = function (id) {
     this._store = {};
-  }
-;
+  };
 
   this.isSelected = function (id) {
     if (id !== undefined) {

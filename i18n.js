@@ -5,8 +5,7 @@ exports.setLang = function (lang) {
 };
 exports.get = function (key) {
   return gLang && gLang.get(key);
-}
-;
+};
 
 exports.Language = Class(function () {
   this.init = function (dict) {

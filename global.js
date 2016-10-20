@@ -11,8 +11,7 @@ exports.getTargetWindow = function () {
 };
 exports.getTargetDocument = function () {
   return gDoc;
-}
-;
+};
 
 exports.setWidgetPrefix = function (p) {
   gWidgetPrefix = p;

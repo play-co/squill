@@ -1,5 +1,5 @@
-jsio('import .Element');
-jsio('import .Widget');
+import Element from './Element';
+import Widget from './Widget';
 
 exports = Class(Widget, function (supr) {
   this.isValid = true;
@@ -12,8 +12,7 @@ exports = Class(Widget, function (supr) {
     if (opts.items) {
       this.addItems(opts.items);
     }
-  }
-;
+  };
 
   this.buildContent = function () {
     this.each(bind(this, function (item) {
@@ -23,8 +22,7 @@ exports = Class(Widget, function (supr) {
         item.appendTo(this._el);
       }
     }));
-  }
-;
+  };
 
   this.validate = function () {
     this.each(bind(this, function (item) {
@@ -35,8 +33,7 @@ exports = Class(Widget, function (supr) {
       }
     }));
     return this.isValid;
-  }
-;
+  };
 
   this.each = function (cb) {
     for (var i = 0, w; w = this._items[i]; ++i) {
@@ -52,8 +49,7 @@ exports = Class(Widget, function (supr) {
       var def = items[i];
       this.add(def);
     }
-  }
-;
+  };
 
   this.add = function (item) {
     if ($.isElement(item)) {
@@ -78,9 +74,20 @@ exports = Class(Widget, function (supr) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     this._items.push(item);
-  }
-;
+  };
 
   this.removeByName = function (name) {
   };

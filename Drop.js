@@ -1,6 +1,7 @@
-jsio('import .Widget');
+import Widget from './Widget';
 
-jsio('from util.browser import $');
+import browser from 'util/browser';
+let $ = browser.$;
 
 function cancelEvent(e) {
   e.stopPropagation();
@@ -160,8 +161,7 @@ exports = Class(Widget, function (supr) {
         reader.readAsDataURL(file);
       }
     }), false);
-  }
-;
+  };
 
   this.onDrop = function () {
   };

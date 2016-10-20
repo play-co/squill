@@ -1,4 +1,5 @@
-jsio('from util.browser import $');
+import browser from 'util/browser';
+let $ = browser.$;
 jsio('import .TextButton, .Widget');
 
 var SubmitButton = exports = Class(TextButton, function (supr) {

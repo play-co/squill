@@ -1,8 +1,9 @@
-jsio('import lib.PubSub');
-jsio('import util.Animation as Animation');
-jsio('from util.browser import $');
-jsio('import .Widget');
-jsio('import .transforms');
+import PubSub from 'lib/PubSub';
+import Animation from 'util/Animation';
+import browser from 'util/browser';
+let $ = browser.$;
+import Widget from './Widget';
+import transforms from './transforms';
 
 exports = Class(Widget, function (supr) {
   this._def = { className: 'menuController' };
@@ -11,8 +12,7 @@ exports = Class(Widget, function (supr) {
     supr(this, 'init', arguments);
     this._stack = [];
     this._isVisible = false;
-  }
-;
+  };
 
   this.isVisible = function () {
     return this._isVisible;
@@ -22,16 +22,14 @@ exports = Class(Widget, function (supr) {
       this._isVisible = isVisible;
       this.publish('VisibleChange', isVisible);
     }
-  }
-;
+  };
 
   this.getCurrentView = function () {
     if (!this._stack.length) {
       return null;
     }
     return this._stack[this._stack.length - 1];
-  }
-;
+  };
 
   this.push = function (view, dontAnimate) {
     for (var i = 0, v; v = this._stack[i]; ++i) {
@@ -66,9 +64,10 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     return view;
-  }
-;
+  };
 
   this._hide = function (view, dontAnimate, backward) {
     var el = view.getElement(), w = el.offsetWidth, onFinish = bind(this, function () {
@@ -87,8 +86,7 @@ exports = Class(Widget, function (supr) {
     } else {
       onFinish();
     }
-  }
-;
+  };
 
   this._show = function (view, dontAnimate, backward) {
     // hidden side effect: will build the menu for menus that haven't been built yet
@@ -116,8 +114,7 @@ exports = Class(Widget, function (supr) {
     } else {
       onFinish();
     }
-  }
-;
+  };
 
   this.fadeOut = function (dontAnimate) {
     var view = this._stack[this._stack.length - 1], el = this.getElement();
@@ -152,8 +149,7 @@ exports = Class(Widget, function (supr) {
     } else {
       onFinish();
     }
-  }
-;
+  };
 
   this.fadeIn = function (dontAnimate) {
     var view = this._stack[this._stack.length - 1], el = this.getElement(), onFinish = function () {
@@ -188,8 +184,7 @@ exports = Class(Widget, function (supr) {
     } else {
       onFinish();
     }
-  }
-;
+  };
 
   this.popTo = function (view, dontAnimate) {
     var n = this._stack.length;
@@ -197,8 +192,7 @@ exports = Class(Widget, function (supr) {
       this.subscribeOnce('DidPop', this, 'popTo', view, dontAnimate);
       this.pop(dontAnimate);
     }
-  }
-;
+  };
 
   this.pop = function (dontAnimate) {
     if (!this._stack.length) {
@@ -221,9 +215,10 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     return view;
-  }
-;
+  };
 
   this.popAll = function (dontAnimate) {
     while (this._stack[1]) {

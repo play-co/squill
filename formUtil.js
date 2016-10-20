@@ -1,4 +1,5 @@
-jsio('from util.browser import $');
+import browser from 'util/browser';
+let $ = browser.$;
 
 exports.onEnter = function (el, cb) {
   if (arguments.length > 2) {
@@ -11,13 +12,11 @@ exports.onEnter = function (el, cb) {
       cb();
     }
   });
-}
-;
+};
 
 exports.focus = function (el) {
   $.id(el.getElement && el.getElement() || el).focus();
-}
-;
+};
 
 exports.onPress = function (el, cb) {
   if (arguments.length > 2) {

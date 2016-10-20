@@ -1,4 +1,4 @@
-jsio('import .BasicDataSource as BasicDataSource');
+import BasicDataSource from './BasicDataSource';
 
 var TreeDataSourceNode = Class(function () {
   this.init = function (opts) {

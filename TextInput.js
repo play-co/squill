@@ -1,6 +1,7 @@
-jsio('from util.browser import $');
-jsio('import .Widget');
-jsio('import squill.models.bindings as bindings');
+import browser from 'util/browser';
+let $ = browser.$;
+import Widget from './Widget';
+import bindings from 'squill/models/bindings';
 
 var TextInput = exports = Class(Widget, function (supr) {
   this._type = 'text';
@@ -40,9 +41,10 @@ var TextInput = exports = Class(Widget, function (supr) {
     }
 
 
+
+
     supr(this, 'init', [opts]);
-  }
-;
+  };
 
   this.buildWidget = function () {
     var el = this._el;
@@ -87,21 +89,18 @@ var TextInput = exports = Class(Widget, function (supr) {
     this.initMouseEvents(el);
     this.initFocusEvents(this._input);
     this.initKeyEvents(this._input);
-  }
-;
+  };
 
   this.focus = function () {
     this._input.focus();
   };
   this.blur = function () {
     this._input.blur();
-  }
-;
+  };
 
   this.getInputElement = function () {
     return this._input;
-  }
-;
+  };
 
   this.setName = function (name) {
     supr(this, 'setName', arguments);
@@ -109,8 +108,7 @@ var TextInput = exports = Class(Widget, function (supr) {
     if (this._input) {
       this._input.name = name;
     }
-  }
-;
+  };
 
   this.setData = this.setValue = function (value) {
     if (value === undefined) {
@@ -121,35 +119,30 @@ var TextInput = exports = Class(Widget, function (supr) {
     this.saveSelection();
     this._value = this._input.value = value;
     this.restoreSelection();
-  }
-;
+  };
 
   this.getValue = function () {
     return this._input.value;
-  }
-;
+  };
 
   this.onKeyDown = function () {
     supr(this, 'onKeyDown', arguments);
     if (this._placeholder) {
       $.hide(this._placeholder);
     }
-  }
-;
+  };
 
   this.onKeyUp = function () {
     supr(this, 'onKeyUp', arguments);
     this.checkLabel();
     this.checkValue();
-  }
-;
+  };
 
   this.onMouseDown = function (evt) {
     supr(this, 'onMouseDown', arguments);
 
     evt.stopPropagation();
-  }
-;
+  };
 
   //    $.stopEvent(evt);
   this.onKeyPress = function (e) {
@@ -158,8 +151,7 @@ var TextInput = exports = Class(Widget, function (supr) {
       this.publish('EnterPressed');
     }
     this.checkValue();
-  }
-;
+  };
 
   this.onBlur = function () {
     supr(this, 'onBlur');
@@ -168,13 +160,11 @@ var TextInput = exports = Class(Widget, function (supr) {
     if (this._overlay) {
       $.show(this._overlay);
     }
-  }
-;
+  };
 
   this.isValid = function () {
     return this._isValid;
-  }
-;
+  };
 
   this.checkValue = function () {
     var value = this._input.value;
@@ -204,16 +194,14 @@ var TextInput = exports = Class(Widget, function (supr) {
       this.publish('change', this._value);
       this.publish('ValueChange', this._value);
     }
-  }
-;
+  };
 
   this.saveSelection = function () {
     this._selection = {
       start: this._input.selectionStart,
       end: this._input.selectionEnd
     };
-  }
-;
+  };
 
   this.restoreSelection = function () {
     var input = this._input;
@@ -221,21 +209,18 @@ var TextInput = exports = Class(Widget, function (supr) {
       input.selectionStart = this._selection.start;
       input.selectionEnd = this._selection.end;
     }
-  }
-;
+  };
 
   this.checkLabel = function () {
     if (this._placeholder && /^\s*$/.test(this._input.value)) {
       $.show(this._placeholder);
     }
-  }
-;
+  };
 
   this.onClick = function () {
     supr(this, 'onClick');
 
-  }
-;
+  };
 
   //setTimeout(bind(this._input, 'focus'), 100);
   this.setEnabled = function (isEnabled) {
@@ -247,8 +232,7 @@ var TextInput = exports = Class(Widget, function (supr) {
       this._input.disabled = true;
       this.addClass('disabled');
     }
-  }
-;
+  };
 
   this.isFocused = function () {
     return this._isFocused;

@@ -1,39 +1,35 @@
-jsio('import lib.PubSub');
-jsio('import std.uri');
-jsio('from util.browser import $');
+import PubSub from 'lib/PubSub';
+import uri from 'std/uri';
+import browser from 'util/browser';
+let $ = browser.$;
 
 var UNIQUE_ID = '__squill__window_id';
 
-var Window = exports = Class(lib.PubSub, function () {
+var Window = exports = Class(PubSub, function () {
   this.init = function (win) {
     this._win = win || window;
-    this._location = new std.uri(this._win.location);
+    this._location = new uri(this._win.location);
     this._dim = $(this._win);
     $.onEvent(this._win, 'resize', this, 'onViewportChange');
     $.onEvent(this._win, 'scroll', this, 'onViewportChange');
-  }
-;
+  };
 
   this.onViewportChange = function (e) {
     this._dim = $(this._win);
     this.publish('ViewportChange', e, this._dim);
-  }
-;
+  };
 
   this.getDim = this.getViewport = function () {
     return this._dim;
-  }
-;
+  };
 
   this.query = function (key) {
     return this._location.query(key);
-  }
-;
+  };
 
   this.hash = function (key) {
     return this._location.query(key);
-  }
-;
+  };
 
   this.center = function (el, opts) {
     opts = merge(opts, { subscribe: true });

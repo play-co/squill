@@ -1,8 +1,9 @@
-jsio('import .Widget');
-jsio('import math.geom.Point as Point');
-jsio('from util.browser import $');
-jsio('import .Window');
-jsio('import .transitions');
+import Widget from './Widget';
+import Point from 'math/geom/Point';
+import browser from 'util/browser';
+let $ = browser.$;
+import Window from './Window';
+import transitions from './transitions';
 
 module.exports = Class(Widget, function (supr) {
   this._def = {
@@ -33,8 +34,7 @@ module.exports = Class(Widget, function (supr) {
 
   this.getContainer = function () {
     return this._container;
-  }
-;
+  };
 
   this.buildWidget = function (el, scope) {
     if (this._opts.title) {
@@ -63,13 +63,11 @@ module.exports = Class(Widget, function (supr) {
     $.onEvent(this._closeBtn, 'touchend', this, 'hide', null);
 
     this.initDragEvents(this._titlebar);
-  }
-;
+  };
 
   this.setTitle = function (title) {
     $.setText(this._titlebarText, title);
-  }
-;
+  };
 
   this.onDrag = function (dragEvt, moveEvt, delta) {
     if (!dragEvt.data) {
@@ -81,24 +79,21 @@ module.exports = Class(Widget, function (supr) {
 
     this._el.style.left = Math.max(0, pos.x) + 'px';
     this._el.style.top = Math.max(0, pos.y) + 'px';
-  }
-;
+  };
 
   // override
   this.dispatchButton = function (target, evt) {
     if (this.delegate && this.delegate.call(this, target) !== false) {
       this.hide(target);
     }
-  }
-;
+  };
 
   this.setIsModal = function (isModal) {
     this._isModal = isModal;
     if (this.isShowing()) {
       this.showUnderlay();
     }
-  }
-;
+  };
 
   this.center = function () {
     var el = this.getElement();

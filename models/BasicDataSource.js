@@ -1,4 +1,4 @@
-jsio('import lib.PubSub as PubSub');
+import PubSub from 'lib/PubSub';
 
 var BasicDataSource = exports = Class(PubSub, function (supr) {
   this.init = function (opts) {

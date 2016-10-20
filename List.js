@@ -1,9 +1,10 @@
-jsio('import .Window');
-jsio('import .Widget');
-jsio('from util.browser import $');
-jsio('import .models.DataSource as DataSource');
-jsio('import .models.DataItem as DataItem');
-jsio('import .Selection');
+import Window from './Window';
+import Widget from './Widget';
+import browser from 'util/browser';
+let $ = browser.$;
+import DataSource from './models/DataSource';
+import DataItem from './models/DataItem';
+import Selection from './Selection';
 
 var List = module.exports = Class(Widget, function (supr) {
   this._css = 'list';
@@ -169,15 +170,13 @@ var List = module.exports = Class(Widget, function (supr) {
     if (this.selection) {
       this.selection.select(value);
     }
-  }
-;
+  };
 
   this.getValue = function () {
     if (this.selection) {
       return this.selection.get();
     }
-  }
-;
+  };
 
   this.setSelectable = function (selectable) {
     this.selection = new Selection({
@@ -208,10 +207,11 @@ var List = module.exports = Class(Widget, function (supr) {
     }
 
 
+
+
     this._cellCtor = cellCtor;
     this.clear();
-  }
-;
+  };
 
   this.clear = function () {
     for (var id in this._cellsByID) {
@@ -231,8 +231,7 @@ var List = module.exports = Class(Widget, function (supr) {
 
   this.setCell = this.setCellForId = function (id, cell) {
     this._cellsByID[id] = cell;
-  }
-;
+  };
 
   this.getCells = function () {
     return this._cellsByID;
@@ -298,8 +297,7 @@ var List = module.exports = Class(Widget, function (supr) {
   this.onShow = function () {
     supr(this, 'onShow', arguments);
     this.needsRender();
-  }
-;
+  };
 
   // just render all cells for now
   this.render = function () {
@@ -468,8 +466,7 @@ var List = module.exports = Class(Widget, function (supr) {
     ;
 
     renderMany.call(this);
-  }
-;
+  };
 
   this.setOffsetParent = function (offsetParent) {
     this._opts.offsetParent = offsetParent;

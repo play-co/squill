@@ -1,5 +1,6 @@
-jsio('import .Widget');
-jsio('from util.browser import $');
+import Widget from './Widget';
+import browser from 'util/browser';
+let $ = browser.$;
 
 exports = Class(Widget, function () {
   this._def = {

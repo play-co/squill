@@ -1,7 +1,7 @@
-jsio('import squill.Widget');
-jsio('import squill.models.bindings as bindings');
+import Widget from 'squill/Widget';
+import bindings from 'squill/models/bindings';
 
-exports = Class(squill.Widget, function () {
+exports = Class(Widget, function () {
   this._css = 'image';
   this._def = { tag: 'img' };
 

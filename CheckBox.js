@@ -1,5 +1,6 @@
-jsio('import .Widget');
-jsio('from util.browser import $');
+import Widget from './Widget';
+import browser from 'util/browser';
+let $ = browser.$;
 
 var CheckBox = exports = Class(Widget, function (supr) {
   this._css = 'checkbox';
@@ -38,35 +39,30 @@ var CheckBox = exports = Class(Widget, function (supr) {
     if (this._opts.__result) {
       this._opts.__result.addSubscription(this, 'Select', this._opts.id);
     }
-  }
-;
+  };
 
   this._onCheck = function () {
     this.publish('Check', this.isChecked());
     this.emit('change', this.isChecked());
-  }
-;
+  };
 
   this.setLabel = function (label) {
     $.setText(this.label, label);
   };
   this.setName = function (name) {
     this.checkbox.name = name;
-  }
-;
+  };
 
   this.setData = this.setValue = function (value) {
     this.checkbox.checked = !!value;
-  }
-;
+  };
 
   this.isChecked = function () {
     return this.checkbox.checked;
   };
   this.setChecked = function (isChecked) {
     this.checkbox.checked = isChecked;
-  }
-;
+  };
 
   this.getValue = function () {
     return this.isChecked() ? this.checkbox.value : null;

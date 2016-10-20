@@ -1,8 +1,9 @@
-jsio('import lib.PubSub');
-jsio('import .Widget');
-jsio('import .Delegate');
+import PubSub from 'lib/PubSub';
+import Widget from './Widget';
+import Delegate from './Delegate';
 
-jsio('from util.browser import $');
+import browser from 'util/browser';
+let $ = browser.$;
 
 var Menu = exports = Class(Widget, function (supr) {
   // this.init = function(params) {
@@ -23,8 +24,7 @@ var Menu = exports = Class(Widget, function (supr) {
 
   this.getContainer = function () {
     return this.container;
-  }
-;
+  };
 
   this.onBeforeShow = function () {
   };
@@ -33,8 +33,7 @@ var Menu = exports = Class(Widget, function (supr) {
   this.onBeforeHide = function () {
   };
   this.onHide = function () {
-  }
-;
+  };
 
   this.toggle = function () {
     if (this._isShowing) {
@@ -42,8 +41,7 @@ var Menu = exports = Class(Widget, function (supr) {
     } else {
       this.show();
     }
-  }
-;
+  };
 
   this.show = function () {
     this._isShowing = true;
@@ -94,8 +92,7 @@ var Menu = exports = Class(Widget, function (supr) {
 
     this.emit('open');
     Menu.emit('open', this);
-  }
-;
+  };
 
   this.hide = function () {
     this._isShowing = false;
@@ -107,7 +104,7 @@ var Menu = exports = Class(Widget, function (supr) {
   };
 });
 
-var subs = new lib.PubSub();
+var subs = new PubSub();
 Menu.emit = bind(subs, 'emit');
 Menu.on = bind(subs, 'on');
 Menu.removeListener = bind(subs, 'removeListener');

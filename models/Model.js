@@ -1,4 +1,4 @@
-jsio('import lib.PubSub');
+import PubSub from 'lib/PubSub';
 
 
 function copy(obj) {
@@ -21,7 +21,11 @@ function matchPath(p1, p2) {
 
 
 
-var Model = exports = Class(lib.PubSub, function (supr) {
+
+
+
+
+var Model = exports = Class(PubSub, function (supr) {
   this.init = function (opts) {
     var obj;
 
@@ -70,31 +74,26 @@ var Model = exports = Class(lib.PubSub, function (supr) {
         }, this);
       }
     }
-  }
-;
+  };
 
   this.setObject = function (obj) {
     this._data = obj;
     this.emit();
     this.persist();
     return this;
-  }
-;
+  };
 
   this.toObject = function () {
     return copy(this._data);
-  }
-;
+  };
 
   this.clone = function () {
     return new Model(this.getObject());
-  }
-;
+  };
 
   this.has = function (path) {
     return this.get(path) !== undefined;
-  }
-;
+  };
 
   this.get = function (path) {
     var segments = parsePath(path);
@@ -106,14 +105,14 @@ var Model = exports = Class(lib.PubSub, function (supr) {
     }
 
 
+
+
     return o;
-  }
-;
+  };
 
   this.getObject = function (path) {
     return copy(this.get(path) || {});
-  }
-;
+  };
 
   this.set = function (path, value) {
     var segments = parsePath(path);
@@ -138,10 +137,11 @@ var Model = exports = Class(lib.PubSub, function (supr) {
     }
 
 
+
+
     this.persist();
     return this;
-  }
-;
+  };
 
   this.emit = function (path, value) {
     if (path) {
@@ -160,8 +160,7 @@ var Model = exports = Class(lib.PubSub, function (supr) {
       }, this);
     }
     return this;
-  }
-;
+  };
 
   this.persist = function () {
     if (this._storageKey) {

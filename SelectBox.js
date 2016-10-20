@@ -1,7 +1,8 @@
-jsio('import .Widget');
-jsio('import squill.models.DataSource as DataSource');
+import Widget from './Widget';
+import DataSource from 'squill/models/DataSource';
 
-jsio('from util.browser import $');
+import browser from 'util/browser';
+let $ = browser.$;
 
 var SelectBox = exports = Class(Widget, function (supr) {
   this._css = 'select';
@@ -23,8 +24,7 @@ var SelectBox = exports = Class(Widget, function (supr) {
       this.setDataSource(opts.dataSource);
     }
     supr(this, 'init', arguments);
-  }
-;
+  };
 
   this.buildWidget = function () {
     if (this._opts.name) {
@@ -64,23 +64,22 @@ var SelectBox = exports = Class(Widget, function (supr) {
     }
 
 
+
+
     this.initMouseEvents(this._el);
     $.onEvent(this._select, 'change', this, '_onSelect');
-  }
-;
+  };
 
   this._onSelect = function () {
     var item = this._dataSource.get(this.getValue());
     if (item) {
       this.publish('change', item);
     }
-  }
-;
+  };
 
   this.getDataSource = function () {
     return this._dataSource;
-  }
-;
+  };
 
   this.setDataSource = function (dataSource) {
     if (this._dataSource) {
@@ -93,14 +92,12 @@ var SelectBox = exports = Class(Widget, function (supr) {
     this._dataSource.forEach(function (item, key) {
       this.onUpdateItem(key, item);
     }, this);
-  }
-;
+  };
 
   this.defaultRenderer = function (item) {
     var key = this._dataSource.getKey();
     return item.displayName || item.label || item.title || item.text || item[key];
-  }
-;
+  };
 
   this.onUpdateItem = function (id, item) {
     var el = this._items[id];
@@ -123,8 +120,7 @@ var SelectBox = exports = Class(Widget, function (supr) {
     var renderer = this._opts.renderer;
     el.innerText = typeof renderer === 'string' ? item[renderer] : renderer(item);
     el.value = item[keyField];
-  }
-;
+  };
 
   this.onRemoveItem = function (id) {
     var el = this._items[id];
@@ -148,8 +144,7 @@ var SelectBox = exports = Class(Widget, function (supr) {
   };
   this.setValue = function (value) {
     this._select.value = value;
-  }
-;
+  };
 
   this.getValue = function () {
     return this._select.value;

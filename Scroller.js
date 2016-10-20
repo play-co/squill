@@ -1,7 +1,8 @@
-jsio('import .Drag');
-jsio('import .Widget');
-jsio('import .transforms');
-jsio('from util.browser import $');
+import Drag from './Drag';
+import Widget from './Widget';
+import transforms from './transforms';
+import browser from 'util/browser';
+let $ = browser.$;
 
 exports = Class(Widget, function (supr) {
   this._css = 'scroller';
@@ -19,8 +20,7 @@ exports = Class(Widget, function (supr) {
     this._hasMomentum = opts.momentum;
 
     supr(this, 'init', [opts]);
-  }
-;
+  };
 
   this.buildContent = function () {
     var el = this._el;
@@ -54,24 +54,23 @@ exports = Class(Widget, function (supr) {
     }
 
 
+
+
     return supr(this, 'buildContent', arguments);
-  }
-;
+  };
 
   this.getScrollTop = function () {
     return this._scrollTop;
   };
   this.getContainer = this.getScrollPane = function () {
     return this._scrollPane;
-  }
-;
+  };
 
   this.onTouchStart = function () {
     if (this._momentum) {
       clearInterval(this._momentum);
     }
-  }
-;
+  };
 
   this.onDragStart = function (dragEvt, mouseEvt) {
     this._height = this._scrollPane.offsetHeight - this._el.offsetHeight;
@@ -79,8 +78,7 @@ exports = Class(Widget, function (supr) {
     if (this._momentum) {
       clearInterval(this._momentum);
     }
-  }
-;
+  };
 
   this.onDrag = function (dragEvt, moveEvt, delta) {
     var now = +new Date(), d = this._lastDelta;
@@ -90,8 +88,7 @@ exports = Class(Widget, function (supr) {
     d.when = now;
 
     this.scrollTo(this._scrollTop + delta.y);
-  }
-;
+  };
 
   this.scrollTo = function (y, animate) {
     this._scrollTop = y;
@@ -119,8 +116,7 @@ exports = Class(Widget, function (supr) {
       transforms.move(this._scrollPane, 0, this._scrollTop);
       onFinish();
     }
-  }
-;
+  };
 
   this.onDragStop = function (dragEvt, selectEvt) {
     $.stopEvent(selectEvt);

@@ -1,7 +1,8 @@
-jsio('from util.browser import $');
-jsio('import .Widget');
+import browser from 'util/browser';
+let $ = browser.$;
+import Widget from './Widget';
 
-jsio('import .hint as hint');
+import hint from './hint';
 
 var Graph = exports = Class(Widget, function (supr) {
   this._css = 'cnvs';
@@ -415,8 +416,7 @@ var Graph = exports = Class(Widget, function (supr) {
     ctx.lineTo(i + settings.itemSize, j + 7.5);
     ctx.lineTo(i + settings.itemSize - 4, j + 11.5);
     ctx.stroke();
-  }
-;
+  };
 
   this._renderHorizontalBars = function (segmentInfo, ctx, data) {
     var settings = this._settings, valueSpace = settings.valueSpace, mainPadding = settings.mainPadding, width = this._currentWidth - mainPadding * 2 - segmentInfo.maxLabel, height = this._currentHeight - mainPadding * 2 - valueSpace, step = height / data.length, barWidth, barHeight = step - settings.barPadding * 2, barHeightSeg, barX, barY, item, points, i, j, k, l;

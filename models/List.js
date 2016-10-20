@@ -1,6 +1,6 @@
-jsio('import .Resource');
-jsio('import .Widget');
-jsio('import ..Selection');
+import Resource from './Resource';
+import Widget from './Widget';
+import Selection from '../Selection';
 
 var List = exports = Class(Widget, function (supr) {
   this.init = function (opts) {
@@ -23,8 +23,7 @@ var List = exports = Class(Widget, function (supr) {
     this.isRecycleEnabled = opts.recycle;
 
     this.updateOpts(opts);
-  }
-;
+  };
 
   this.updateOpts = function (opts) {
     if (this._opts) {
@@ -64,9 +63,10 @@ var List = exports = Class(Widget, function (supr) {
     }
 
 
+
+
     return this._opts;
-  }
-;
+  };
 
   this.setSelections = function (selections) {
     selections.forEach(bind(this, 'select'));
@@ -87,8 +87,7 @@ var List = exports = Class(Widget, function (supr) {
       this._dataSource.subscribe('Remove', this, '_onRemove');
       this.needsSort();
     }
-  }
-;
+  };
 
   this._onUpdate = function (id, item) {
     var cell = this._cells[id];
@@ -96,41 +95,35 @@ var List = exports = Class(Widget, function (supr) {
       this._updatedCells[id] = item;
     }
     this.needsSort();
-  }
-;
+  };
 
   this._onRemove = function (id, item) {
     this._removed[id] = true;
     this.needsSort();
-  }
-;
+  };
 
   this.needsSort = function () {
     this._needsSort = true;
     this._view.needsRepaint();
-  }
-;
+  };
 
   this.setSelected = function (data) {
     this._selected = data;
   };
   this.getSelected = function () {
     return this._selected;
-  }
-;
+  };
 
   this.setCellGetter = function (getCell) {
     this._getCell = getCell;
   };
   this.getCellById = function (id) {
     return this._cells[id];
-  }
-;
+  };
 
   this.setSorter = function (sorter) {
     this._sorter = sorter;
-  }
-;
+  };
 
   // just render all cells for now
   this.render = function (viewport) {
@@ -160,13 +153,11 @@ var List = exports = Class(Widget, function (supr) {
         this.renderVariable(viewport);
       }
     }
-  }
-;
+  };
 
   this.getRenderOpts = function () {
     return this._renderOpts;
-  }
-;
+  };
 
   // y is required for non-fixed-size lists.  Otherwise, y is ignored.
   this._positionCell = function (cell, i, y) {
@@ -197,8 +188,7 @@ var List = exports = Class(Widget, function (supr) {
         y: y
       });
     }
-  }
-;
+  };
 
   this.renderVariable = function (viewport) {
     if (!this._dataSource) {
@@ -245,9 +235,10 @@ var List = exports = Class(Widget, function (supr) {
     }
 
 
+
+
     renderMany.call(this);
-  }
-;
+  };
 
   this._removeCells = function () {
     var removed = this._removed;
@@ -261,8 +252,7 @@ var List = exports = Class(Widget, function (supr) {
         }
       }
     }
-  }
-;
+  };
 
   this._createCell = function (item) {
     var id = item[this._dataSource.key];
@@ -285,9 +275,10 @@ var List = exports = Class(Widget, function (supr) {
     }
 
 
+
+
     return cell;
-  }
-;
+  };
 
   this._updateRenderOpts = function (viewport) {
     var r = this._renderOpts;
@@ -337,9 +328,10 @@ var List = exports = Class(Widget, function (supr) {
     }
 
 
+
+
     return true;
-  }
-;
+  };
 
   this.renderFixed = function (viewport) {
     if (!this._updateRenderOpts(viewport)) {
@@ -400,8 +392,7 @@ var List = exports = Class(Widget, function (supr) {
 
   this.toggle = function (dataItem) {
     this.selection && this.selection.toggle(dataItem);
-  }
-;
+  };
 
   this.select = function (dataItem) {
     this.selection && this.selection.select(dataItem);

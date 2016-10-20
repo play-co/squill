@@ -1,4 +1,5 @@
-jsio('from util.browser import $');
+import browser from 'util/browser';
+let $ = browser.$;
 
 var cbs = [];
 
@@ -26,16 +27,14 @@ exports.centerVertical = function (el) {
   onResize(function (width, height) {
     el.style.y = Math.max(0, (height - el.offsetHeight) / 2);
   })(dim.width, dim.height);
-}
-;
+};
 
 exports.centerHorizontal = function (el) {
   var dim = $(window);
   onResize(function (width, height) {
     el.style.x = Math.max(0, (width - el.offsetWidth) / 2);
   })(dim.width, dim.height);
-}
-;
+};
 
 exports.center = function (el) {
   exports.centerVertical(el);

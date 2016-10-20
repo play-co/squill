@@ -1,7 +1,8 @@
-jsio('import .Widget');
-jsio('import .models.DataItem as DataItem');
+import Widget from './Widget';
+import DataItem from './models/DataItem';
 
-jsio('from util.browser import $');
+import browser from 'util/browser';
+let $ = browser.$;
 
 var Cell = exports = Class(Widget, function (supr) {
   this._css = 'cell';
@@ -16,13 +17,11 @@ var Cell = exports = Class(Widget, function (supr) {
         this.setItem(opts.item);
       }
     }
-  }
-;
+  };
 
   this.buildWidget = function (el) {
     this.initMouseEvents();
-  }
-;
+  };
 
   this.isSelected = function () {
     return this._widgetParent.selection && this._widgetParent.selection.isSelected(this._item);
@@ -51,8 +50,7 @@ var Cell = exports = Class(Widget, function (supr) {
   };
 
   this.render = function () {
-  }
-;
+  };
 
   this.onClick = this.onSelect = function () {
     if (!this._widgetParent.selection) {
@@ -70,8 +68,7 @@ var Cell = exports = Class(Widget, function (supr) {
     } else if (type == 'single') {
       this.select();
     }
-  }
-;
+  };
 
   this.updateSelected = function () {
     var isSelected = this.isSelected();

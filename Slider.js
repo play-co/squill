@@ -1,5 +1,6 @@
-jsio('from util.browser import $');
-jsio('import .Widget');
+import browser from 'util/browser';
+let $ = browser.$;
+import Widget from './Widget';
 
 var Slider = exports = Class(Widget, function (supr) {
   this._css = 'rng';

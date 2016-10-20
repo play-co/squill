@@ -1,6 +1,6 @@
-jsio('import lib.PubSub');
+import PubSub from 'lib/PubSub';
 
-var Transition = Class(lib.PubSub, function () {
+var Transition = Class(PubSub, function () {
   this.init = function (opts) {
     this._target = opts.target;
     this._start = opts.start;

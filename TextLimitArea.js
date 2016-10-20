@@ -1,6 +1,7 @@
-jsio('from util.browser import $');
-jsio('import .Widget');
-jsio('import .TextArea');
+import browser from 'util/browser';
+let $ = browser.$;
+import Widget from './Widget';
+import TextArea from './TextArea';
 
 var TextLimitArea = exports = Class(TextArea, function (supr) {
   this.buildWidget = function () {
@@ -12,8 +13,7 @@ var TextLimitArea = exports = Class(TextArea, function (supr) {
     });
 
     this.initKeyEvents(this._textarea);
-  }
-;
+  };
 
   this.onKeyUp = function () {
     supr(this, 'onKeyUp', arguments);
@@ -26,8 +26,7 @@ var TextLimitArea = exports = Class(TextArea, function (supr) {
     } else {
       this._limitLabel.className = this._limitLabel.className.replace(/\binvalid\b/g, '');
     }
-  }
-;
+  };
 
   this.validators = [
     {

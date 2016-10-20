@@ -1,5 +1,5 @@
-jsio('import lib.Callback');
-jsio('import .BasicDataSource as BasicDataSource');
+import Callback from 'lib/Callback';
+import BasicDataSource from './BasicDataSource';
 
 
 var defaults = { key: 'id' };
@@ -22,7 +22,7 @@ var DataSource = exports = Class(BasicDataSource, function (supr) {
 
     this.length = 0;
 
-    this.onLoad = new lib.Callback();
+    this.onLoad = new Callback();
 
     this.setSorter(opts.sorter);
     this.setPersistence(opts.persistence);
@@ -42,8 +42,7 @@ var DataSource = exports = Class(BasicDataSource, function (supr) {
       this.onLoad.clear();
       persistence.load(this, this.onLoad.chain());
     }
-  }
-;
+  };
 
   this._saveChanges = function (type, key) {
     if (this._changeDataSave && !this._changeData[type + 'Hash'][key]) {
@@ -231,8 +230,7 @@ var DataSource = exports = Class(BasicDataSource, function (supr) {
 
   this.getKey = function () {
     return this.key;
-  }
-;
+  };
 
   this.get = this.getItemForID = function (id) {
     return this._byID[id] || null;
@@ -274,8 +272,7 @@ var DataSource = exports = Class(BasicDataSource, function (supr) {
 
   this.toArray = function () {
     return this._byIndex.slice(0);
-  }
-;
+  };
 
   this.beginChanges = function () {
     this._changeDataSave = true;
@@ -322,8 +319,7 @@ var DataSource = exports = Class(BasicDataSource, function (supr) {
     if (this._persistence) {
       this._persistence.save(this);
     }
-  }
-;
+  };
 
   this.compare = function (dict, cb) {
     var key = this.key;
@@ -354,8 +350,7 @@ var DataSource = exports = Class(BasicDataSource, function (supr) {
     for (var k in compareTo) {
       cb.call(this, this, null, compareTo[k]);
     }
-  }
-;
+  };
 
   this.filter = function (filter) {
     var result = new DataSource({ key: this.key });

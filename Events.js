@@ -1,11 +1,12 @@
-jsio('from util.browser import $');
-jsio('import .Drag');
-jsio('import lib.PubSub');
+import browser from 'util/browser';
+let $ = browser.$;
+import Drag from './Drag';
+import PubSub from 'lib/PubSub';
 
 var SLICE = Array.prototype.slice;
 var isMobile = /(iPod|iPhone|iPad|Android)/i.test(navigator.userAgent);
 
-exports = Class(lib.PubSub, function () {
+exports = Class(PubSub, function () {
   this.event = function (el, name, handler) {
     if (!this._eventEnabled) {
       this._eventEnabled = {};
@@ -84,8 +85,7 @@ exports = Class(lib.PubSub, function () {
     this.event(el, 'keypress', 'onKeyPress');
     this.event(el, 'keyup', 'onKeyUp');
     return this;
-  }
-;
+  };
 
   this._onTouchStart = function (e) {
     this.onMouseOver(e);

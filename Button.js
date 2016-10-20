@@ -1,7 +1,8 @@
-jsio('from util.browser import $');
-jsio('import .Widget');
+import browser from 'util/browser';
+let $ = browser.$;
+import Widget from './Widget';
 
-jsio('import .hint as hint');
+import hint from './hint';
 
 var Button = exports = Class(Widget, function (supr) {
   this._css = 'btn';
@@ -104,8 +105,7 @@ var Button = exports = Class(Widget, function (supr) {
   };
   this.focus = function () {
     this._el && this._el.focus();
-  }
-;
+  };
 
   this.setEnabled = function (isEnabled) {
     if (this._isEnabled != isEnabled) {

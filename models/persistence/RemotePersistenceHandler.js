@@ -8,9 +8,9 @@
  *
  * The final version should only send the updates to the server.
 **/
-jsio('import util.ajax');
+import ajax from 'util/ajax';
 
-jsio('import .BasicPersistenceHandler as BasicPersistenceHandler');
+import BasicPersistenceHandler from './BasicPersistenceHandler';
 
 var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function (supr) {
   this.init = function (opts) {
@@ -18,8 +18,7 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 
     this._loadURL = opts && opts.loadURL;
     this._saveURL = opts && opts.saveURL;
-  }
-;
+  };
 
   this._checkChangeData = function () {
     if (!this._updateList) {
@@ -69,7 +68,9 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
     }
 
 
-    util.ajax.post({
+
+
+    ajax.post({
       url: this._loadURL,
       data: this._params
     }, bind(this, function (err, response) {
@@ -147,7 +148,7 @@ var RemotePersistenceHandler = exports = Class(BasicPersistenceHandler, function
 
     data = merge({ data: data }, this._params);
 
-    util.ajax.post({
+    ajax.post({
       url: this._saveURL,
       data: data
     }, bind(this, function (err, response) {

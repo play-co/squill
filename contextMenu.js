@@ -1,6 +1,7 @@
-jsio('from util.browser import $');
+import browser from 'util/browser';
+let $ = browser.$;
 
-jsio('import .Widget');
+import Widget from './Widget';
 
 var contextMenu = false;
 

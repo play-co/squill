@@ -1,5 +1,6 @@
-jsio('import .Widget');
-jsio('from util.browser import $');
+import Widget from './Widget';
+import browser from 'util/browser';
+let $ = browser.$;
 
 var defaults = { className: 'pillButtons' };
 
@@ -7,8 +8,7 @@ var PillButtons = exports = Class(Widget, function (supr) {
   this.init = function (opts) {
     opts = merge(opts, defaults);
     supr(this, 'init', [opts]);
-  }
-;
+  };
 
   this.buildWidget = function (el) {
     this._options = {};
@@ -33,13 +33,11 @@ var PillButtons = exports = Class(Widget, function (supr) {
       $.onEvent(optionEl, 'mousedown', this, 'onSelect', optionEl, opts[i].value);
       this._options[opts[i].value] = optionEl;
     }
-  }
-;
+  };
 
   this.setValue = function (value) {
     this.onSelect(this._options[value], value);
-  }
-;
+  };
 
   this.onSelect = function (optionEl, value, evt) {
     if (value === this._selected.value) {

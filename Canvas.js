@@ -1,5 +1,6 @@
-jsio('from util.browser import $');
-jsio('import .Widget');
+import browser from 'util/browser';
+let $ = browser.$;
+import Widget from './Widget';
 
 var Canvas = exports = Class(Widget, function (supr) {
   this._css = 'cnvs';
@@ -9,8 +10,7 @@ var Canvas = exports = Class(Widget, function (supr) {
     params = merge(params, { tag: 'canvas' });
     this._isEnabled = params.isEnabled;
     supr(this, 'init', [params]);
-  }
-;
+  };
 
   this.create = function () {
     supr(this, 'create', arguments);

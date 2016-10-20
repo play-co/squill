@@ -1,6 +1,7 @@
-jsio('from util.browser import $');
-jsio('import .Widget');
-jsio('import lib.sort');
+import browser from 'util/browser';
+let $ = browser.$;
+import Widget from './Widget';
+import sort from 'lib/sort';
 
 var TabbedPane = exports = Class(Widget, function (supr) {
   this._def = {
@@ -77,8 +78,7 @@ var TabbedPane = exports = Class(Widget, function (supr) {
 
   this.getContainer = function () {
     return this._container || this._el;
-  }
-;
+  };
 
   this.addTabWidget = function (def, results) {
     return this.addWidget(def, this.tabContainer, results);
@@ -98,13 +98,11 @@ var TabbedPane = exports = Class(Widget, function (supr) {
     def.forEach(function (opts) {
       this.newPane(opts, result);
     }, this);
-  }
-;
+  };
 
   this.newPane = function (def, res) {
     return this.addWidget(merge({ type: exports.Pane }, def, { tabPaneClassName: this._opts.tabPaneClassName }), null, res);
-  }
-;
+  };
 
   this._addPane = function (pane) {
     var title = pane.getTitle();
@@ -113,8 +111,10 @@ var TabbedPane = exports = Class(Widget, function (supr) {
     }
 
 
+
+
     this._panes.push(pane);
-    lib.sort(this._panes, function (pane) {
+    sort(this._panes, function (pane) {
       return pane._sortIndex;
     });
     this.tabContainer.appendChild(pane.tab);
@@ -126,9 +126,10 @@ var TabbedPane = exports = Class(Widget, function (supr) {
     }
 
 
+
+
     return this;
-  }
-;
+  };
 
   this.clear = function () {
     this._panes.length = 0;

@@ -1,5 +1,7 @@
-jsio('import .Button, .Widget');
-jsio('from util.browser import $');
+import Button from './Button';
+import Widget from './Widget';
+import browser from 'util/browser';
+let $ = browser.$;
 
 var TextButton = exports = Class(Button, function (supr) {
   this._type = 'text-button';
@@ -10,8 +12,7 @@ var TextButton = exports = Class(Button, function (supr) {
 
     this.initMouseEvents(el);
     this.initKeyEvents(el);
-  }
-;
+  };
 
   this.setLabel = function (label) {
     this._opts.label = label;

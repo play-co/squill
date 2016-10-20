@@ -1,4 +1,4 @@
-jsio('import .Widget');
+import Widget from './Widget';
 
 exports = Class(Widget, function (supr) {
   this._def = {
@@ -11,8 +11,7 @@ exports = Class(Widget, function (supr) {
 
   this.getContainer = function () {
     return this.contents;
-  }
-;
+  };
 
   this.buildChildren = function (children) {
     if (Array.isArray(children[0])) {

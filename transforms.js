@@ -1,12 +1,12 @@
-jsio('from util.browser import $');
+import browser from 'util/browser';
+let $ = browser.$;
 
 var vendor = /webkit/i.test(navigator.appVersion) ? 'webkit' : /firefox/i.test(navigator.userAgent) ? 'Moz' : 'opera' in window ? 'O' : '', has3d = 'WebKitCSSMatrix' in window && 'm11' in new WebKitCSSMatrix(), hasTransform = vendor + 'Transform' in document.documentElement.style, translateStart = 'translate' + (has3d ? '3d(' : '('), translateEnd = has3d ? ',0)' : ')';
 
 if (hasTransform) {
   exports.setLeft = function (el, left) {
     el.style[vendor + 'Transform'] = translateStart + left + 'px,0' + translateEnd;
-  }
-;
+  };
 
   exports.setTop = function (el, top) {
     el.style[vendor + 'Transform'] = translateStart + '0,' + top + 'px' + translateEnd;
@@ -14,8 +14,7 @@ if (hasTransform) {
 } else {
   exports.setLeft = function (el, left) {
     el.style.left = left + 'px';
-  }
-;
+  };
 
   exports.setTop = function (el, top) {
     el.style.top = top + 'px';
@@ -43,8 +42,7 @@ exports.onTransitionEnd = function (el, cb) {
     $.onEvent(el, 'transitionend', finished),
     $.onEvent(el, 'oTransitionEnd', finished)
   ];
-}
-;
+};
 
 exports.setTransition = function (el, transition, cb) {
   if (transition) {
@@ -57,8 +55,7 @@ exports.setTransition = function (el, transition, cb) {
   } else {
     el.style[vendor + 'Transition'] = 'none';
   }
-}
-;
+};
 
 exports.rotate = function (el, rotation, transition, cb) {
   if (!hasTransform) {
@@ -72,8 +69,7 @@ exports.rotate = function (el, rotation, transition, cb) {
   if (cb && !transition) {
     cb();
   }
-}
-;
+};
 
 exports.move = function (el, x, y, transition, cb) {
   if (!hasTransform) {
@@ -85,7 +81,6 @@ exports.move = function (el, x, y, transition, cb) {
   if (cb && !transition) {
     cb();
   }
-}
-;
+};
 
 exports.hasTransform = hasTransform;

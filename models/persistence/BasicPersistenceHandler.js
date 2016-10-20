@@ -1,4 +1,4 @@
-jsio('import lib.PubSub as PubSub');
+import PubSub from 'lib/PubSub';
 
 var BasicPersistanceHandler = exports = Class(PubSub, function (supr) {
   this.init = function (opts) {
@@ -31,8 +31,7 @@ var BasicPersistanceHandler = exports = Class(PubSub, function (supr) {
 
   this.setSource = function (dataSource) {
     this._dataSource = dataSource;
-  }
-;
+  };
 
   this.remove = function (data) {
     var i, j;

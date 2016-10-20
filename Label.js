@@ -1,8 +1,9 @@
-jsio('from util.browser import $');
-jsio('import squill.Widget');
-jsio('import squill.models.bindings as bindings');
+import browser from 'util/browser';
+let $ = browser.$;
+import Widget from 'squill/Widget';
+import bindings from 'squill/models/bindings';
 
-exports = Class(squill.Widget, function () {
+exports = Class(Widget, function () {
   this._css = 'label';
   this._def = {
     children: [{
@@ -18,8 +19,7 @@ exports = Class(squill.Widget, function () {
     if (opts.format) {
       bindings.parseFormat(this, opts.format);
     }
-  }
-;
+  };
 
   this.setText = function (text) {
     $.setText(this._labelSpan, text);

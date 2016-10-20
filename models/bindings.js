@@ -17,13 +17,11 @@ exports.parseFormat = function (widget, format) {
 
   subs.reverse();
   new Binding(widget, null, format, subs);
-}
-;
+};
 
 exports.parseData = function (widget, data) {
   new Binding(widget, data);
-}
-;
+};
 
 var Binding = Class(function () {
   this.init = function (widget, key, src, subs) {
@@ -45,8 +43,7 @@ var Binding = Class(function () {
     // }
     widget.on('change', bind(this, '_updateModel'));
     baseWidget.on('model', bind(this, '_connect'));
-  }
-;
+  };
 
   this._connect = function (model) {
     if (this._model) {
@@ -67,8 +64,7 @@ var Binding = Class(function () {
       model.subscribe(this._key, this, '_updateKey');
       this._updateKey(model.get(this._key));
     }
-  }
-;
+  };
 
   this._disconnect = function () {
     var model = this._model;
@@ -77,8 +73,7 @@ var Binding = Class(function () {
     }, this);
 
     this._key && model.unsubscribe(this._key, this);
-  }
-;
+  };
 
   this._update = function (key, value) {
     var str = this._src;
@@ -90,13 +85,11 @@ var Binding = Class(function () {
     }, this);
 
     this._widget.setData(str);
-  }
-;
+  };
 
   this._updateKey = function (value) {
     this._widget.setData(value);
-  }
-;
+  };
 
   this._updateModel = function (value) {
     if (this._model && this._key) {
