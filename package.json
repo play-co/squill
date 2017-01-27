@@ -10,10 +10,5 @@
 		"clientPaths": {
 			"squill": "."
 		}
-	},
-  "jsioWebpack": {
-    "alias": {
-      "squill": "."
-    }
-  }
+	}
 }
