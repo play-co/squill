@@ -4,7 +4,7 @@ import {
   merge,
   bind,
   logger
-} from 'base';
+} from 'jsio_base';
 
 import Element from './Element';
 import Widget from './Widget';

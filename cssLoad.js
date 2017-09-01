@@ -3,7 +3,7 @@ let exports = {};
 import {
   logger,
   bind
-} from 'base';
+} from 'jsio_base';
 
 import uri from 'std/uri';
 import ajax from 'util/ajax';

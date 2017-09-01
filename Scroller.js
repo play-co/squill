@@ -3,7 +3,7 @@ let exports = {};
 import {
   merge,
   bind
-} from 'base';
+} from 'jsio_base';
 
 import Drag from './Drag';
 import Widget from './Widget';

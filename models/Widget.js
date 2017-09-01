@@ -1,6 +1,6 @@
 let exports = {};
 
-import PubSub from 'lib/PubSub';
+import { PubSub } from 'lib/PubSub';
 
 exports = class extends PubSub {
   constructor (opts) {

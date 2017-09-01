@@ -1,6 +1,6 @@
 let exports = {};
 
-import PubSub from 'lib/PubSub';
+import { PubSub } from 'lib/PubSub';
 
 function copy (obj) {
   return JSON.parse(JSON.stringify(obj));

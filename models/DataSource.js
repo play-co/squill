@@ -2,9 +2,8 @@ let exports = {};
 
 import {
   merge,
-  isArray,
   logger
-} from 'base';
+} from 'jsio_base';
 
 import Callback from 'lib/Callback';
 import BasicDataSource from './BasicDataSource';
@@ -92,7 +91,7 @@ exports = class extends BasicDataSource {
     }
   }
   add (item) {
-    if (isArray(item)) {
+    if (Array.isArray(item)) {
       var res = [];
       for (var i = 0, len = item.length; i < len; ++i) {
         if (item[i]) {
@@ -295,7 +294,7 @@ exports = class extends BasicDataSource {
 
     // create a key-indexed copy of dict to run the comparison against
     var compareTo = {};
-    if (isArray(dict)) {
+    if (Array.isArray(dict)) {
       for (var i = 0, n = dict.length; i < n; ++i) {
         compareTo[dict[i][key]] = dict[i];
       }

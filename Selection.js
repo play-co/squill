@@ -1,8 +1,8 @@
 let exports = {};
 
-import { merge } from 'base';
+import { merge } from 'jsio_base';
 
-import PubSub from 'lib/PubSub';
+import { PubSub } from 'lib/PubSub';
 
 /**
  * The Selection class connects a selection storage to a UI element.

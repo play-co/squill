@@ -14,7 +14,7 @@ import {
   isArray,
   bind,
   merge
-} from 'base';
+} from 'jsio_base';
 
 import ajax from 'util/ajax';
 

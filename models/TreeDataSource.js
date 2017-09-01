@@ -4,7 +4,7 @@ import {
   merge,
   isArray,
   bind
-} from 'base';
+} from 'jsio_base';
 
 import BasicDataSource from './BasicDataSource';
 

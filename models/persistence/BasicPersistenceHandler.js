@@ -1,8 +1,8 @@
 let exports = {};
 
-import { isArray } from 'base';
+import { isArray } from 'jsio_base';
 
-import PubSub from 'lib/PubSub';
+import { PubSub } from 'lib/PubSub';
 
 exports = class extends PubSub {
   constructor (opts) {

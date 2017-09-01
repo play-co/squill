@@ -1,11 +1,11 @@
 let exports = {};
 
-import { bind } from 'base';
+import { bind } from 'jsio_base';
 
 import browser from 'util/browser';
 let $ = browser.$;
 import Drag from './Drag';
-import PubSub from 'lib/PubSub';
+import { PubSub } from 'lib/PubSub';
 
 var SLICE = Array.prototype.slice;
 var isMobile = /(iPod|iPhone|iPad|Android)/i.test(navigator.userAgent);

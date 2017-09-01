@@ -2,7 +2,7 @@ import {
   merge,
   delay,
   bind
-} from 'base';
+} from 'jsio_base';
 
 import Window from './Window';
 import Widget from './Widget';

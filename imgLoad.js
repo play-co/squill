@@ -1,6 +1,6 @@
 let exports = {};
 
-import { logger } from 'base';
+import { logger } from 'jsio_base';
 
 import Callback from 'lib/Callback';
 

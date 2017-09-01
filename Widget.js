@@ -4,7 +4,7 @@ import {
   merge,
   logger,
   bind
-} from 'base';
+} from 'jsio_base';
 
 import browser from 'util/browser';
 let $ = browser.$;

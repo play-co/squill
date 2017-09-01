@@ -1,8 +1,8 @@
 let exports = {};
 
-import { bind } from 'base';
+import { bind } from 'jsio_base';
 
-import PubSub from 'lib/PubSub';
+import { PubSub } from 'lib/PubSub';
 
 function pollHash () {
   try {

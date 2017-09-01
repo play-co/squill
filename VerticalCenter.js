@@ -1,6 +1,6 @@
 let exports = {};
 
-import { merge } from 'base';
+import { merge } from 'jsio_base';
 
 import Widget from './Widget';
 import browser from 'util/browser';

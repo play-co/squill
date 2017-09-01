@@ -1,6 +1,6 @@
 let exports = {};
 
-import { bind } from 'base';
+import { bind } from 'jsio_base';
 
 import browser from 'util/browser';
 let $ = browser.$;

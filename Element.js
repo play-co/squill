@@ -1,6 +1,6 @@
 let exports = {};
 
-import PubSub from 'lib/PubSub';
+import { PubSub } from 'lib/PubSub';
 import browser from 'util/browser';
 let $ = browser.$;
 

@@ -1,6 +1,6 @@
 let exports = {};
 
-import { bind } from 'base';
+import { bind } from 'jsio_base';
 
 var RE_BINDING = /(^|[^%])%\((.*?)\)([ +0-]?)(\d*)(\.?\d*)([dfcs])/g;
 

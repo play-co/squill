@@ -1,4 +1,4 @@
-import { bind } from 'base';
+import { bind } from 'jsio_base';
 
 import Widget from './Widget';
 import Point from 'math/geom/Point';

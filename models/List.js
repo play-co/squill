@@ -3,7 +3,7 @@ let exports = {};
 import {
   merge,
   bind
-} from 'base';
+} from 'jsio_base';
 
 import Resource from './Resource';
 import Widget from './Widget';
